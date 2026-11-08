@@ -5,3 +5,4 @@ weights/*
 !weights/README.md
 dev_cache/
 outputs/
+!weights/README_weights.md

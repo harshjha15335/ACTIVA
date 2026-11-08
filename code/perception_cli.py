@@ -44,9 +44,14 @@ def main():
     parser.add_argument("output")
     parser.add_argument("--categories", help="JSON list or object with categories list")
     parser.add_argument("--weights")
+    parser.add_argument("--device")
+    parser.add_argument("--batch-size", type=int)
+    parser.add_argument("--model")
+    parser.add_argument("--fp16", action=argparse.BooleanOptionalAction, default=None)
+    parser.add_argument("--require-canonical-vocabulary", action="store_true")
     parser.add_argument("--mode", choices=["clip", "motion-only"], default="clip")
-    parser.add_argument("--importance", choices=["constant", "novelty", "motion", "text"], default="novelty")
-    parser.add_argument("--pooling", choices=["mean", "weighted", "top"], default="mean")
+    parser.add_argument("--importance", choices=["constant", "novelty", "motion", "text"], default=None)
+    parser.add_argument("--pooling", choices=["mean", "weighted", "top"], default=None)
     parser.add_argument("--cache-dir", help="Optional DEVELOPMENT export; inference never reads caches")
     args = parser.parse_args()
     if Path(args.input).resolve() == Path(args.output).resolve():
@@ -55,10 +60,22 @@ def main():
         os.environ["ACTIVA_CATEGORIES"] = str(Path(args.categories).resolve())
     if args.weights:
         os.environ["ACTIVA_CLIP_WEIGHTS"] = str(Path(args.weights).resolve())
-    os.environ["ACTIVA_IMPORTANCE"] = args.importance
-    os.environ["ACTIVA_POOLING"] = args.pooling
+    for value, name in [(args.device, "ACTIVA_DEVICE"), (args.batch_size, "ACTIVA_BATCH_SIZE"),
+                        (args.model, "ACTIVA_CLIP_MODEL")]:
+        if value is not None:
+            os.environ[name] = str(value)
+    if args.fp16 is not None:
+        os.environ["ACTIVA_CLIP_FP16"] = "1" if args.fp16 else "0"
+    if args.require_canonical_vocabulary:
+        os.environ["ACTIVA_REQUIRE_CANONICAL_VOCAB"] = "1"
+    if args.importance is not None:
+        os.environ["ACTIVA_IMPORTANCE"] = args.importance
+    if args.pooling is not None:
+        os.environ["ACTIVA_POOLING"] = args.pooling
     started = time.perf_counter()
     try:
+        from perception_options import settings
+        cfg = settings()
         info = inspect_video(args.input)
         clip, category = None, None
         if args.mode == "motion-only":
@@ -67,9 +84,8 @@ def main():
             from clip_features import extract_clip_features
             from importance import predict_importance
             from category import classify_video
-            from config import settings
-            if not settings().categories:
-                raise ValueError("CLIP mode requires --categories or ACTIVA_CATEGORIES.")
+            from category_vocab import load_categories
+            vocabulary = load_categories(cfg)
             clip = extract_clip_features(info)
             importance = predict_importance(info, clip)
             category = classify_video(info, clip, importance)
@@ -77,18 +93,24 @@ def main():
             "format": "activa-m2-diagnostic-v1", "video": asdict(info),
             "mode": args.mode, "model": clip.model_name if clip else None,
             "category": asdict(category) if category else None,
-            "importance_method": args.importance if clip else "motion",
+            "vocabulary_source": vocabulary.source if clip else None,
+            "canonical_vocabulary": vocabulary.canonical if clip else False,
+            "importance_method": cfg.baseline if clip else "motion",
+            "pooling": cfg.pooling if clip else None,
             "times": importance.times.tolist(), "importance": importance.values.tolist(),
             "elapsed_seconds": time.perf_counter() - started,
         }
-        atomic_json(args.output, result)
         if args.cache_dir:
-            directory = Path(args.cache_dir)
-            (directory / "importance").mkdir(parents=True, exist_ok=True)
-            np.savez_compressed(directory / "importance" / f"{info.video_id}.npz", times=importance.times, values=importance.values)
-            if clip:
-                (directory / "clip").mkdir(parents=True, exist_ok=True)
-                np.savez_compressed(directory / "clip" / f"{info.video_id}.npz", times=clip.times, feats=clip.feats, model_name=clip.model_name)
+            if clip is None:
+                # Retain clearly labeled legacy motion diagnostics; these are not CLIP caches.
+                directory = Path(args.cache_dir) / "importance"
+                directory.mkdir(parents=True, exist_ok=True)
+                np.savez_compressed(directory / f"{info.video_id}.npz", times=importance.times, values=importance.values)
+            else:
+                from perception_cache import write_cache
+                result["cache_manifest"] = str(write_cache(args.cache_dir, info, clip, importance,
+                    {"importance": cfg.baseline, "pooling": cfg.pooling}))
+        atomic_json(args.output, result)
         print(f"Wrote {args.output}: {len(importance.times)} samples in {result['elapsed_seconds']:.2f}s")
     except Exception as error:
         parser.exit(1, f"Perception failed: {error}\n")

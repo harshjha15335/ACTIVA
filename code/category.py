@@ -1,9 +1,10 @@
 """Zero-shot CLIP category classification with configurable exact labels."""
 import numpy as np
 from contracts import CategoryResult
-from config import settings
+from perception_options import settings
 from importance import validate_clip
-from clip_backend import normalize, text_features
+from clip_backend import normalize, text_features, model_identifier
+from category_vocab import load_categories
 PROMPTS = ("a first-person video of {}", "egocentric footage of someone {}", "a GoPro view of {}", "a photo taken from a head-mounted camera while {}", "a person is {}")
 
 def pool_features(feats, values, method):
@@ -25,13 +26,15 @@ def pool_features(feats, values, method):
 
 def classify_video(info, clip, imp):
     cfg = settings()
-    if not cfg.categories:
-        raise ValueError("Set ACTIVA_CATEGORIES to a JSON list of exact category strings.")
+    vocabulary = load_categories(cfg)
+    labels = vocabulary.labels
+    if "/sha256:" in clip.model_name and clip.model_name != model_identifier(cfg.model, cfg.weights):
+        raise ValueError("Image features and configured text checkpoint identities differ.")
     times, feats = validate_clip(info, clip)
     if not np.array_equal(times, imp.times):
         raise ValueError("Importance timestamps must exactly match CLIP grid.")
     video = pool_features(feats, imp.values, cfg.pooling)
-    vectors = text_features([template.format(label) for label in cfg.categories for template in PROMPTS], cfg)
-    prototypes = normalize(vectors.reshape(len(cfg.categories), len(PROMPTS), -1).mean(axis=1))
+    vectors = text_features([template.format(label) for label in labels for template in PROMPTS], cfg)
+    prototypes = normalize(vectors.reshape(len(labels), len(PROMPTS), -1).mean(axis=1))
     scores = prototypes @ video
-    return CategoryResult(cfg.categories[int(np.argmax(scores))], {label: float(score) for label, score in zip(cfg.categories, scores)})
+    return CategoryResult(labels[int(np.argmax(scores))], {label: float(score) for label, score in zip(labels, scores)})

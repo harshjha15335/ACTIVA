@@ -1,7 +1,7 @@
 """Training-free importance baselines; human-importance quality is unmeasured."""
 import numpy as np
 from contracts import Importance
-from config import settings
+from perception_options import settings
 
 def validate_clip(info, clip):
     times, feats = np.asarray(clip.times), np.asarray(clip.feats)

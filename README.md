@@ -1,14 +1,15 @@
-# ACTIVA — M2 Perception
+# ACTIVA — Member 2 Perception
 
-Standalone perception implementation from the uploaded M2 guide. This is not a
-complete ACTIVA submission: M1 action detection, M3 selection and official M4
-schema/validator integration are not implemented here. Guide A5 contracts and a
-local decoder have been bootstrapped so M2 can be developed independently.
-M4 should review these adapters when integrating.
+Real pretrained CLIP extraction, four importance baselines and zero-shot category
+classification are implemented. **Development handover is conditional; this is
+not a complete or officially validated ACTIVA submission.** Read
+[docs/M2_HANDOFF.md](docs/M2_HANDOFF.md) and
+[docs/M2_INTEGRATION_STATUS.md](docs/M2_INTEGRATION_STATUS.md).
 
-## Install (Python 3.12, FFmpeg/ffprobe)
+## Install
 
-Use the existing isolated checkout; no additional worktree is needed.
+Python 3.12 and FFmpeg/ffprobe on PATH are required. Use the existing isolated
+checkout; do not create another worktree unless explicitly requested.
 
 ```sh
 python3 -m venv --system-site-packages /workspace/activa-venv
@@ -16,65 +17,93 @@ python3 -m venv --system-site-packages /workspace/activa-venv
 /workspace/activa-venv/bin/python -m pip install -r requirements-dev.txt
 ```
 
-For a CUDA machine install the matching official PyTorch build instead. CPU is
-the tested local configuration. No real GPU runtime or performance is claimed.
+CPU/Linux is validated. For Windows use a Python 3.12 venv, install the appropriate
+official PyTorch wheels, requirements-dev.txt, and FFmpeg. Invoke the Python CLI
+directly instead of the Bash wrapper. Windows execution has not been tested here.
+No CUDA device was available; CPU is the explicit supported fallback.
 
-## Run without weights
+## Explicit checkpoint choice
+
+OpenAI's original host remains denied in this environment. A compatible **different**
+pretrained checkpoint from OpenCLIP's official GitHub release was acquired and
+validated: ViT-B-32, QuickGELU, LAION-400M e32,512 dimensions.
+This is an explicit development candidate; team model approval is pending.
+It is not silently substituted for OpenAI defaults.
+
+```sh
+/workspace/activa-venv/bin/python scripts/prepare_weights.py --preset laion400m_e32
+```
+
+See [weights/README_weights.md](weights/README_weights.md) for the source, exact
+hashes, verification level, license reference and original-OpenAI/manual routes.
+Setup downloads only on explicit request; inference never downloads. Weights and
+videos stay out of Git. Checkpoint manifests are verified on local model loading.
+
+## Run
+
+```sh
+ACTIVA_PYTHON=/workspace/activa-venv/bin/python ./perceive.sh input.mp4 outputs/perception.json --weights weights/ViT-B-32-laion400m_e32.safetensors --categories /absolute/path/development-categories.json --importance novelty --pooling mean --cache-dir dev_cache
+```
+
+Equivalent cross-platform invocation:
+
+```sh
+python code/perception_cli.py input.mp4 outputs/perception.json --weights weights/ViT-B-32-laion400m_e32.safetensors --categories development-categories.json
+```
+
+Category JSON is a unique nonempty exact-label array (or object with categories).
+When M4's vocab.load() is available its canonical labels take precedence and
+conflicting development labels fail. `--require-canonical-vocabulary` rejects the
+missing canonical adapter. Development-label outputs explicitly record their
+source; they are never claimed officially compatible.
+
+Motion-only diagnostics require no weights and emit a null category:
 
 ```sh
 ACTIVA_PYTHON=/workspace/activa-venv/bin/python ./perceive.sh input.mp4 outputs/motion.json --mode motion-only
 ```
 
-This decodes real frames at 2 fps and scores smoothed, rank-normalized image
-change. Category is explicitly null; no CLIP features or action predictions are
-fabricated. Output is `activa-m2-diagnostic-v1`, not organizer JSON.
+Output is `activa-m2-diagnostic-v1`, not the official final schema. M4 owns the
+actual main/run.sh/schema integration; no competing submission runner is created.
 
-## Run CLIP perception
+## Configuration
 
-```sh
-/workspace/activa-venv/bin/python scripts/prepare_weights.py
-ACTIVA_PYTHON=/workspace/activa-venv/bin/python ./perceive.sh input.mp4 outputs/perception.json --categories /absolute/path/categories.json --weights weights/ViT-B-32.safetensors --importance novelty --cache-dir dev_cache
-```
+Explicit CLI > environment > shared defaults. Omitted flags preserve environment
+values. M4-owned config.py is unchanged; perception_options.py validates and
+resolves its settings. Explicit relative paths are caller-relative; implicit
+weight defaults resolve against this checkout.
 
-Category input is a JSON array of unique exact label strings, or an object with
-that array under `categories`. Supply official labels when available. Test labels
-are only for smoke checks; they do not establish Samsung label compatibility.
+- ACTIVA_IMPORTANCE / --importance: constant,novelty,motion,text.
+- ACTIVA_POOLING / --pooling: mean,weighted,top(top30percent).
+- ACTIVA_CLIP_WEIGHTS / --weights; ACTIVA_CLIP_MODEL / --model.
+- ACTIVA_DEVICE / --device: cpu,cuda,cuda:index; ACTIVA_BATCH_SIZE / --batch-size.
+- ACTIVA_CATEGORIES / --categories: explicit development JSON.
+- ACTIVA_REQUIRE_CANONICAL_VOCAB=1 / --require-canonical-vocabulary.
+- ACTIVA_CLIP_FP16=1 / --fp16: optional CUDA autocast (untestedGPU); CPU staysFP32.
 
-CLIP uses the library's resize/center-crop/normalization, real decoded timestamps,
-2 fps and L2-normalized float32 features. Rotation uses ffprobe's display-matrix
-angle; arbitrary rotations fail clearly. Output includes the model identifier,
-importance timestamps/values and cosine category scores. These scores are not
-calibrated probabilities. Mean pooling is the default; `--pooling weighted` and
-`--pooling top` are available for later held-out comparison. Importance choices:
-constant, novelty in a +/-10-second window, decoded image motion, and text-guided.
-No baseline has been established as best on human labels.
+No global Torch RNG reseed or deterministic-algorithm policy change escapes model
+initialization. Replacing checkpoint files invalidates the backend cache. Features
+identify the actual checkpoint SHA256, not only an architecture name.
 
-Inference loads local weights only. Downloading is confined to the explicit setup
-script and verifies OpenAI's published SHA-256. No dev cache is ever read by the
-inference path. Optional cache exports for M3 contain `times`, `feats`,
-`model_name` in `clip/*.npz`, and `times`, `values` in `importance/*.npz`.
-
-Optional environment variables: ACTIVA_DEVICE (cpu default), ACTIVA_BATCH_SIZE
-(16), ACTIVA_CLIP_MODEL (ViT-B-32), ACTIVA_CLIP_WEIGHTS, ACTIVA_CATEGORIES,
-ACTIVA_IMPORTANCE and ACTIVA_POOLING. The public functions retain guide A5
-signatures. `code/tcn.py` provides the untrained TCN architecture and a loss for
-future experiments; no training or model selection has occurred.
-
-## Verify
+## Tests and tools
 
 ```sh
 /workspace/activa-venv/bin/python -m pytest -q
 ```
 
-See docs/results.md for executed checks and docs/leakage.md for the outstanding
-audit. scripts/audit_ids.py accepts our own CSV inventory format `video_id,sha256`;
-it is not an assumed organizer manifest parser. Exact matches are excluded and
-all unmatched clips remain unresolved until content review. It never declares
-training data safe based only on missing filename/hash matches.
+Real-model tests explicitly require opt-in local assets; without them those tests
+report BLOCKED skips, never random pretrained substitutes. The full executed run:
 
-## Remaining external work
+```sh
+ACTIVA_REAL_CLIP_WEIGHTS=/workspace/ACTIVA/weights/ViT-B-32-laion400m_e32.safetensors ACTIVA_REAL_MEDIA=/workspace/remediation-results/activa-m2/media /workspace/activa-venv/bin/python -m pytest -q
+```
 
-Obtain the official kit/vocabulary and evaluation manifest, review content overlap,
-and verify annotation formats. Run real pretrained CLIP video checks once weights
-are available. Compare baselines and any TCN using reviewed-safe video-level folds.
-Record actual F1/accuracy, runtime, and human review; no benchmark numbers exist yet.
+Observed:74 passed,0 failed,0 skipped,4 warnings. Media are small public dog/bus photos
+and an MP4 derived from OpenCV vtest.avi, retained locally, not committed.
+Setup/real tests do not fetch assets implicitly. Source URLs are in docs/results.md.
+
+Other tools: scripts/validate_pretrained.py, benchmark_perception.py,
+inspect_fpvsum.py, fingerprint_videos.py, audit_ids.py, evaluate_perception.py and
+check_m3_handoff.py. See docs/evaluation_formats.md for explicit development input
+schemas and safeguards. No training, tuning, held-out quality result or official
+score exists yet. Do not train until docs/leakage.md clearance is reviewed.
