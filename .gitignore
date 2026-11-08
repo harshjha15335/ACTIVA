@@ -1,0 +1,7 @@
+__pycache__/
+.pytest_cache/
+.venv/
+weights/*
+!weights/README.md
+dev_cache/
+outputs/

@@ -1,0 +1,7 @@
+# Install CPU torch/torchvision first; see README.md.
+numpy==2.3.5
+Pillow==13.0.0
+torch==2.15.0
+torchvision==0.29.2
+open_clip_torch==4.2.1
+av==19.0.2
