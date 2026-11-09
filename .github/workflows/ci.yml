@@ -16,6 +16,12 @@ jobs:
           cache: pip
       - name: Install FFmpeg
         run: sudo apt-get update && sudo apt-get install -y ffmpeg
+      - name: CPU-only PyTorch (once a module needs it)
+        run: |
+          pins=$(grep -iE '^(torch|torchvision)==' requirements.txt || true)
+          if [ -n "$pins" ]; then
+            pip install --index-url https://download.pytorch.org/whl/cpu $pins
+          fi
       - name: Install Python packages
         run: pip install -r requirements-dev.txt
       - name: run.sh is executable with LF endings

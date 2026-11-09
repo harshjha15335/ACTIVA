@@ -9,7 +9,7 @@ import fallbacks
 import main
 import schema
 import vocab
-from contracts import Action, CategoryResult, Highlight, Importance, VideoInfo
+from contracts import Action, CategoryResult, ClipFeats, Highlight, Importance, VideoInfo
 
 
 def fake_module(monkeypatch, name, **functions):
@@ -21,6 +21,25 @@ def fake_module(monkeypatch, name, **functions):
 
 def boom(*args):
     raise RuntimeError("module crashed")
+
+
+@pytest.fixture(autouse=True)
+def stub_modules(monkeypatch):
+    """Test main.py on its own, whatever real modules are on the branch."""
+    def clip(info):
+        times = np.arange(0.0, info.duration, 0.5)
+        feats = np.zeros((len(times), 4), np.float32)
+        feats[:, 0] = 1.0
+        return ClipFeats(times, feats, "test")
+
+    fake_module(monkeypatch, "clip_features", extract_clip_features=clip)
+    fake_module(monkeypatch, "actions", detect_actions=lambda info: [])
+    fake_module(monkeypatch, "importance",
+                predict_importance=lambda info, c: Importance(c.times.copy(), np.full(len(c.times), 0.5)))
+    fake_module(monkeypatch, "category",
+                classify_video=lambda info, c, i: CategoryResult(vocab.load().categories[0]))
+    fake_module(monkeypatch, "optimizer",
+                select_highlights=lambda info, a, i, c: fallbacks.uniform_highlights(info))
 
 
 def assert_valid(result):
