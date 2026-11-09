@@ -1,0 +1,2 @@
+# Optional development dataset tooling. Shared requirements.txt is unchanged.
+scipy==1.17.0
