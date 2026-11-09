@@ -1,0 +1,307 @@
+{
+  "date_ist": "2026-11-09T18:39:58.808024+05:30",
+  "M2_base_commit": "e70b55f213fa990bd1d66d297a812f3f5a24e4dd",
+  "tested_owner_refs": {
+    "main": "cc3d61d23c57be326eeca80baf19a8f61141fd67",
+    "M1": "fccad758b3e71cf1c816326eeae1ab965895c0db",
+    "M3": "cc6f36a3c4d567235b5466666d3d6e0848ed5acf"
+  },
+  "M2_suite": {
+    "tests": 78,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "passed": 78
+  },
+  "combined_suite": {
+    "tests": 237,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "passed": 237
+  },
+  "checkpoint": {
+    "preset": "laion400m_e32",
+    "architecture": "ViT-B-32",
+    "published_prefix": "46683a32",
+    "verification_level": "published-sha256-prefix-verified; full hash computed locally",
+    "files": {
+      "ViT-B-32-laion400m_e32.pt": {
+        "sha256": "46683a32721d5c68911153698992361285d20ca690bb4f317c11e45c03d798fa",
+        "bytes": 605159845,
+        "matches_manifest": true
+      },
+      "ViT-B-32-laion400m_e32.safetensors": {
+        "sha256": "9bd6bea2e0b7f343b17347af1854d7fd2667a227b0997801e5d297d46808854b",
+        "bytes": 605143452,
+        "matches_manifest": true
+      }
+    }
+  },
+  "environment": {
+    "python": "3.12.14",
+    "cpu_count": 5,
+    "torch_threads": 5,
+    "torch": "2.15.0+cpu",
+    "cuda_available": false,
+    "cuda_build": null,
+    "platform": "Linux-6.18.57-x86_64-with-glibc2.41"
+  },
+  "team_interfaces": {
+    "kind": "canonical-rehearsal-not-official-submission",
+    "review_root": "/workspace/final-integration-results/activa-m2/rehearsal/combined",
+    "vocabulary_authority": "M4-TEST-FIXTURE-NOT-OFFICIAL",
+    "offline_socket_connections_blocked": true,
+    "model": "ViT-B-32/sha256:9bd6bea2e0b7f343b17347af1854d7fd2667a227b0997801e5d297d46808854b",
+    "feature_shape": [
+      20,
+      512
+    ],
+    "feature_dtype": "float32",
+    "fallback_stages": [],
+    "category": {
+      "label": "dev-category-a",
+      "scores": {
+        "dev-category-a": 0.21653157472610474,
+        "dev-category-b": 0.21400433778762817
+      }
+    },
+    "canonical_schema_proxy_valid": true,
+    "official_validator_verified": false,
+    "M1_actual_action_count": 0,
+    "M1_helper_action_accepted_by_M4": {
+      "verb": "dev-verb-a",
+      "noun": "dev-noun-a",
+      "start": 0.533,
+      "end": 1.533,
+      "score": 0.8
+    },
+    "M1_grid_roundtrip_pass": true,
+    "M1_real_raw_video_action_alignment": "UNVERIFIED: detect_actions is still an empty G0 stub; conversion/finalization helpers only were tested.",
+    "M3_importance_sensitive": false,
+    "M3_intervals": {
+      "early": [
+        [
+          4.2500000005,
+          5.7499999995
+        ]
+      ],
+      "late": [
+        [
+          4.2500000005,
+          5.7499999995
+        ]
+      ],
+      "uniform": [
+        [
+          4.2500000005,
+          5.7499999995
+        ]
+      ]
+    },
+    "M3_budget_checks_pass": true,
+    "M3_fixture": "/workspace/final-integration-results/activa-m2/m3-importance-controlled.json",
+    "stage_seconds": {
+      "clip": 7.452130943999919,
+      "actions": 1.4304999922387651e-05,
+      "importance": 0.0026901840001301025,
+      "category": 0.30313768100018024,
+      "highlights": 0.0007012270000359422,
+      "total": 7.847272318000023
+    },
+    "total_seconds": 7.8971884340001,
+    "serialized_output": {
+      "video_id": "walking-smoke",
+      "label": "dev-category-a",
+      "actions": [],
+      "highlights": [
+        {
+          "start": 4.25,
+          "end": 5.75,
+          "importance": 0.1167
+        }
+      ]
+    }
+  },
+  "canonical_run_sh": {
+    "command": [
+      "/workspace/final-integration-results/activa-m2/rehearsal/combined/run.sh",
+      "/workspace/remediation-results/activa-m2/media/walking-smoke.mp4",
+      "/workspace/final-integration-results/activa-m2/canonical-cli.json"
+    ],
+    "exit_code": 0,
+    "stdout_empty": true,
+    "no_stage_fallback_logged": true,
+    "vocabulary": "M4 test fixture NOT official",
+    "output_keys": [
+      "actions",
+      "highlights",
+      "label",
+      "video_id"
+    ],
+    "official_validator": "UNAVAILABLE"
+  },
+  "fresh_benchmarks": [
+    {
+      "kind": "real-pretrained-CLIP-runtime-not-quality-evaluation",
+      "video": {
+        "video_id": "walking-loop-120",
+        "path": "/workspace/remediation-results/activa-m2/media/walking-loop-120.mp4",
+        "duration": 120.0,
+        "fps": 10.0,
+        "width": 768,
+        "height": 576,
+        "rotation": 0
+      },
+      "samples": 240,
+      "embedding_dimension": 512,
+      "model": "ViT-B-32/sha256:9bd6bea2e0b7f343b17347af1854d7fd2667a227b0997801e5d297d46808854b",
+      "device": "cpu",
+      "batch_size": 16,
+      "offline_socket_connections_blocked": true,
+      "importance_method": "novelty",
+      "category": {
+        "label": "walking",
+        "scores": {
+          "walking": 0.2681151032447815,
+          "riding a bicycle": 0.18639563024044037,
+          "cooking": 0.14293910562992096
+        }
+      },
+      "timing_seconds": {
+        "import": 3.945483613000306,
+        "load": 3.3308241260001523,
+        "extract": 14.32793712800003,
+        "importance": 0.004360112000085792,
+        "category": 0.5376076460001968,
+        "total": 22.309930451000128
+      },
+      "peak_cpu_rss_kib": 1567632,
+      "peak_gpu_allocated_bytes": null,
+      "fixture_note": "Existing verified looped OpenCV surveillance video, not first-person/held-out quality data. Fresh current-model run through M4 shared decoder."
+    },
+    {
+      "kind": "real-pretrained-CLIP-runtime-not-quality-evaluation",
+      "video": {
+        "video_id": "walking-loop-300",
+        "path": "/workspace/remediation-results/activa-m2/media/walking-loop-300.mp4",
+        "duration": 300.0,
+        "fps": 10.0,
+        "width": 768,
+        "height": 576,
+        "rotation": 0
+      },
+      "samples": 600,
+      "embedding_dimension": 512,
+      "model": "ViT-B-32/sha256:9bd6bea2e0b7f343b17347af1854d7fd2667a227b0997801e5d297d46808854b",
+      "device": "cpu",
+      "batch_size": 16,
+      "offline_socket_connections_blocked": true,
+      "importance_method": "novelty",
+      "category": {
+        "label": "walking",
+        "scores": {
+          "walking": 0.2675570845603943,
+          "riding a bicycle": 0.18629567325115204,
+          "cooking": 0.14310269057750702
+        }
+      },
+      "timing_seconds": {
+        "import": 2.8705233509999744,
+        "load": 2.07579598600023,
+        "extract": 34.445571136000126,
+        "importance": 0.00990858000022854,
+        "category": 0.4833537139998043,
+        "total": 39.979712618999656
+      },
+      "peak_cpu_rss_kib": 1567580,
+      "peak_gpu_allocated_bytes": null,
+      "fixture_note": "Existing verified looped OpenCV surveillance video, not first-person/held-out quality data. Fresh current-model run through M4 shared decoder."
+    },
+    {
+      "kind": "real-pretrained-CLIP-runtime-not-quality-evaluation",
+      "video": {
+        "video_id": "walking-loop-600",
+        "path": "/workspace/remediation-results/activa-m2/media/walking-loop-600.mp4",
+        "duration": 600.0,
+        "fps": 10.0,
+        "width": 768,
+        "height": 576,
+        "rotation": 0
+      },
+      "samples": 1200,
+      "embedding_dimension": 512,
+      "model": "ViT-B-32/sha256:9bd6bea2e0b7f343b17347af1854d7fd2667a227b0997801e5d297d46808854b",
+      "device": "cpu",
+      "batch_size": 16,
+      "offline_socket_connections_blocked": true,
+      "importance_method": "novelty",
+      "category": {
+        "label": "walking",
+        "scores": {
+          "walking": 0.2679979205131531,
+          "riding a bicycle": 0.1862727701663971,
+          "cooking": 0.1432102620601654
+        }
+      },
+      "timing_seconds": {
+        "import": 2.9729862710000816,
+        "load": 1.92195518599965,
+        "extract": 73.79402735900021,
+        "importance": 0.023537764999673527,
+        "category": 0.7883245779999015,
+        "total": 79.64823722099982
+      },
+      "peak_cpu_rss_kib": 1567372,
+      "peak_gpu_allocated_bytes": null,
+      "fixture_note": "Existing verified looped OpenCV surveillance video, not first-person/held-out quality data. Fresh current-model run through M4 shared decoder."
+    }
+  ],
+  "issue_inspection": [
+    {
+      "number": 1,
+      "state": "OPEN",
+      "title": "[M2 \u2192 M1] Timeline, vocabulary, confidence and runtime compatibility (M2-TIMELINE-RUNTIME)",
+      "url": "https://github.com/harshjha15335/ACTIVA/issues/1",
+      "comment_count": 0,
+      "linked_pull_requests": {
+        "nodes": []
+      },
+      "timeline_pages_complete": true,
+      "updated_at": "2026-11-09T12:30:30Z"
+    },
+    {
+      "number": 2,
+      "state": "OPEN",
+      "title": "[M2 \u2192 M3] Genuine CLIP features, importance handoff and selector acceptance (M2-REAL-FEATURE-HANDOFF)",
+      "url": "https://github.com/harshjha15335/ACTIVA/issues/2",
+      "comment_count": 0,
+      "linked_pull_requests": {
+        "nodes": []
+      },
+      "timeline_pages_complete": true,
+      "updated_at": "2026-11-09T12:30:33Z"
+    },
+    {
+      "number": 3,
+      "state": "OPEN",
+      "title": "[M2 \u2192 M4] Canonical integration, official artifacts and Git foundation (M2-CANONICAL-INTEGRATION)",
+      "url": "https://github.com/harshjha15335/ACTIVA/issues/3",
+      "comment_count": 0,
+      "linked_pull_requests": {
+        "nodes": []
+      },
+      "timeline_pages_complete": true,
+      "updated_at": "2026-11-09T12:30:35Z"
+    }
+  ],
+  "issue_comments_posted": false,
+  "github_api_access": "BLOCKED: Forbidden; api.github.com absent from enforced runtime allowlist. Rule saved in draft, not applied.",
+  "official_vocabulary": "UNAVAILABLE: only M4 placeholder fixture tested",
+  "leakage": "BLOCKED BY MANIFEST; no approved training IDs",
+  "heldout_importance_f1": null,
+  "heldout_category_accuracy": null,
+  "TCN_trained": false,
+  "shared_files_modified": false,
+  "history_merge_performed": false
+}
