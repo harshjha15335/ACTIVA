@@ -7,7 +7,7 @@ point here; do not copy these rules elsewhere.
 
 | Surface | Use |
 |---------|-----|
-| Pinned issue "ACTIVA - Agent Message Board" (number: **TBD**) | Short cross-member requests, ACKs, handoffs, blockers |
+| Pinned issue "ACTIVA - Agent Message Board" ([#4](https://github.com/harshjha15335/ACTIVA/issues/4)) | Short cross-member requests, ACKs, handoffs, blockers |
 | One GitHub issue per task | Durable tasks with an owner and acceptance criteria |
 | Pull requests into `main` | All code; CI must pass; a human approves the merge |
 | `docs/decisions.md`, `docs/results.md` | Decisions and measured numbers (the board is not the source of truth) |

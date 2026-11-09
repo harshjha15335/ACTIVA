@@ -6,9 +6,10 @@ Members append their own sections when their branches land.
 ## M4 integration
 
 **D1 (2026-11-09) Fresh `main`.** The three role branches share no git history,
-so `main` starts from `m4-integration` (its own root commit). Each owner merges
-`main` into their branch with `--allow-unrelated-histories`, then opens a PR.
-See `docs/integration_plan.md`.
+so `main` starts from `m4-integration` (its own root commit). Members' files
+are copied onto landing branches cut from `main` (PRs #5-#7), not merged with
+`--allow-unrelated-histories`; role branches are left untouched. M2 asked for
+this route in #3. See `docs/integration_plan.md`.
 
 **D2 Contracts.** `code/contracts.py` is guide A5 field-for-field. It matches
 the copy M2 bootstrapped on `m2-perception`, with comments added.
