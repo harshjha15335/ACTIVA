@@ -1,0 +1,31 @@
+# Union of the m1/m2/m3 branch rules, so their files land on main unchanged.
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+.env
+.env.*
+!.env.example
+.ipynb_checkpoints/
+
+# Large or private assets: never commit (guide A6).
+dev_cache/
+data/
+tmp/
+outputs/*
+!outputs/README.md
+weights/*
+!weights/README.md
+!weights/README_weights.md
+*.mp4
+*.npy
+*.npz
+*.pt
+*.pth
+*.ckpt
+*.pkl
+*.tar.gz
+
+# Official student kit: keep local until we confirm it may go in a public repo.
+kit/*
+!kit/README.md

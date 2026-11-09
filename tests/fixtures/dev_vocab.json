@@ -1,0 +1,7 @@
+{
+  "_note": "TEST PLACEHOLDER ONLY. Not the official vocabulary. Replace with the student kit's supported_classes.json.",
+  "verbs": ["dev-verb-a", "dev-verb-b"],
+  "nouns": ["dev-noun-a", "dev-noun-b"],
+  "categories": ["dev-category-a", "dev-category-b"],
+  "pairs": [["dev-verb-a", "dev-noun-a"], ["dev-verb-a", "dev-noun-b"], ["dev-verb-b", "dev-noun-b"]]
+}

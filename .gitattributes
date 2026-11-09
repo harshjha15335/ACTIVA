@@ -1,0 +1,4 @@
+# Shell scripts must keep LF endings or they fail on Linux (guide B7).
+* text=auto
+*.sh text eol=lf
+*.py text eol=lf
