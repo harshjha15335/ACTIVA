@@ -44,3 +44,33 @@ def test_confusion_matrix_sample_counts_and_vocabulary():
     assert result['confusion_matrix']==[[1,1],[0,1]]
     assert result['per_category']['A']['count']==2
     with pytest.raises(ValueError):category_metrics(['A'],['A'],['unsupported'])
+
+def test_m4_module_present_without_kit_uses_explicit_development_labels(tmp_path,monkeypatch):
+    module=ModuleType('vocab')
+    class VocabError(RuntimeError):pass
+    module.VocabError=VocabError
+    module.config=SimpleNamespace(vocab_path=lambda:tmp_path/'missing-kit.json')
+    def load():raise VocabError('Kit not installed')
+    module.load=load
+    monkeypatch.setitem(sys.modules,'vocab',module)
+    result=load_categories(SimpleNamespace(categories=('dev-label',)),require_canonical=False)
+    assert result.labels==('dev-label',) and not result.canonical
+    with pytest.raises(VocabError):load_categories(SimpleNamespace(categories=('dev-label',)),require_canonical=True)
+
+
+def test_malformed_installed_m4_vocab_never_silently_uses_dev_labels(tmp_path,monkeypatch):
+    path=tmp_path/'bad-kit.json';path.write_text('broken')
+    module=ModuleType('vocab')
+    class VocabError(RuntimeError):pass
+    module.VocabError=VocabError;module.config=SimpleNamespace(vocab_path=lambda:path)
+    def load():raise VocabError('Malformed vocabulary')
+    module.load=load;monkeypatch.setitem(sys.modules,'vocab',module)
+    with pytest.raises(VocabError):load_categories(SimpleNamespace(categories=('dev-label',)),False)
+
+
+def test_unrelated_vocab_failure_is_not_masked(tmp_path,monkeypatch):
+    module=ModuleType('vocab');module.config=SimpleNamespace(vocab_path=lambda:tmp_path/'missing')
+    module.VocabError=RuntimeError
+    def load():raise TypeError('Implementation error')
+    module.load=load;monkeypatch.setitem(sys.modules,'vocab',module)
+    with pytest.raises(TypeError):load_categories(SimpleNamespace(categories=('dev',)),False)

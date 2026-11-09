@@ -84,3 +84,12 @@ exact importance grid/range and original video hash if locally present. Use
 allow_pickle=False. This is a development consumer helper only. M3 acceptance
 of the format is pending. Optional motion-only CLI cache remains a separately
 labeled legacy diagnostic and is not a genuine CLIP handover artifact.
+
+## Evaluation evidence completeness
+
+Current reports also record dataset version/input hashes, exact safe IDs, scorer
+version/protocol, macro precision/recall/F1 over identical videos, baseline and
+pooling runtime, prompt-template hash and the reproduction command. A positive
+full toy-orchestration test exercises this path without protected data. Its purpose
+is explicitly TOY-INFRASTRUCTURE-TEST-NOT-QUALITY; no toy scores count as model
+quality or grant training clearance.

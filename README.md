@@ -98,7 +98,7 @@ report BLOCKED skips, never random pretrained substitutes. The full executed run
 ACTIVA_REAL_CLIP_WEIGHTS=/workspace/ACTIVA/weights/ViT-B-32-laion400m_e32.safetensors ACTIVA_REAL_MEDIA=/workspace/remediation-results/activa-m2/media /workspace/activa-venv/bin/python -m pytest -q
 ```
 
-Observed:74 passed,0 failed,0 skipped,4 warnings. Media are small public dog/bus photos
+Observed:78 passed,0 failed,0 skipped,4 warnings. Media are small public dog/bus photos
 and an MP4 derived from OpenCV vtest.avi, retained locally, not committed.
 Setup/real tests do not fetch assets implicitly. Source URLs are in docs/results.md.
 
@@ -107,3 +107,28 @@ inspect_fpvsum.py, fingerprint_videos.py, audit_ids.py, evaluate_perception.py a
 check_m3_handoff.py. See docs/evaluation_formats.md for explicit development input
 schemas and safeguards. No training, tuning, held-out quality result or official
 score exists yet. Do not train until docs/leakage.md clearance is reviewed.
+
+## Canonical team integration — 9 November 2026
+
+Canonical main, M1 and M3 sources are now available. M2's current suite passes
+78 tests; a source-only M1/M2/M3/M4 rehearsal passes 237 tests (including M2's
+cases, not an additional 237 independent model tests). Actual M4 main.run/run.sh
+executes genuine M2 without fallback using the M4 TEST vocabulary. Official kit
+vocabulary/validator and held-out quality remain unavailable.
+
+For reproducible real tests, explicitly set up the small public smoke inputs:
+
+```sh
+python scripts/setup_validation_assets.py --output /tmp/activa-m2-smoke
+```
+
+Use that directory as ACTIVA_REAL_MEDIA; no asset is downloaded by inference or
+implicitly by tests. M2's missing-kit adapter preserves explicit development use
+without masking malformed installed vocabulary. The platform-neutral motion CLI
+test invokes Python directly; Windows execution itself remains unverified.
+
+See docs/M2_PATCH_TRANSFER.md for the checked patch/rehearsal recipe and
+scripts/verify_team_interfaces.py for actual owner-interface checks. No unrelated
+histories were merged. Current source refs, issue status and exact remaining
+requirements are in docs/M2_INTEGRATION_STATUS.md. Existing issues are #1,#2,#3;
+no duplicate issue is needed.

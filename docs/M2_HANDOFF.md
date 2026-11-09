@@ -1,5 +1,23 @@
 # M2 handover — conditional development integration
 
+## Current canonical integration update — 9 November 2026
+
+Canonical `main` now exists at cc3d61d. Actual M1/M3 source is available. M2 passed
+78 standalone tests and the source-only combined rehearsal passed 237 tests.
+M4's actual main.run/run.sh executed genuine M2 with no fallbacks and valid local
+schema output using its TEST vocabulary. This does not verify official labels or
+the official validator. M1 still returns no actions; M3 remains uniform.
+
+The adapter now distinguishes an absent kit file from malformed installed vocab:
+explicit development labels may work when the file is absent, but strict mode
+and malformed canonical data still fail. No shared-owner file was modified.
+
+Reproduction and a clean-base patch are documented in M2_PATCH_TRANSFER.md.
+Use setup_validation_assets.py for hash-checked public smoke inputs; do not rely
+on an undocumented local media directory. Read M2_INTEGRATION_STATUS.md for the
+current issue/network state and exact remaining dependencies. Older timing and
+status details below are superseded where the current results report differs.
+
 ## 1. Overview and status
 
 Pretrained CLIP extraction, four importance baselines, and zero-shot category
@@ -146,7 +164,7 @@ is valid. Real FPVSum category accuracy and the best pooling method are unknown.
 
 ## 11. Tests
 
-The fresh full run has **74 passed, 0 failed, 0 skipped**, with four warnings.
+The fresh full run has **78 passed, 0 failed, 0 skipped**, with four warnings.
 It includes opt-in genuine pretrained image/video tests, renamed-input determinism,
 all baselines/pooling methods, cache integrity, canonical vocabulary fixtures,
 configuration regression and data guards. Without explicitly supplied real assets,
@@ -181,11 +199,11 @@ and provide importance-aware selection plus ablation evidence.
 
 ## 14. M4 acceptance
 
-M4 must supply/approve the official kit, categories, evaluation manifest, validator,
-canonical shared files, asset packaging and runtime rules. Existing config.py,
+M4 has published the canonical shared files. It must still supply/approve the
+official kit, categories, evaluation manifest, validator, asset packaging and runtime rules. Existing config.py,
 contracts.py, video_io.py and requirements.txt were not changed by remediation.
 M2/M3 have unrelated roots; reviewed patch/cherry-pick integration onto an approved
-foundation requires team agreement. No histories were force-merged.
+foundation requires team agreement. No histories were force-merged. A checked patch-transfer route is now prepared.
 
 ## 15. Dataset/evaluation gates
 
@@ -201,7 +219,7 @@ These proxies are not original-frame or final-highlight Samsung metrics.
 
 ## 16. Remaining blockers
 
-Official vocabulary/manifest/validator and canonical approval; annotation identity
+Official vocabulary/manifest/validator and owner acceptance; annotation identity
 and timeline review; held-out F1/accuracy and model selection; conditional TCN
 training; M1 action/timeline/runtime compatibility; M3 importance-aware selection;
 full offline run.sh/schema validation; final weight approval and human review.

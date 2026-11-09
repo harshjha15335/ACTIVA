@@ -3,6 +3,7 @@ import argparse
 from dataclasses import asdict
 import json
 import os
+import sys
 from pathlib import Path
 import tempfile
 import time
@@ -111,7 +112,7 @@ def main():
                 result["cache_manifest"] = str(write_cache(args.cache_dir, info, clip, importance,
                     {"importance": cfg.baseline, "pooling": cfg.pooling}))
         atomic_json(args.output, result)
-        print(f"Wrote {args.output}: {len(importance.times)} samples in {result['elapsed_seconds']:.2f}s")
+        print(f"Wrote {args.output}: {len(importance.times)} samples in {result['elapsed_seconds']:.2f}s", file=sys.stderr)
     except Exception as error:
         parser.exit(1, f"Perception failed: {error}\n")
 

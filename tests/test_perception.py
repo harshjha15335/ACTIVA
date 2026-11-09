@@ -142,8 +142,8 @@ def test_two_minute_black_motion_cli_and_invalid_input(tmp_path):
     path = tmp_path / 'black.mp4'
     subprocess.run(['ffmpeg', '-v', 'error', '-f', 'lavfi', '-i', 'color=c=black:s=32x32:r=2:d=120', '-c:v', 'libx264', str(path)], check=True)
     output = tmp_path / 'out.json'
-    script = Path(__file__).resolve().parents[1] / 'perceive.sh'
-    command = [str(script), str(path), str(output), '--mode', 'motion-only', '--cache-dir', str(tmp_path / 'cache')]
+    script = Path(__file__).resolve().parents[1] / 'code' / 'perception_cli.py'
+    command = [sys.executable, str(script), str(path), str(output), '--mode', 'motion-only', '--cache-dir', str(tmp_path / 'cache')]
     environment = {**os.environ, 'ACTIVA_PYTHON': sys.executable}
     subprocess.run(command, env=environment, check=True)
     data = json.loads(output.read_text())
@@ -152,7 +152,7 @@ def test_two_minute_black_motion_cli_and_invalid_input(tmp_path):
     np.testing.assert_array_equal(data['importance'], np.full(240, 0.5))
     cached = np.load(tmp_path / 'cache' / 'importance' / 'black.npz')
     np.testing.assert_array_equal(cached['values'], data['importance'])
-    command[1] = str(tmp_path / 'missing.mp4')
+    command[2] = str(tmp_path / 'missing.mp4')
     assert subprocess.run(command, env=environment, capture_output=True).returncode != 0
 
 

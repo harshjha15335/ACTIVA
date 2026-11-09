@@ -2,6 +2,7 @@
 from dataclasses import dataclass
 import importlib
 import os
+from pathlib import Path
 
 @dataclass(frozen=True)
 class CategoryVocabulary:
@@ -25,7 +26,21 @@ def load_categories(cfg, require_canonical=None):
         if error.name!='vocab':raise
         module=None
     if module is not None:
-        loaded=module.load()
+        try:
+            loaded=module.load()
+        except Exception as error:
+            # Module presence does not mean the kit has been installed. Only the
+            # declared M4 error plus a demonstrably missing configured file may
+            # use explicit development labels; malformed installed files fail.
+            declared_error=getattr(module,'VocabError',None)
+            path_getter=getattr(getattr(module,'config',None),'vocab_path',None)
+            if (require_canonical or not isinstance(declared_error,type)
+                    or not isinstance(error,declared_error) or not callable(path_getter)):
+                raise
+            if Path(path_getter()).exists():
+                raise
+            module=None
+    if module is not None:
         if not isinstance(loaded,(tuple,list)) or len(loaded)!=4:
             raise ValueError('M4 vocab.load() must return (verbs,nouns,categories,is_valid_pair).')
         canonical=validate_labels(loaded[2])

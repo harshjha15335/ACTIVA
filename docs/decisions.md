@@ -33,3 +33,18 @@ M4 approval. Shared config.py,contracts.py,video_io.py and requirements.txt are 
     evaluation and approved scorer conventions are established.
 11. Preserve M1/M3/M4 files and unrelated Git histories. Shared foundation migration,
     merges and submission require their owners/humans. Messages are drafts only.
+
+## M2 canonical integration decisions — 9 November 2026
+
+- Canonical source is main@cc3d61d; M1@fccad75 and M3@cc6f36a are available.
+  Tests use immutable source copies, not edits to those owner branches.
+- User explicitly forbids unrelated-history merging. Despite M4's proposed merge
+  command, prepare a source-only patch checked against canonical main instead.
+- Missing installed vocabulary modules and missing kit data are distinct states.
+  Only a declared M4 VocabError plus a demonstrably absent configured file may
+  use explicit development labels; strict mode and malformed files still fail.
+- Real M2 passes through the actual M4 runner/schema with fixture labels, not
+  official vocabulary. This is canonical API evidence, not official compliance.
+- Existing issues #1/#2/#3 stay OPEN; no owner ACK was observed. API egress is
+  blocked and its domain addition was saved; no comment is considered sent until
+  a successful GitHub response is recorded.

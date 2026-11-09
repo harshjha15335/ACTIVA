@@ -61,3 +61,11 @@ Unresolved: **all public FPVSum videos for training purposes**.
 See evaluation_formats.md. These are ACTIVA adapter schemas, not invented Samsung
 manifest formats. M4 must supply the real manifest adapter/interpretation.
 Production perception never loads these annotations,reviews or development caches.
+
+## Current integration check — 9 November 2026
+
+Fresh source inspection reconfirmed 98 videos / 56 labeled / 42 unlabeled and the same
+strict parser ID/category blockers. Canonical main now exists, but its kit folder
+contains instructions only; its vocabulary fixture is explicitly not official.
+No official manifest or newly approved safe list was found. Status remains
+BLOCKED BY MANIFEST and no training or held-out model-quality run occurred.
