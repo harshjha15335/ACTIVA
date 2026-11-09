@@ -59,9 +59,9 @@ def window_centres(num_windows: int, grid: FeatureGrid = GRID) -> np.ndarray:
 def expected_num_windows(duration: float, grid: FeatureGrid = GRID) -> int:
     """Approximate window count for a video after resampling to grid.fps.
 
-    Planning/sanity helper only. The exact count of the published features (including
-    how the last partial window is handled) must be checked against the published
-    .npz files in the Step 4 comparison.
+    Planning/sanity helper only. Observed on P01_11 (561.6 s): published T = 1053 while
+    this formula gives 1052, so the published extractor likely pads the last window
+    (ceil(n_frames / 16)). Confirm on more videos in the Step 4 comparison.
     """
     n_frames = int(np.floor(float(duration) * grid.fps + 1e-9))
     if n_frames < grid.num_frames:
