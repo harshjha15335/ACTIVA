@@ -1,0 +1,4 @@
+# Member 3 only; merge into M4's shared requirements during integration.
+numpy>=1.24,<3
+pandas>=2,<3
+pytest>=8,<10
