@@ -1,3 +1,4 @@
 -r requirements.txt
 pytest==9.2.0
+-r requirements-m2.txt
 -r requirements-m3.txt
