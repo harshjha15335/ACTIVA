@@ -124,6 +124,33 @@ Other findings:
   our pad rule emits ceil -> one extra trailing window. Fix pending.
 - Decode is the bottleneck: ~33 s CPU to decode+resize a 30 s 1080p60 clip with PyAV+PIL.
 
+### Step 4 gate v2: frame pipeline variants (measured 2026-11-11, Kaggle T4 x2)
+
+Kaggle notebook `notebookc3973e8913` v1 ("Successfully ran in 1278.7s") from
+`kaggle/m1_step4_feature_gate_v2.ipynb` at 07bd0b8. Same 4 videos, BGR, whole frame,
+`floor` window rule. On Kaggle (ffmpeg 6.1.1) the M1 tests ran with the ffmpeg path: 69 passed.
+
+| Frame pipeline | feat cos mean | cos min | verb top-1 | noun top-1 | decode s/video | model s/video |
+|---|---|---|---|---|---|---|
+| ff_jpg4_even (ffmpeg 60 fps, JPEG q4, even frames) | **0.9405** | 0.869 | 0.844 | 0.819 | 13.1 | 11.5 |
+| ff_jpg2_even | 0.9402 | 0.870 | 0.821 | 0.805 | 13.2 | 11.9 |
+| ff_jpg4_odd | 0.9389 | 0.863 | 0.854 | 0.785 | 13.1 | 11.7 |
+| ff_raw_even (**production default**) | 0.9383 | 0.867 | 0.826 | 0.820 | 13.1 | 11.1 |
+| ff30_raw (ffmpeg fps=30) | 0.9374 | 0.861 | 0.830 | 0.799 | 11.3 | 12.1 |
+| pyav_pil (v1) | 0.9372 | 0.860 | 0.835 | 0.790 | 23.5 | 12.0 |
+| ff_raw_odd | 0.9365 | 0.857 | 0.811 | 0.804 | 13.0 | 11.3 |
+
+Window counts now match the published files exactly (55/55, 59/59, 28/28, 47/47).
+Downstream, best variant, top-100 ours-in-published: verb 0.81 / 0.89 / 0.77 / 0.76,
+noun 0.86 / 0.76 / 0.68 / 0.69 (P02_13 / P03_21 / P26_30 / P28_23).
+
+Reading: every frame pipeline lands at cos 0.937-0.941, so decoding, scaling, JPEG and
+frame parity are **not** the cause of the gap. Production uses `ff_raw_even` (1.8x faster
+decode than PyAV; the JPEG round trip gains 0.002, within noise, and needs GBs of temp files on
+20-min videos). Open hypothesis: a sub-window frame offset in the original extraction
+(not detectable by the whole-window shift test), or a different checkpoint than
+`SlowFast.pyth`. Verdict unchanged: **PARTIAL**.
+
 ## Not done / open
 
 - Close the feature gap (JPEG/ffmpeg frame path), fix window count (floor), speed up decode.
