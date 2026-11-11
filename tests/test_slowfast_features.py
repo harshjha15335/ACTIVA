@@ -12,23 +12,30 @@ def frames(n, h=4, w=6):
     return [np.full((h, w, 3), k % 256, np.uint8) for k in range(n)]
 
 
-@pytest.mark.parametrize("n", [0, 1, 31, 32, 33, 48, 100, 16848])
+@pytest.mark.parametrize("n", [0, 1, 15, 16, 31, 32, 33, 48, 100, 16848])
 def test_window_counts(n):
-    assert len(window_starts(n, pad_last=True)) == (-(-n // 16) if n else 0)
-    assert len(window_starts(n, pad_last=False)) == (max(0, (n - 32) // 16 + 1) if n >= 32 else 0)
+    assert sf.num_windows(n, rule="floor") == n // 16
+    assert sf.num_windows(n, rule="ceil") == -(-n // 16)
+    assert sf.num_windows(n, rule="complete") == (max(0, (n - 32) // 16 + 1) if n >= 32 else 0)
 
 
-def test_published_p01_11_count_matches_padded_rule():
-    # P01_11: 561.6 s -> 16848 frames at 30 fps; published features have T = 1053.
-    assert len(window_starts(16848, pad_last=True)) == 1053
+@pytest.mark.parametrize("n_frames,published_T", [(885, 55), (957, 59), (458, 28), (755, 47), (16848, 1053)])
+def test_floor_rule_matches_published_feature_counts(n_frames, published_T):
+    # measured in the Step 4 gate: P02_13, P03_21, P26_30, P28_23, P01_11
+    assert len(window_starts(n_frames)) == published_T
 
 
-@pytest.mark.parametrize("pad", [True, False])
-@pytest.mark.parametrize("n", [5, 32, 47, 50, 100])
-def test_streaming_windows_match_naive(n, pad):
+def test_unknown_rule_rejected():
+    with pytest.raises(ValueError):
+        sf.num_windows(10, rule="round")
+
+
+@pytest.mark.parametrize("rule", ["floor", "ceil", "complete"])
+@pytest.mark.parametrize("n", [5, 16, 32, 47, 50, 100])
+def test_streaming_windows_match_naive(n, rule):
     fr = frames(n)
-    got = list(iter_windows(fr, pad_last=pad))
-    assert [s for s, _ in got] == window_starts(n, pad_last=pad)
+    got = list(iter_windows(fr, rule=rule))
+    assert [s for s, _ in got] == window_starts(n, rule=rule)
     for start, clip in got:
         assert len(clip) == 32
         want = [min(start + k, n - 1) for k in range(32)]   # padding repeats the last frame
@@ -73,10 +80,10 @@ def test_extract_features_with_fake_model(monkeypatch):
     out = sf.extract_features(None, bundle=None, p=Preprocess(height=8, width=12),
                               batch_size=3, frames=[np.zeros((16, 24, 3), np.uint8)] * 70)
     assert out["n_frames"] == 70
-    assert out["feats"].shape == (5, 2304)                     # ceil(70 / 16)
-    assert out["starts"].tolist() == [0, 16, 32, 48, 64]
-    assert np.allclose(out["centres"], (np.arange(5) * 16 + 16) / 30)
-    assert [c[0] for c in calls] == [3, 2]
+    assert out["feats"].shape == (4, 2304)                     # floor(70 / 16)
+    assert out["starts"].tolist() == [0, 16, 32, 48]
+    assert np.allclose(out["centres"], (np.arange(4) * 16 + 16) / 30)
+    assert [c[0] for c in calls] == [3, 1]
     assert calls[0][1:] == (32, 8, 12, 3)
 
 
@@ -89,3 +96,26 @@ def test_extract_features_empty_video(monkeypatch):
 def test_load_slowfast_missing_assets_fail_loudly(tmp_path):
     with pytest.raises(FileNotFoundError):
         sf.load_slowfast(tmp_path / "nope", tmp_path / "cfg.yaml", tmp_path / "SlowFast.pyth")
+
+
+def test_ffmpeg_select_expression():
+    assert sf._ffmpeg_select(sf.FrameSource(offset=1, step=2)) == r"select='gte(n\,1)*not(mod(n-1\,2))'"
+
+
+def test_unknown_backend_rejected():
+    with pytest.raises(ValueError):
+        sf.extract_features("x.mp4", bundle=None, source=sf.FrameSource(backend="opencv"))
+
+
+@pytest.mark.skipif(__import__("shutil").which("ffmpeg") is None, reason="ffmpeg not installed")
+@pytest.mark.parametrize("jpeg_q", [None, 4])
+def test_ffmpeg_frames_rate_size_and_order(tmp_path, jpeg_q):
+    import subprocess
+    vid = tmp_path / "t.mp4"
+    # 2 s of 60 fps test pattern whose frame counter changes every frame
+    subprocess.run(["ffmpeg", "-v", "error", "-f", "lavfi", "-i", "testsrc2=size=640x360:rate=60",
+                    "-t", "2", "-pix_fmt", "yuv420p", str(vid)], check=True)
+    fr = list(sf.ffmpeg_frames(vid, Preprocess(), sf.FrameSource(jpeg_q=jpeg_q), size=(456, 256)))
+    assert len(fr) == 60                      # 120 frames at 60 fps, every 2nd kept
+    assert fr[0].shape == (256, 456, 3) and fr[0].dtype == np.uint8
+    assert not np.array_equal(fr[0], fr[1])

@@ -49,7 +49,7 @@ class Preprocess:
     height: int = 256           # EPIC rgb_frames are 456x256
     width: Optional[int] = None  # None: keep aspect ratio (1920x1080 -> 456x256)
     crop: Optional[int] = None  # None: whole frame (ActionFormer issue #91)
-    pad_last: bool = True       # emit a final padded window (published T = ceil(n/16)?)
+    window_rule: str = "floor"  # T = n // 16, as the published features (see num_windows)
 
     def out_size(self, src_w: int, src_h: int) -> tuple[int, int]:
         """(width, height) after resizing, before any crop."""
@@ -80,26 +80,115 @@ def resize_frame(rgb: np.ndarray, p: Preprocess) -> np.ndarray:
     return np.ascontiguousarray(arr)
 
 
-def window_starts(n_frames: int, grid: FeatureGrid = GRID, pad_last: bool = True) -> list[int]:
-    """Start index (in 30 fps sampled frames) of every feature window.
+@dataclass(frozen=True)
+class FrameSource:
+    """How frames are decoded. Default reproduces EPIC's frame pipeline with ffmpeg:
+    resample to 60 fps, scale to 456x256, keep every 2nd frame (SlowFast sampling rate 2
+    at 60 fps = 30 fps). `jpeg_q` additionally round-trips frames through JPEG like the
+    EPIC `rgb_frames` dumps the model was trained on (ffmpeg `-q:v`)."""
+    backend: str = "ffmpeg"          # "ffmpeg" or "pyav" (video_io.iter_frames at 30 fps)
+    fps: float = 60.0
+    step: int = 2
+    offset: int = 0                  # first kept frame index at `fps`
+    jpeg_q: Optional[int] = None     # None: raw frames
 
-    pad_last=False: only complete windows, (n - 32) // 16 + 1 of them.
-    pad_last=True : one window per stride step, ceil(n / 16), later windows padded by
-                    repeating the last frame.
+
+def _ffmpeg_select(src: FrameSource) -> str:
+    return f"select='gte(n\\,{src.offset})*not(mod(n-{src.offset}\\,{src.step}))'"
+
+
+def ffmpeg_frames(path, p: "Preprocess" = None, src: FrameSource = FrameSource(),
+                  size: Optional[tuple[int, int]] = None) -> Iterator[np.ndarray]:
+    """Decode with ffmpeg -> RGB uint8 frames at 1/step of src.fps, already resized.
+
+    Time origin: ffmpeg starts at the stream's first frame, so frame k of the output is at
+    k * step / fps seconds, the same origin as video_io (PTS - start_time). ffmpeg applies
+    the display-matrix rotation by default, like video_io.iter_frames.
+    """
+    import shutil
+    import subprocess
+    import tempfile
+
+    from PIL import Image
+
+    p = p or Preprocess()
+    if shutil.which("ffmpeg") is None:
+        raise RuntimeError("ffmpeg not found on PATH; install FFmpeg.")
+    if size is None:
+        import video_io
+        info = video_io.inspect_video(path)
+        w, h = (info.height, info.width) if info.rotation in (90, 270) else (info.width, info.height)
+        size = p.out_size(w, h)
+    out_w, out_h = size
+    vf = f"fps={src.fps},scale={out_w}:{out_h}:flags=bicubic,{_ffmpeg_select(src)}"
+    base = ["ffmpeg", "-nostdin", "-v", "error", "-i", str(path), "-vf", vf, "-vsync", "0"]
+
+    if src.jpeg_q is None:
+        cmd = base + ["-pix_fmt", "rgb24", "-f", "rawvideo", "-"]
+        proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        nbytes = out_w * out_h * 3
+        try:
+            while True:
+                buf = proc.stdout.read(nbytes)
+                if len(buf) < nbytes:
+                    break
+                yield np.frombuffer(buf, np.uint8).reshape(out_h, out_w, 3)
+        finally:
+            proc.stdout.close()
+            err = proc.stderr.read().decode(errors="replace")
+            if proc.wait() != 0:
+                raise RuntimeError(f"ffmpeg failed on {path}: {err.strip()[-500:]}")
+        return
+
+    with tempfile.TemporaryDirectory(prefix="activa_frames_") as tmp:
+        cmd = base + ["-q:v", str(int(src.jpeg_q)), f"{tmp}/%010d.jpg"]
+        res = subprocess.run(cmd, capture_output=True, text=True)
+        if res.returncode != 0:
+            raise RuntimeError(f"ffmpeg failed on {path}: {res.stderr.strip()[-500:]}")
+        for f in sorted(Path(tmp).glob("*.jpg")):
+            with Image.open(f) as im:
+                yield np.asarray(im.convert("RGB"))
+            f.unlink()
+
+
+WINDOW_RULES = ("floor", "ceil", "complete")
+
+
+def num_windows(n_frames: int, grid: FeatureGrid = GRID, rule: str = "floor") -> int:
+    """How many feature windows a video of n sampled (30 fps) frames gets.
+
+    floor   : n // 16. Matches every published ActionFormer EPIC feature file we checked
+              (P02_13 885 -> 55, P03_21 957 -> 59, P26_30 458 -> 28, P28_23 755 -> 47,
+              P01_11 16848 -> 1053); trailing windows are padded with the last frame.
+    ceil    : ceil(n / 16), padded.
+    complete: only windows with all 32 frames, (n - 32) // 16 + 1.
     """
     n = int(n_frames)
+    if rule not in WINDOW_RULES:
+        raise ValueError(f"window rule must be one of {WINDOW_RULES}, got {rule!r}")
     if n <= 0:
-        return []
-    if pad_last:
-        return list(range(0, n, grid.stride))
-    if n < grid.num_frames:
-        return []
-    return list(range(0, n - grid.num_frames + 1, grid.stride))
+        return 0
+    if rule == "floor":
+        return n // grid.stride
+    if rule == "ceil":
+        return -(-n // grid.stride)
+    return max(0, (n - grid.num_frames) // grid.stride + 1) if n >= grid.num_frames else 0
+
+
+def window_starts(n_frames: int, grid: FeatureGrid = GRID, rule: str = "floor") -> list[int]:
+    """Start index (in 30 fps sampled frames) of every feature window."""
+    return [i * grid.stride for i in range(num_windows(n_frames, grid, rule))]
 
 
 def iter_windows(frames: Iterable[np.ndarray], grid: FeatureGrid = GRID,
-                 pad_last: bool = True) -> Iterator[tuple[int, list]]:
-    """Stream (start_index, 32 frames) windows without holding the whole video in memory."""
+                 rule: str = "floor") -> Iterator[tuple[int, list]]:
+    """Stream (start_index, 32 frames) windows without holding the whole video in memory.
+
+    Complete windows are emitted as soon as their frames arrive; once the stream ends the
+    remaining windows required by `rule` are emitted, padded by repeating the last frame.
+    """
+    if rule not in WINDOW_RULES:
+        raise ValueError(f"window rule must be one of {WINDOW_RULES}, got {rule!r}")
     buf: deque = deque()
     first = 0        # sampled-frame index of buf[0]
     next_start = 0
@@ -115,14 +204,13 @@ def iter_windows(frames: Iterable[np.ndarray], grid: FeatureGrid = GRID,
             while first < next_start and buf:
                 buf.popleft()
                 first += 1
-    if not pad_last or n == 0:
+    total = num_windows(n, grid, rule)
+    if n == 0 or not buf:
         return
-    last = buf[-1] if buf else None
-    while next_start < n:
+    last = buf[-1]
+    while next_start < total * grid.stride:
         lo = next_start - first
         clip = list(buf)[lo:]
-        if last is None:
-            break
         clip = clip + [last] * (grid.num_frames - len(clip))
         yield next_start, clip
         next_start += grid.stride
@@ -215,15 +303,21 @@ def run_clips(bundle: SlowFastBundle, clips: np.ndarray):
 
 
 def extract_features(path, bundle: SlowFastBundle, p: Preprocess = Preprocess(),
-                     batch_size: int = 8, grid: FeatureGrid = GRID, frames=None) -> dict:
+                     batch_size: int = 8, grid: FeatureGrid = GRID, frames=None,
+                     source: FrameSource = FrameSource()) -> dict:
     """Raw video -> {'feats','v_prob','n_prob','starts','centres','n_frames'}.
 
     `frames` may be supplied (an iterable of RGB uint8 frames at grid.fps) for testing;
-    by default they come from video_io.iter_frames(path, grid.fps).
+    otherwise they are decoded per `source` (ffmpeg by default, or video_io/PyAV).
     """
     if frames is None:
-        import video_io
-        frames = (rgb for _t, rgb in video_io.iter_frames(path, grid.fps))
+        if source.backend == "pyav":
+            import video_io
+            frames = (rgb for _t, rgb in video_io.iter_frames(path, grid.fps))
+        elif source.backend == "ffmpeg":
+            frames = ffmpeg_frames(path, p, source)
+        else:
+            raise ValueError(f"unknown frame backend {source.backend!r}")
 
     count = [0]
 
@@ -241,7 +335,7 @@ def extract_features(path, bundle: SlowFastBundle, p: Preprocess = Preprocess(),
         feats.append(f); vps.append(v); nps.append(n); starts.extend(batch_starts)
         batch.clear(); batch_starts.clear()
 
-    for start, clip in iter_windows(prepped(), grid, p.pad_last):
+    for start, clip in iter_windows(prepped(), grid, p.window_rule):
         batch.append(np.stack(clip)); batch_starts.append(start)
         if len(batch) >= batch_size:
             flush()
