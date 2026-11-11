@@ -55,9 +55,80 @@ Findings that matter for Step 4:
 - Annotation JSON `fps` is null (config `default_fps: 30` is used) and labels are numeric
   class ids; verb/noun names must come from the EPIC-100 class CSVs.
 
+## Real inference engine (branch m1-real-action-inference, 2026-11-11)
+
+Board request M1-REAL-ACTION-INFERENCE (#4). Kit: `Student package_track04 (1).zip`,
+sha256 ddf7ee8d...0c09 (matches the board), kept in git-ignored `kit/`.
+
+Extractor provenance (ActionFormer authors): EPIC-KITCHENS fine-tuned SlowFast from
+epic-kitchens-slowfast (actionformer issue #116); 2304-D after 3D global average pooling
+(#70); whole 16:9 frame, no centre crop (#91). From epic-kitchens-slowfast @ bf50519:
+frames are EPIC rgb_frames read with `cv2.imread` (**BGR**, never converted), /255,
+-0.45, /0.225; 32 frames at 60 fps sampling rate 2 (= 30 fps); slow path = 8 of 32.
+
+| Piece | File | State |
+|---|---|---|
+| Raw MP4 -> features (+ v_prob/n_prob) | `code/slowfast_features.py` | built, unit-tested; parity with published features **pending gate** |
+| ActionFormer verb/noun inference | `code/actions.py` `ActionFormerRunner` | EMA weights load strict (CPU, torch 2.15) |
+| NMS without C++ build | `code/nms_1d_py.py` | unit-tested; parity vs compiled **pending gate** |
+| Pairing, NMS, cap 2000, official vocab | `code/actions.py` | all 97 verbs / 300 nouns are in kit vocabulary (kit adds `other`) |
+| `detect_actions(info)` | `code/actions.py` | real chain; raises `ActionEngineUnavailable` if assets missing |
+| Local assets, pinned + hashed | `scripts/setup_m1_assets.py` -> `weights/m1/ASSETS.json` | done (needs M4 OK: new file in scripts/) |
+
+Asset hashes (sha256): SlowFast.pyth `0fc9e83d...0cf7`, verb `88486434...687b`,
+noun `8d313a2d...bbf9`, verb classes csv `aab8bf21...033e`, noun classes csv `40f0a81c...e893`.
+
+Runtime: SlowFast on laptop CPU (torch 2.15) **7.1 s per window** -> a 10-min video
+(~1125 windows) would take >2 h on CPU. A GPU is required; GPU numbers pending.
+
+Tests: M1 suites 50 passed. Full suite in project venv: 5 failed / 3 errors, identical
+on plain `main` (M2 tests: no ffmpeg on this laptop + kit label conflict noted by M4).
+
+### Step 4 gate result (measured 2026-11-11, Kaggle T4 x2, torch 2.11.0+cu130)
+
+Kaggle notebook `notebookdbcfaaeed9` v1 ("Successfully ran in 1420.9s"), from
+`kaggle/m1_step4_feature_gate.ipynb` at ab0c43f. Raw MP4s from the official EPIC downloader:
+P02_13, P03_21, P26_30, P28_23 (all 1920x1080, 59.94 fps). Compared with the published
+ActionFormer features of the same videos. No annotations used.
+
+| Variant | feat cos mean | feat cos min | verb top-1 agree | noun top-1 agree | v_prob MAE |
+|---|---|---|---|---|---|
+| **bgr_full** (456x256, BGR, no crop) | **0.937** | **0.860** | **0.835** | **0.790** | 0.0027 |
+| bgr_crop256 | 0.930 | 0.821 | 0.793 | 0.717 | 0.0043 |
+| bgr_crop224 | 0.912 | 0.803 | 0.768 | 0.669 | 0.0047 |
+| rgb_full | 0.826 | 0.579 | 0.791 | 0.618 | 0.0036 |
+
+Best temporal shift 0 on every video (time base aligned).
+
+ActionFormer on our bgr_full features vs on published features, top-100 detections with a
+same-class match at tIoU >= 0.5 (ours-in-published / published-in-ours):
+
+| Video | verb | noun |
+|---|---|---|
+| P02_13 | 0.80 / 0.81 | 0.86 / 0.85 |
+| P03_21 | 0.86 / 0.85 | 0.74 / 0.73 |
+| P26_30 | 0.78 / 0.83 | 0.74 / 0.74 |
+| P28_23 | 0.75 / 0.78 | 0.68 / 0.70 |
+
+NMS parity (P02_13 verb, published features): compiled `nms_1d_cpu` vs `nms_1d_py`:
+2000 / 2000 detections, top-100 match 1.00, max score difference 4.5e-8. **Identical.**
+
+**Verdict: PARTIAL.** Raw MP4 -> real ActionFormer detections works and is time-aligned,
+but features reach cos 0.937 (guide PASS rule: >= 0.95) and ~70-86% of top detections are
+reproduced. Remaining gap is in the frames themselves (the model's own verb/noun top-1
+differs on ~16-21% of windows): EPIC rgb_frames are ffmpeg-scaled JPEGs read by cv2,
+we use PyAV + PIL bicubic without JPEG. Next: emulate that path and re-measure.
+
+Other findings:
+- Published window count is **floor(n_frames / 16)** (55/59/28/47 here, 1053 for P01_11);
+  our pad rule emits ceil -> one extra trailing window. Fix pending.
+- Decode is the bottleneck: ~33 s CPU to decode+resize a 30 s 1080p60 clip with PyAV+PIL.
+
 ## Not done / open
 
-- Step 4 gate (raw MP4 -> matching features) not started.
+- Close the feature gap (JPEG/ffmpeg frame path), fix window count (floor), speed up decode.
+- Time-alignment check on real video, GPU runtime for 2/5/10-min videos, real dev action cache.
+- Opt-in real-checkpoint integration test; M4 strict end-to-end run.
 - No tuning data plan yet: the pretrained models were trained on all of EPIC train, so
   thresholds tuned on train are biased and tuning on validation is leakage. Option to decide:
   retrain ActionFormer heads on train minus a few held-out participants (training needs
