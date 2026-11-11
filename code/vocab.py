@@ -3,12 +3,16 @@
     verbs, nouns, categories, is_valid_pair = vocab.load()
 
 load() returns a 4-tuple (a NamedTuple, so attribute access also works), which
-is the shape M2's category_vocab.py adapter expects.
+is the shape M2's category_vocab.py adapter expects. `categories` holds the
+kit's video labels.
 
-VERIFY: the layout of the kit's supported_classes.json is not known yet.
-_parse() currently accepts a JSON object with "verbs", "nouns" and "categories"
-string lists, plus an optional "pairs" list of [verb, noun]. When the kit
-arrives, adapt _parse() to its real layout and keep load()'s return shape.
+Layout of the student kit's supported_classes.json (version prism2026-theme01-v1):
+
+    {"version": str, "labels": [16 str], "verbs": [98 str], "nouns": [301 str], "notes": str}
+
+The kit lists no valid verb-noun pairs, so every known verb with every known
+noun is accepted. An optional "pairs" list of [verb, noun] (used only by test
+fixtures) restricts that.
 """
 from functools import lru_cache
 import json
@@ -63,10 +67,10 @@ def _labels(data, key, path):
 
 def _parse(data, path):
     if not isinstance(data, dict):
-        raise VocabError(f"{path}: expected a JSON object with verbs/nouns/categories.")
+        raise VocabError(f"{path}: expected a JSON object with labels/verbs/nouns.")
+    categories = _labels(data, "labels", path)
     verbs = _labels(data, "verbs", path)
     nouns = _labels(data, "nouns", path)
-    categories = _labels(data, "categories", path)
     verb_set, noun_set = frozenset(verbs), frozenset(nouns)
 
     pairs = data.get("pairs")

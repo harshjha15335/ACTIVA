@@ -48,6 +48,34 @@ than discarding the whole list.
 (`config.INCLUDE_ACTION_SCORE`).
 
 
+**D10 (2026-11-11) Output format from the student kit.** `schema.py` now writes
+the kit's 6 fields (team_id, video_id, duration_sec, label {name, score},
+actions [{segment, verb, noun, score}], highlights [{segment}]) and supersedes
+the 4-key layout in D5/D6/D9. Internal contracts (`contracts.py`) are unchanged;
+conversion happens only at the output boundary. Action `score` is always written.
+
+**D11 Vocabulary layout.** `vocab.py` reads `labels`/`verbs`/`nouns`; the kit has
+no pair list, so every verb x noun is valid. `Vocab.categories` holds the labels.
+
+**D12 Highlights >= 4 s.** Clips under 4 s are dropped before checks (the
+scorer ignores them); touching clips are merged. The fallback uses 6 s clips.
+
+**D13 Short videos (provisional).** When 15% of a video is under 4 s, we output
+exactly one 4.0 s clip: a file without a >= 4 s segment is invalid (scores 0),
+while the budget is a warning with a soft penalty. `config.SHORT_VIDEO_SINGLE_CLIP`;
+pending organiser confirmation (`docs/kit_compliance.md` Q2).
+
+**D14 team_id** comes from `config.TEAM_ID` or `ACTIVA_TEAM_ID`; missing is a
+configuration error (exit 5). No placeholder ID is ever written.
+
+**D15 Strict mode.** `ACTIVA_STRICT=1` makes any stage failure exit 6 with no
+JSON. Default stays fallback-on for submission runs, because a missing file
+scores 0; strict mode is for release checks and the batch runner's verification.
+
+**D16 Local spec validator.** `scripts/validate_outputs.py` implements our
+reading of the README while the official `validate.py` is missing. It is not the
+official validator; results are labelled that way.
+
 ## M2 decisions proposed for review
 
 # M2 implementation decisions — pending shared-owner acceptance
