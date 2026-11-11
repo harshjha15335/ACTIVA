@@ -236,12 +236,174 @@ def finalize(p: PairDetections, duration: float,
 
 
 # --------------------------------------------------------------------------- #
+# Class ids -> official vocabulary
+# --------------------------------------------------------------------------- #
+def load_class_keys(csv_path) -> list[str]:
+    """EPIC_100_{verb,noun}_classes.csv -> list where index == class id.
+
+    The mapping comes from the file's `id` and `key` columns; list order is never assumed.
+    """
+    import csv
+
+    with open(csv_path, newline="", encoding="utf-8") as f:
+        rows = list(csv.DictReader(f))
+    if not rows or "id" not in rows[0] or "key" not in rows[0]:
+        raise ValueError(f"{csv_path}: expected 'id' and 'key' columns")
+    by_id = {int(r["id"]): r["key"].strip() for r in rows}
+    if sorted(by_id) != list(range(len(by_id))):
+        raise ValueError(f"{csv_path}: class ids are not 0..{len(by_id) - 1}")
+    return [by_id[i] for i in range(len(by_id))]
+
+
+def map_to_vocab(class_keys: Sequence[str], vocab_words: Sequence[str], kind: str) -> list[str]:
+    """Check every model class key exists verbatim in the official vocabulary."""
+    allowed = set(vocab_words)
+    missing = [k for k in class_keys if k not in allowed]
+    if missing:
+        raise ValueError(f"{len(missing)} {kind} classes not in the official vocabulary, e.g. {missing[:5]}")
+    return list(class_keys)
+
+
+# --------------------------------------------------------------------------- #
+# ActionFormer (local code checkout, EMA weights)
+# --------------------------------------------------------------------------- #
+class ActionEngineUnavailable(RuntimeError):
+    """Model code or weights are not installed; the pipeline must not pretend otherwise."""
+
+
+def _import_actionformer(code_root):
+    """Import ActionFormer's model code without its training/metrics dependencies."""
+    import importlib
+    import sys
+    import types
+
+    import nms_1d_py
+
+    nms_impl = nms_1d_py.install()
+    code_root = str(code_root)
+    if code_root not in sys.path:
+        sys.path.insert(0, code_root)
+    if "libs.utils" not in sys.modules:   # skip libs/utils/__init__ (pandas, joblib, metrics)
+        pkg = types.ModuleType("libs.utils")
+        pkg.__path__ = [str(__import__("pathlib").Path(code_root) / "libs" / "utils")]
+        sys.modules["libs.utils"] = pkg
+        pkg.batched_nms = importlib.import_module("libs.utils.nms").batched_nms
+    from libs.core import load_config
+    from libs.modeling import make_meta_arch
+    return load_config, make_meta_arch, nms_impl
+
+
+class ActionFormerRunner:
+    def __init__(self, code_root, cfg_yaml, ckpt, device="cpu"):
+        import torch
+
+        load_config, make_meta_arch, self.nms_impl = _import_actionformer(code_root)
+        cfg = load_config(str(cfg_yaml))
+        self.model = make_meta_arch(cfg["model_name"], **cfg["model"])
+        state = torch.load(str(ckpt), map_location="cpu", weights_only=False)
+        state = state.get("state_dict_ema", state)
+        state = {(k[7:] if k.startswith("module.") else k): v for k, v in state.items()}
+        self.model.load_state_dict(state, strict=True)
+        self.model.eval().to(device)
+        self.num_classes = int(cfg["model"]["num_classes"])
+
+    def detect(self, feats: np.ndarray, duration: float, grid: FeatureGrid = GRID):
+        """feats [T, 2304] -> (segs [N,2] s, labels [N], scores [N]) for the whole video."""
+        import torch
+
+        if len(feats) == 0:
+            return np.zeros((0, 2)), np.zeros(0, int), np.zeros(0)
+        item = {"video_id": "video", "feats": torch.from_numpy(np.ascontiguousarray(feats.T)).float(),
+                "segments": None, "labels": None, "fps": float(grid.fps), "duration": float(duration),
+                "feat_stride": int(grid.stride), "feat_num_frames": int(grid.num_frames)}
+        with torch.no_grad():
+            res = self.model([item])[0]
+        return (res["segments"].cpu().numpy().astype(float), res["labels"].cpu().numpy().astype(int),
+                res["scores"].cpu().numpy().astype(float))
+
+
+def _latest_ckpt(folder):
+    from pathlib import Path
+
+    hits = sorted(Path(folder).glob("*.pth.tar"))
+    if not hits:
+        raise ActionEngineUnavailable(f"no ActionFormer checkpoint (*.pth.tar) in {folder}")
+    return hits[-1]
+
+
+_ENGINE: dict = {}
+
+
+def _engine():
+    """Load SlowFast + both ActionFormer heads + class maps once per process."""
+    if _ENGINE:
+        return _ENGINE
+    import logging
+
+    import config
+    import vocab
+    from action_config import engine_assets
+    from slowfast_features import load_slowfast
+
+    assets = engine_assets()
+    missing = assets.missing()
+    if missing:
+        raise ActionEngineUnavailable(
+            "action engine assets missing (see code/action_config.py EngineAssets): " + ", ".join(missing))
+    device = config.DEVICE
+    v = vocab.load()
+    eng = {
+        "slowfast": load_slowfast(assets.slowfast_code, assets.slowfast_cfg, assets.slowfast_ckpt, device),
+        "verb": ActionFormerRunner(assets.af_code, assets.af_cfg("verb"), _latest_ckpt(assets.af_ckpt_dir("verb")), device),
+        "noun": ActionFormerRunner(assets.af_code, assets.af_cfg("noun"), _latest_ckpt(assets.af_ckpt_dir("noun")), device),
+        "verb_names": map_to_vocab(load_class_keys(assets.classes_csv("verb")), v.verbs, "verb"),
+        "noun_names": map_to_vocab(load_class_keys(assets.classes_csv("noun")), v.nouns, "noun"),
+        "vocab": v,
+    }
+    logging.getLogger("activa.actions").info("action engine loaded on %s (NMS: %s)", device, eng["verb"].nms_impl)
+    _ENGINE.update(eng)
+    return _ENGINE
+
+
+def detections_to_actions(verb_det, noun_det, duration, verb_names, noun_names,
+                          is_valid_pair=None, prior=None, s: PairingSettings = PAIRING, action_cls=None):
+    """Raw verb/noun detections (segs, labels, scores) -> sorted, capped list[Action]."""
+    valid = None
+    if is_valid_pair is not None:
+        def valid(vi, ni):
+            return bool(is_valid_pair(verb_names[vi], noun_names[ni]))
+    pairs = pair_detections(*verb_det, *noun_det, prior=prior, is_valid_pair=valid, s=s)
+    return finalize(nms_pairs(pairs, s.nms_tiou), duration, verb_names, noun_names, s, action_cls)
+
+
+# --------------------------------------------------------------------------- #
 # Public entry point
 # --------------------------------------------------------------------------- #
 def detect_actions(info: "VideoInfo") -> list:
     """Return every action in the full video, highest confidence first.
 
-    G0 STUB: returns an empty list so `run.sh` works end-to-end before the action
-    models are integrated. Replaced by the real engine after the Step 4 gate.
+    raw MP4 -> SlowFast features (slowfast_features) -> ActionFormer verb + noun
+    -> verb-noun pairing -> NMS -> list[Action] (times in seconds on the video_io
+    timeline, verbs/nouns from the official vocabulary, at most 2000).
+
+    Raises ActionEngineUnavailable if the local models are not installed, so the
+    pipeline logs a fallback (or fails in strict mode) instead of silently returning [].
     """
-    return []
+    import logging
+    import time
+
+    from slowfast_features import extract_features
+
+    eng = _engine()
+    log = logging.getLogger("activa.actions")
+    t0 = time.time()
+    feats = extract_features(info.path, eng["slowfast"])
+    t1 = time.time()
+    verb = eng["verb"].detect(feats["feats"], info.duration)
+    noun = eng["noun"].detect(feats["feats"], info.duration)
+    actions = detections_to_actions(verb, noun, info.duration, eng["verb_names"], eng["noun_names"],
+                                    is_valid_pair=eng["vocab"].is_valid_pair)
+    log.info("actions: %d windows, %d verb / %d noun detections -> %d actions "
+             "(features %.1fs, detection %.1fs)", len(feats["feats"]), len(verb[2]), len(noun[2]),
+             len(actions), t1 - t0, time.time() - t1)
+    return actions

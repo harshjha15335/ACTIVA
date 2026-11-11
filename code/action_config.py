@@ -33,10 +33,59 @@ class PairingSettings:
     segment_mode: str = "verb"     # "verb" | "union" | "intersection"
     nms_tiou: float = 0.5          # class-wise NMS threshold on pairs
     min_score: float = 0.0         # drop pairs below this score
-    max_actions: int = 500         # cap on actions written per video
+    max_actions: int = 2000        # official cap: 0-2000 actions per video (TEAM_README)
     min_length: float = 0.1        # seconds; shorter segments are dropped
     round_digits: int = 3          # agree final rounding with M4
 
 
 GRID = FeatureGrid()
 PAIRING = PairingSettings()
+
+
+# --------------------------------------------------------------------------- #
+# Local model assets (never downloaded at runtime)
+# --------------------------------------------------------------------------- #
+import os  # noqa: E402
+from pathlib import Path  # noqa: E402
+
+REPO_ROOT = Path(__file__).resolve().parents[1]
+DEFAULT_ASSETS = REPO_ROOT / "weights" / "m1"
+
+
+@dataclass(frozen=True)
+class EngineAssets:
+    """Where the action engine finds its code and weights. Layout under ACTIVA_M1_ASSETS:
+
+        epic-kitchens-slowfast/                 code @ bf50519 (Apache-2.0)
+        SlowFast.pyth                           EPIC-100 SlowFast 8x8 R50 checkpoint
+        actionformer_release/                   code @ 61ea7eb (MIT)
+        epic_slowfast_verb_reproduce/*.pth.tar  ActionFormer EPIC verb checkpoint
+        epic_slowfast_noun_reproduce/*.pth.tar  ActionFormer EPIC noun checkpoint
+        EPIC_100_verb_classes.csv               class id -> key (EPIC annotations repo)
+        EPIC_100_noun_classes.csv
+    """
+    root: Path
+
+    @property
+    def slowfast_code(self): return self.root / "epic-kitchens-slowfast"
+    @property
+    def slowfast_cfg(self): return self.slowfast_code / "configs" / "EPIC-KITCHENS" / "SLOWFAST_8x8_R50.yaml"
+    @property
+    def slowfast_ckpt(self): return self.root / "SlowFast.pyth"
+    @property
+    def af_code(self): return self.root / "actionformer_release"
+    def af_cfg(self, kind): return self.af_code / "configs" / f"epic_slowfast_{kind}.yaml"
+    def af_ckpt_dir(self, kind): return self.root / f"epic_slowfast_{kind}_reproduce"
+    def classes_csv(self, kind): return self.root / f"EPIC_100_{kind}_classes.csv"
+
+    def required(self):
+        return [self.slowfast_code, self.slowfast_cfg, self.slowfast_ckpt, self.af_code,
+                self.af_cfg("verb"), self.af_cfg("noun"), self.af_ckpt_dir("verb"),
+                self.af_ckpt_dir("noun"), self.classes_csv("verb"), self.classes_csv("noun")]
+
+    def missing(self):
+        return [str(p) for p in self.required() if not p.exists()]
+
+
+def engine_assets() -> EngineAssets:
+    return EngineAssets(Path(os.environ.get("ACTIVA_M1_ASSETS", DEFAULT_ASSETS)))
