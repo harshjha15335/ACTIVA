@@ -151,6 +151,29 @@ decode than PyAV; the JPEG round trip gains 0.002, within noise, and needs GBs o
 (not detectable by the whole-window shift test), or a different checkpoint than
 `SlowFast.pyth`. Verdict unchanged: **PARTIAL**.
 
+### Step 4 gate v3: sub-window frame offset (measured 2026-11-11, Kaggle T4 x2)
+
+Kaggle notebook `notebook919773d50a` v1 ("Successfully ran in 1173.0s") from
+`kaggle/m1_step4_feature_gate_v3.ipynb` at 88c184e. Production ffmpeg frames, shifted by k
+frames at 30 fps before windowing (k < 0: windows start earlier). Means over the 4 videos:
+
+| k | -12 | -8 | -6 | -4 | **-2** | **-1** | 0 | +1 | +2 | +4 | +6 | +8 | +12 |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| feat cos | 0.878 | 0.908 | 0.923 | 0.934 | **0.945** | 0.943 | 0.938 | 0.935 | 0.930 | 0.917 | 0.905 | 0.892 | 0.863 |
+| verb top-1 | 0.725 | 0.739 | 0.794 | 0.823 | 0.850 | **0.860** | 0.826 | 0.798 | 0.810 | 0.790 | 0.699 | 0.680 | 0.606 |
+| noun top-1 | 0.688 | 0.712 | 0.773 | 0.804 | 0.814 | **0.853** | 0.820 | 0.767 | 0.780 | 0.770 | 0.735 | 0.668 | 0.617 |
+
+A smooth peak at k = -1..-2 (~50 ms): the published windows start slightly earlier than
+ours. Production now uses `FrameSource.shift = -1` (best verb/noun agreement; cos 0.943,
+within 0.002 of the peak); the window count still follows the real frame count.
+
+**Verdict after v1-v3: PARTIAL, with the cause narrowed down.** Decode backend, scaling,
+JPEG, frame parity and window count are matched or ruled out; the time offset is fixed.
+The remaining ~0.055 cosine gap (peak 0.945 < 0.95) and ~15% top-1 disagreement are most
+likely the checkpoint or the authors' private extraction setup, which cannot be reproduced
+from public files. The engine is real, offline and time-aligned; it is an approximation of
+ActionFormer's published input, and that should be stated in the README and deck.
+
 ## Not done / open
 
 - Close the feature gap (JPEG/ffmpeg frame path), fix window count (floor), speed up decode.

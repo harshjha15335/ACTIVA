@@ -119,3 +119,25 @@ def test_ffmpeg_frames_rate_size_and_order(tmp_path, jpeg_q):
     assert len(fr) == 60                      # 120 frames at 60 fps, every 2nd kept
     assert fr[0].shape == (256, 456, 3) and fr[0].dtype == np.uint8
     assert not np.array_equal(fr[0], fr[1])
+
+
+@pytest.mark.parametrize("shift", [-2, -1, 0, 1, 2])
+def test_shift_moves_window_content_but_not_window_count(monkeypatch, shift):
+    seen = []
+
+    def fake_run(bundle, clips):
+        seen.extend(int(c[0, 0, 0, 0]) for c in clips)   # first frame value of each window
+        b = clips.shape[0]
+        return (np.zeros((b, 2304), np.float32), np.zeros((b, 97), np.float32), np.zeros((b, 300), np.float32))
+
+    monkeypatch.setattr(sf, "run_clips", fake_run)
+    fr = [np.full((8, 12, 3), k, np.uint8) for k in range(70)]
+    out = sf.extract_features(None, bundle=None, p=Preprocess(height=8, width=12, color="rgb"),
+                              frames=iter(fr), source=sf.FrameSource(shift=shift))
+    assert len(out["feats"]) == 70 // 16                  # count follows the real video
+    want_first = [max(0, 16 * i + shift) for i in range(4)]
+    assert seen == want_first
+
+
+def test_default_shift_is_minus_one():
+    assert sf.FrameSource().shift == -1

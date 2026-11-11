@@ -91,6 +91,8 @@ class FrameSource:
     step: int = 2
     offset: int = 0                  # first kept frame index at `fps`
     jpeg_q: Optional[int] = None     # None: raw frames
+    shift: int = -1                  # frames (at 30 fps) to start windows earlier (<0) or later (>0);
+                                     # gate v3: -1/-2 best match the published features (0 -> 0.938, -1 -> 0.943)
 
 
 def _ffmpeg_select(src: FrameSource) -> str:
@@ -181,11 +183,13 @@ def window_starts(n_frames: int, grid: FeatureGrid = GRID, rule: str = "floor") 
 
 
 def iter_windows(frames: Iterable[np.ndarray], grid: FeatureGrid = GRID,
-                 rule: str = "floor") -> Iterator[tuple[int, list]]:
+                 rule: str = "floor", count_adjust: int = 0) -> Iterator[tuple[int, list]]:
     """Stream (start_index, 32 frames) windows without holding the whole video in memory.
 
     Complete windows are emitted as soon as their frames arrive; once the stream ends the
     remaining windows required by `rule` are emitted, padded by repeating the last frame.
+    `count_adjust` is added to the frame count before applying `rule` (used when frames were
+    prepended or dropped by a shift, so the window count still follows the real video).
     """
     if rule not in WINDOW_RULES:
         raise ValueError(f"window rule must be one of {WINDOW_RULES}, got {rule!r}")
@@ -204,7 +208,7 @@ def iter_windows(frames: Iterable[np.ndarray], grid: FeatureGrid = GRID,
             while first < next_start and buf:
                 buf.popleft()
                 first += 1
-    total = num_windows(n, grid, rule)
+    total = num_windows(n + count_adjust, grid, rule)
     if n == 0 or not buf:
         return
     last = buf[-1]
@@ -320,11 +324,20 @@ def extract_features(path, bundle: SlowFastBundle, p: Preprocess = Preprocess(),
             raise ValueError(f"unknown frame backend {source.backend!r}")
 
     count = [0]
+    shift = int(source.shift)
 
     def prepped():
-        for rgb in frames:
+        first = True
+        for i, rgb in enumerate(frames):
             count[0] += 1
-            yield resize_frame(rgb, p)
+            if i < shift:                      # shift > 0: drop the first frames
+                continue
+            img = resize_frame(rgb, p)
+            if first and shift < 0:            # shift < 0: repeat the first frame
+                for _ in range(-shift):
+                    yield img
+            first = False
+            yield img
 
     feats, vps, nps, starts, batch, batch_starts = [], [], [], [], [], []
 
@@ -335,7 +348,7 @@ def extract_features(path, bundle: SlowFastBundle, p: Preprocess = Preprocess(),
         feats.append(f); vps.append(v); nps.append(n); starts.extend(batch_starts)
         batch.clear(); batch_starts.clear()
 
-    for start, clip in iter_windows(prepped(), grid, p.window_rule):
+    for start, clip in iter_windows(prepped(), grid, p.window_rule, count_adjust=shift):
         batch.append(np.stack(clip)); batch_starts.append(start)
         if len(batch) >= batch_size:
             flush()
