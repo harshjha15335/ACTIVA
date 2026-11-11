@@ -20,8 +20,9 @@ LOG_LEVEL = os.environ.get("ACTIVA_LOG_LEVEL", "INFO")
 
 # --- Team -------------------------------------------------------------------------
 # Every output JSON carries team_id, identical across all 187 files (TEAM_README s3).
-# Set TEAM_ID once the team has its official ID; ACTIVA_TEAM_ID overrides it.
-TEAM_ID = None
+# Registered team name. Provisional: no official team ID has been issued yet;
+# change here if the organisers assign one. ACTIVA_TEAM_ID overrides it.
+TEAM_ID = "LensLog"
 
 
 class ConfigError(RuntimeError):

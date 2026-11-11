@@ -67,6 +67,8 @@ pending organiser confirmation (`docs/kit_compliance.md` Q2).
 
 **D14 team_id** comes from `config.TEAM_ID` or `ACTIVA_TEAM_ID`; missing is a
 configuration error (exit 5). No placeholder ID is ever written.
+2026-11-11: no official team ID was issued, so `TEAM_ID = "LensLog"`, the
+registered team name (provisional; organisers asked, `docs/kit_compliance.md` Q9).
 
 **D15 Strict mode.** `ACTIVA_STRICT=1` makes any stage failure exit 6 with no
 JSON. Default stays fallback-on for submission runs, because a missing file
