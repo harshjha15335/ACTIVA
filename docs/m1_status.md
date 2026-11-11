@@ -26,9 +26,37 @@ A5 dataclasses when it is missing (`tests/conftest.py`).
 | GPU memory | README: inference may exceed 10 GB, 12 GB recommended (we use Kaggle T4/P100, 16 GB) |
 | Feature extractor checkpoint | **not stated** in the README -> first task of the Step 4 gate |
 
+## Steps 1–3 result (measured 2026-11-10, Kaggle T4, torch 2.11.0+cu130, numpy 2.1.3)
+
+Run: notebook `kaggle/m1_step1_3_actionformer_reference.ipynb`, Kaggle version 2,
+"Successfully ran in 502.4s". Published features + pretrained checkpoints, 138 EPIC-100
+validation videos.
+
+| Model | tIoU 0.1 | 0.2 | 0.3 | 0.4 | 0.5 | **Avg** | README avg |
+|---|---|---|---|---|---|---|---|
+| Verb | 26.58 | 25.42 | 24.15 | 22.28 | 19.01 | **23.49** | 23.51 |
+| Noun | 25.21 | 24.11 | 22.66 | 20.47 | 16.97 | **21.88** | 21.88 |
+
+Reference reproduced (verb within 0.02, noun exact). Compatibility patches needed on new
+torch/numpy: `np.float/int/bool` aliases in `libs/utils/metrics.py`, and `eval.py` checkpoint
+loading (`map_location=cfg['devices'][0], weights_only=False`).
+
+Raw detections: ~2000 per video (verb 275,928 / noun 276,000 over 138 videos), saved as
+Kaggle output `m1_raw_detections_val.pkl`. Validation data: code checks only, no tuning.
+
+Findings that matter for Step 4:
+- Published `.npz` holds `feats [T, 2304]` **plus `v_prob [T, 97]` and `n_prob [T, 300]`**:
+  per-window verb/noun probabilities from the same SlowFast model. So the extractor is the
+  EPIC-100 SlowFast action-recognition model with its classification heads, and our own
+  extractor can be checked on both features and these probabilities.
+- Window count: P01_11 (561.6 s) has **T = 1053**; `(n_frames - 32) // 16 + 1` gives 1052.
+  The published count looks like `ceil(n_frames / 16)` (the last window padded). Confirm on
+  more videos before relying on `expected_num_windows`.
+- Annotation JSON `fps` is null (config `default_fps: 30` is used) and labels are numeric
+  class ids; verb/noun names must come from the EPIC-100 class CSVs.
+
 ## Not done / open
 
-- Steps 1–3 have not been run yet (needs Kaggle). No mAP has been measured by us.
 - Step 4 gate (raw MP4 -> matching features) not started.
 - No tuning data plan yet: the pretrained models were trained on all of EPIC train, so
   thresholds tuned on train are biased and tuning on validation is leakage. Option to decide:
