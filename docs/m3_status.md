@@ -1,4 +1,29 @@
-# M3 startup status
+# M3 status
+
+## Current increment - 2026-11-11
+
+Initial files landed through PR #7; no source files were missing. New work starts
+from shared main f16179c on m3-action-aware-selector. The board assigns replacing
+the uniform stub, whose 3-second clips M4 now drops. Production now uses joint
+predicted-action coverage and importance. U/I/A/J, candidates, sensitivity tests
+and an ablation adapter are implemented; see M3_SELECTOR.md for conventions.
+
+The official ZIP is installed locally and matches the shared SHA-256. It lacks
+validate.py; organizer files are not committed. M4's existing D13 short-video
+exception is logged and reported as a strict-budget violation pending organizers.
+
+Controlled action/importance location changes and the existing M2 handoff checker
+pass on an explicitly SYNTHETIC v1 cache. This is interface evidence. Genuine M2
+caches, raw-MP4 M1 prediction artifacts, reviewed labeled development data and
+an official scorer are unavailable here. No real-data quality winner is claimed.
+Commands/evidence are in docs/results.md. Local handoff drafts have not been sent.
+
+Final checks: 99 M3 tests pass with the kit; full CI-configuration suite has
+317 passed/6 skipped. Three M2 tests fail with the kit installed and reproduce
+on unchanged main, as already flagged by M4. No M2 files were changed to hide
+those failures. The official kit was restored after the CI-configuration run.
+
+## Historical startup record - 2026-11-08
 
 ## Scope
 

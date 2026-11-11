@@ -144,3 +144,76 @@ def test_score_all_no_fabricated_missing_metrics_or_validity():
     args["highlights"] = [highlight(0, 16)]
     report = score_all(**args)
     assert not report["budget_ok"] and report["weighted_total_proxy"] is None
+
+
+def test_official_segment_boundary_is_supported_without_guessing():
+    gt = [dict(segment=[0, 10], verb="cut", noun="tomato", score=.9)]
+    hls = [dict(segment=[0, 10])]
+    assert coverage(gt, hls, "frac>=0.5") == 1
+    assert action_map(gt, gt)["pair"]["mAP"] == 1
+    from eval.metrics import budget_ok
+    assert budget_ok(hls, 100)
+    with pytest.raises(ValueError, match="Ambiguous"):
+        coverage(gt, [dict(segment=[0, 10], start=5)], "any")
+
+
+def test_ablation_uses_dataset_metrics_and_labels_synthetic_evidence():
+    from scripts.run_ablation import synthetic_cases, run_cases
+    result = run_cases(synthetic_cases(), coverage_rule="frac>=0.5", synthetic=True)
+    assert result["synthetic_only"] and not result["official_metrics_verified"]
+    assert result["selector_inputs"] == "predicted"
+    assert set(result["summary"]) == {"U", "I", "A", "J"}
+    assert all(r["strict_budget_violations"] == 0 for r in result["summary"].values())
+    assert result["summary"]["J"]["coverage_proxy"] == 1
+    assert result["summary"]["U"]["coverage_proxy"] < 1
+    assert result["summary"]["J"]["f1_proxy"] > result["summary"]["U"]["f1_proxy"]
+    assert all(r["f1_proxy"] is None for r in result["records"] if r["dataset"] == "epic_kitchens_100")
+
+
+def test_ablation_missing_metrics_cannot_receive_combined_total():
+    from scripts.run_ablation import synthetic_cases, run_cases
+    cases = list(synthetic_cases())
+    cases[1]["human_times"] = cases[1]["human_importance"] = None
+    result = run_cases(cases, coverage_rule="frac>=0.5", synthetic=True, oracle=True)
+    assert result["selector_inputs"] == "oracle_gt"
+    assert all(r["weighted_total_proxy"] is None for r in result["summary"].values())
+
+
+def test_real_study_loader_rejects_evaluation_and_unreviewed_inputs(tmp_path):
+    import json
+    from perception_cache import write_cache, file_sha256
+    from scripts.run_ablation import synthetic_cases, load_study
+    case = next(synthetic_cases())
+    case["info"].video_id = "TEST-ONLY-fixture"
+    source = tmp_path/"synthetic-source.bin"
+    source.write_bytes(b"TEST ONLY: no genuine video or checkpoint")
+    case["info"].path = str(source)
+    manifest = write_cache(tmp_path/"cache", case["info"], case["clip"], case["imp"], {"purpose": "unit-test"})
+    predictions, annotations = tmp_path/"pred.json", tmp_path/"gt.json"
+    predictions.write_text(json.dumps({"source": "predicted", "input_sha256": file_sha256(source),
+                                       "checkpoint_sha256": "a"*64, "actions": []}))
+    annotations.write_text(json.dumps({"input_sha256": file_sha256(source), "actions": []}))
+    study = tmp_path/"study.json"
+    study.write_text(json.dumps({"format": "activa-m3-study-v1", "videos": [
+        {"dataset": "epic_kitchens_100", "m2_manifest": str(manifest),
+         "predictions": str(predictions), "annotations": str(annotations)}]}))
+    official, review = tmp_path/"manifest.csv", tmp_path/"review.json"
+    official.write_text("video_id,duration_sec,dataset\nevaluation-fixture,120,epic_kitchens_100\n")
+    # Explicitly fictional unit-test approval; never used for real-data clearance.
+    decision = {"format": "activa-leakage-review-v1", "state": "reviewed",
+                "reviewed_by": "TEST-ONLY", "reviewed_at": "TEST-ONLY",
+                "official_manifest_sha256": file_sha256(official), "videos": [
+                    {"video_id": case["info"].video_id, "status": "reviewed-safe",
+                     "sha256": file_sha256(source), "evidence": "Fictional unit fixture"}]}
+    review.write_text(json.dumps(decision))
+    assert len(list(load_study(study, review, official))) == 1
+    decision["videos"][0]["status"] = "unresolved"
+    review.write_text(json.dumps(decision))
+    with pytest.raises(ValueError, match="unreviewed"):
+        list(load_study(study, review, official))
+    decision["videos"][0]["status"] = "reviewed-safe"
+    official.write_text("video_id,duration_sec,dataset\nTEST-ONLY-fixture,120,epic_kitchens_100\n")
+    decision["official_manifest_sha256"] = file_sha256(official)
+    review.write_text(json.dumps(decision))
+    with pytest.raises(ValueError, match="evaluation-overlap"):
+        list(load_study(study, review, official))

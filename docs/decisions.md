@@ -130,3 +130,22 @@ M4 approval. Shared config.py,contracts.py,video_io.py and requirements.txt are 
 - Existing issues #1/#2/#3 stay OPEN; no owner ACK was observed. API egress is
   blocked and its domain addition was saved; no comment is considered sent until
   a successful GitHub response is recorded.
+
+## M3 selector decisions - 11 November 2026
+
+- Replace the uniform stub with bounded greedy nonoverlapping interval packing.
+  Distinct pair credit is max per-instance confidence times thresholded union
+  coverage; repeated copies cannot accumulate credit. Importance is integrated
+  on actual timestamps. U/I/A/J are genuine signal ablations.
+- Use M4's output time grid before selection; clips are already >=4 s after
+  inward rounding. Preserve M4's existing D13 short-video exception with an
+  explicit warning and strict-budget-failure reporting, pending organizers.
+- Direct CLIP facility-location scoring/local search are deferred. M2 importance
+  supplies novelty and predicted action pairs supply diversity. No measured
+  held-out evidence justifies added objective components or frozen settings yet.
+- Accept M2 v1 caches only for development experiments through its validating
+  reader. Production has no cache/annotation reads. Real quality comparisons
+  require a reviewed manifest-bound split and actual M1/M2 artifacts.
+- Official metric parity is unresolved. The kit confirms metric weights/datasets
+  but lacks its advertised validator/scorer and exact coverage/F1/penalty rules.
+  All reported synthetic/local scores remain explicitly labeled proxies.

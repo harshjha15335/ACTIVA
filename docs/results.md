@@ -81,3 +81,85 @@ Issues#1/#2/#3 exist and are OPEN. Their inspected pages had zero comments and n
 linked PRs. GitHub API reads returned Forbidden; api.github.com is absent from the
 enforced allowlist. Its domain addition was saved in the environment draft but is
 not applied. Progress comments remain prepared until posting succeeds.
+
+## M3 action-aware selector - 11 November 2026
+
+Base: main f16179c. Branch: m3-action-aware-selector. U/I/A/J are implemented;
+production J uses predicted distinct-action coverage plus integrated importance.
+No M1/M2 or shared contracts/config/schema/runner source was modified.
+Design, complexity, limitations and the real-data adapter: docs/M3_SELECTOR.md.
+
+### Test evidence
+
+Windows, Intel Core i7-10750H CPU, Python 3.13.9, NumPy 2.3.5, pandas 2.3.3,
+pytest 9.2.0, PyAV 19.0.2, Torch 2.15.0+cpu. Project .venv uses local PyPI
+numerics to avoid the inherited Anaconda MKL/Torch OpenMP conflict. No unsafe
+OpenMP override or shared dependency-file edit was used.
+
+Commands (PowerShell):
+
+```powershell
+.\.venv\Scripts\python.exe -m pytest -q tests/test_budget.py tests/test_intervals.py tests/test_metrics.py
+.\.venv\Scripts\python.exe -m pytest -q
+python scripts/run_ablation.py --synthetic --coverage-rule 'frac>=0.5' --output docs/evidence/M3_synthetic_ablation_2026-11-11.json
+```
+
+- M3 suite with the real kit installed: **99 passed** in 4.50 s.
+- Final full suite in CI conditions (default kit vocabulary temporarily absent,
+  restored afterward): **317 passed, 6 skipped**, 92.08 s. Skips: 3 local-kit
+  checks, 2 opt-in genuine pretrained checks, 1 unset-team-ID test because the
+  team ID is already configured.
+- An installed-kit full run had **316 passed, 3 failed, 3 skipped**, 102.15 s.
+  The final CI run additionally includes the new study-leakage guard test.
+  All three failures are the existing M2 test-isolation issues M4 already listed:
+  test_category_uses_exact_configured_labels, test_missing_categories_and_weights_fail,
+  test_real_openclip_offline_with_tiny_random_checkpoint in test_perception.py.
+  A detached worktree of UNCHANGED main f16179c with the same kit reproduced
+  **3 failed** on exactly those three tests (9.01 s). No M2 tests were altered.
+
+Synthetic acceptance proves early/late importance changes clip locations,
+moving action detections changes locations, distinct pairs beat repeated pairs,
+duplicate copies/action ordering do not inflate coverage, the I/A ablations
+ignore the removed signal, canonical inward rounding retains >=4 s clips, and
+random scored actions/irregular PTS preserve constraints and determinism.
+The original 500-duration helper properties remain; 30 random joint-selector
+cases with 20 actions each are also checked.
+
+The existing scripts/check_m3_handoff.py --require-importance-sensitive passed
+on an explicitly SYNTHETIC activa-m2-cache-v1 fixture (240 x 512). Early peak:
+[0,4]; late peak: [116,120]. Model identity is SYNTHETIC-not-pretrained.
+This is interface evidence, not genuine pretrained-model evidence.
+
+### Synthetic ablations and runtime
+
+Evidence: docs/evidence/M3_synthetic_ablation_2026-11-11.json. Exactly two
+handwritten controls, one EPIC-shaped and one FPVSum-shaped. They are NOT actual
+dataset videos. U/I/A/J have zero strict budget violations on these controls.
+The planted distinct-action/importance checks favor J; this cannot establish
+real video quality or justify freezing settings. The separately labeled oracle
+command also runs (`--synthetic --oracle`); it does not replace detector AP with
+oracle AP. No real-data score table or official metric parity is claimed.
+
+One observed stress run on synthetic arrays (no model execution):
+
+| Duration (s) | Scored actions | Selector time (s) | Clips | Selected seconds |
+|---|---:|---:|---:|---:|
+| 120 | 100 | 0.053 | 3 | 16.00 |
+| 600 | 500 | 0.388 | 17 | 87.78 |
+| 1968.6 | 2000 | 2.416 | 31 | 288.22 |
+
+Reproduce inputs with NumPy default_rng(1108), sequentially for the three rows:
+2-fps np.arange times, normalized one-hot 512-D embeddings, uniform random
+importance [0,1], then starts=rng.uniform(0,duration-1,count), and for action i
+use verb='v'+str(i%20), noun='n'+str(i%31), end=min(duration,start+rng.uniform(1,30)),
+score=rng.random(). Time select_highlights with time.perf_counter. This is a
+single runtime observation, not a latency percentile or benchmark accuracy.
+
+### Unresolved evidence
+
+The authentic kit SHA-256 is verified and files remain ignored/local. It has
+no validate.py/scorer. M4's D13 short-video policy is retained with warnings:
+one 4-second clip when 15% is under 4 seconds, explicitly NOT a strict-budget
+pass. Organizer clarification, genuine M1 predictions/M2 caches, approved
+leakage-safe labeled data and real held-out comparisons remain pending.
+M3's handoff/dependency requests are local drafts, not posted messages.
