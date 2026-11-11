@@ -52,7 +52,7 @@ Contents: `TEAM_README.md`, `manifest.csv`, `supported_classes.json`, `P02_109.j
 | Vocabulary keys | expected `categories` | `labels`, `verbs`, `nouns` | `vocab._parse` reads `labels`; the `Vocab` 4-tuple is unchanged (`categories` = labels) | DONE |
 | Valid pairs | optional list | none given | every verb x noun accepted | DONE |
 | Top-level JSON | 4 keys | 6 keys | `schema.to_output` writes all 6 | DONE |
-| `team_id` | none | required, identical | `config.TEAM_ID` / `ACTIVA_TEAM_ID`; missing means exit 5 | BLOCKED: team must choose the ID |
+| `team_id` | none | required, identical | `config.TEAM_ID = "LensLog"` (registered team name); `ACTIVA_TEAM_ID` overrides; missing means exit 5 | PROVISIONAL: no official ID issued yet (Q9) |
 | `duration_sec` | none | ±0.5 s of manifest | probed duration, rounded to 2 decimals; checked by the batch runner and validator | DONE (checked on real videos once downloaded) |
 | `label` | string | `{name, score}` | score = `CategoryResult.scores[label]` clipped to [0, 1] | DONE; M2 asked to make scores calibrated |
 | Action fields | `start`/`end`, no score | `segment` + `score` | `segment` + `score` always | DONE |
@@ -78,6 +78,7 @@ Contents: `TEAM_README.md`, `manifest.csv`, `supported_classes.json`, `P02_109.j
 6. **Vocabulary version:** `supported_classes.json` says `prism2026-theme01-v1`. Is that the right version for Track 04?
 7. **Publishing:** may the kit files (manifest, classes) be committed to a public team repository?
 8. **Reproduction:** what hardware and time limits apply when you re-run `./run.sh`? Is network access available?
+9. **Team ID:** we haven't received one. Should `team_id` and the submission folder use our team name, `LensLog`?
 
 ## Not done here (other owners or later M4 work)
 

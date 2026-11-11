@@ -22,7 +22,6 @@ kit's files in `kit/` (see `kit/README.md`).
 ```sh
 python -m venv .venv
 .venv/bin/pip install -r requirements-dev.txt        # Windows: .venv\Scripts\pip
-export ACTIVA_TEAM_ID=<team id>                      # until config.TEAM_ID is set
 ACTIVA_PYTHON=.venv/bin/python ./run.sh input.mp4 outputs/input.json
 ```
 
