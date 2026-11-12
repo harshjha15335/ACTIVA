@@ -55,8 +55,8 @@ original trusted archive and verifies the exact full hash. Do not rename an
 unrelated checkpoint to bypass verification. --expected-sha256 accepts an optional
 independently trusted64hex digest, never a guessed replacement.
 
-Default shared config still references original weights/ViT-B-32.safetensors.
-Select the validated alternative explicitly with --weights or ACTIVA_CLIP_WEIGHTS.
+Default shared config (code/config.py, decision D17) uses this file:
+weights/ViT-B-32-laion400m_e32.safetensors. Override with --weights or ACTIVA_CLIP_WEIGHTS.
 Inference never downloads and cannot infer that arbitrary supplied weights are
 pretrained. This script is Python-based for Linux/Windows; FFmpeg and runtime
 compatibility must be installed/tested separately. Windows/GPU were not tested.

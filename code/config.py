@@ -100,4 +100,4 @@ def settings():
     batch = int(os.environ.get("ACTIVA_BATCH_SIZE", "16"))
     if batch < 1:
         raise ValueError("Batch size must be positive.")
-    return Settings(os.environ.get("ACTIVA_CLIP_WEIGHTS", "weights/ViT-B-32.safetensors"), tuple(categories), os.environ.get("ACTIVA_CLIP_MODEL", "ViT-B-32"), os.environ.get("ACTIVA_DEVICE", "cpu"), batch, os.environ.get("ACTIVA_IMPORTANCE", "novelty"), os.environ.get("ACTIVA_POOLING", "mean"))
+    return Settings(os.environ.get("ACTIVA_CLIP_WEIGHTS", "weights/ViT-B-32-laion400m_e32.safetensors"), tuple(categories), os.environ.get("ACTIVA_CLIP_MODEL", "ViT-B-32"), os.environ.get("ACTIVA_DEVICE", "cpu"), batch, os.environ.get("ACTIVA_IMPORTANCE", "novelty"), os.environ.get("ACTIVA_POOLING", "mean"))
