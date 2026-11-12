@@ -40,7 +40,7 @@ def test_invalid_environment_fails(key,value,monkeypatch):
 
 def test_default_weight_path_independent_of_cwd(tmp_path,monkeypatch):
     monkeypatch.chdir(tmp_path)
-    assert Path(settings().weights)==PROJECT_ROOT/'weights/ViT-B-32.safetensors'
+    assert Path(settings().weights)==PROJECT_ROOT/'weights/ViT-B-32-laion400m_e32.safetensors'
 
 def test_explicit_relative_path_is_caller_relative(tmp_path,monkeypatch):
     monkeypatch.chdir(tmp_path);monkeypatch.setenv('ACTIVA_CLIP_WEIGHTS','my.pt')

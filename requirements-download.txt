@@ -1,0 +1,2 @@
+# Dev only: downloading the manifest videos (scripts/download_videos.py). Not used by run.sh.
+yt-dlp==2026.10.26

@@ -25,8 +25,22 @@ def media(tmp_path_factory):
     return make_fixtures(tmp_path_factory.mktemp("media"))
 
 
+TEST_TEAM_ID = "TEST_TEAM"
+KIT_VOCAB = ROOT / "kit" / "supported_classes.json"
+
+
 @pytest.fixture
 def dev_vocab(monkeypatch):
-    """Point vocab.load() at the placeholder test vocabulary."""
+    """Point vocab.load() at the placeholder test vocabulary and set a test team_id."""
     monkeypatch.setenv("ACTIVA_VOCAB", str(DEV_VOCAB))
+    monkeypatch.setenv("ACTIVA_TEAM_ID", TEST_TEAM_ID)
+    monkeypatch.delenv("ACTIVA_STRICT", raising=False)
     return DEV_VOCAB
+
+
+@pytest.fixture
+def kit_vocab():
+    """The real student-kit vocabulary, if it is installed in kit/ (never in CI)."""
+    if not KIT_VOCAB.exists():
+        pytest.skip("student kit not installed in kit/")
+    return KIT_VOCAB

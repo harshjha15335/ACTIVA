@@ -4,8 +4,10 @@
 
 Each stage runs inside _stage(): if a module raises or returns something that
 breaks contracts.py, the full traceback goes to stderr and a safe fallback is
-used, so a valid video always yields a valid JSON. An invalid video or missing
-vocabulary fails with a non-zero exit code and writes no JSON.
+used, so a valid video always yields a valid JSON. With ACTIVA_STRICT=1 (release
+checks) a failing stage is an error instead: exit code 6, no JSON.
+An invalid video, missing vocabulary or missing team_id fails with a non-zero
+exit code and writes no JSON. Output format: see schema.py.
 Logs go to stderr only; stdout stays empty.
 
 The demo app must call run() / predict() from here, never a separate path.
@@ -39,7 +41,11 @@ from contracts import Action, CategoryResult, ClipFeats, Highlight, Importance, 
 
 log = logging.getLogger("activa")
 
-EXIT_OK, EXIT_INTERNAL, EXIT_USAGE, EXIT_VIDEO, EXIT_CONFIG = 0, 1, 2, 4, 5
+EXIT_OK, EXIT_INTERNAL, EXIT_USAGE, EXIT_VIDEO, EXIT_CONFIG, EXIT_STRICT = 0, 1, 2, 4, 5, 6
+
+
+class StageError(RuntimeError):
+    """A stage failed while ACTIVA_STRICT=1."""
 
 
 @dataclass
@@ -53,6 +59,7 @@ class PipelineResult:
     output: dict
     timings: dict = field(default_factory=dict)    # stage -> seconds
     fallbacks: list = field(default_factory=list)  # stages that used a fallback
+    warnings: list = field(default_factory=list)   # validator warnings on the output
 
 
 # --- Stage output checks: return None if fine, else a short problem string ---
@@ -97,9 +104,17 @@ def check_category(cat, categories):
     return None
 
 
+def _short_video(info):
+    """True when 15% of the video cannot hold one MIN_CLIP_SECONDS clip."""
+    return config.BUDGET_RATIO * info.duration < config.MIN_CLIP_SECONDS
+
+
 def check_highlights(highlights, info):
+    """Rules for the final highlight list (after normalize_highlights)."""
     if not isinstance(highlights, (list, tuple)):
         return f"expected a list, got {type(highlights).__name__}"
+    if not highlights:
+        return f"no highlight of at least {config.MIN_CLIP_SECONDS:g}s"
     total, previous_end = 0.0, -1.0
     for i, h in enumerate(highlights):
         if not isinstance(h, Highlight):
@@ -112,11 +127,55 @@ def check_highlights(highlights, info):
             return f"item {i}: importance outside [0, 1]"
         if h.start < previous_end:
             return f"item {i}: not sorted / overlaps the previous clip"
+        if h.end - h.start < config.MIN_CLIP_SECONDS - 1e-6:
+            return f"item {i}: shorter than {config.MIN_CLIP_SECONDS:g}s"
         previous_end = h.end
         total += h.end - h.start
-    if total > config.BUDGET_RATIO * info.duration:
-        return f"total {total:.2f}s is over the {config.BUDGET_RATIO:.0%} budget"
+    budget = config.BUDGET_RATIO * info.duration
+    if total > budget + 1e-6:
+        single_min_clip = len(highlights) == 1 and total <= config.MIN_CLIP_SECONDS + 1e-6
+        if not (config.SHORT_VIDEO_SINGLE_CLIP and _short_video(info) and single_min_clip):
+            return f"total {total:.2f}s is over the {config.BUDGET_RATIO:.0%} budget"
     return None
+
+
+def normalize_highlights(highlights, info):
+    """Put a selector's clips into output form; raise ValueError if they are invalid.
+
+    Clips are rounded inward to the output grid, clips under MIN_CLIP_SECONDS are
+    dropped (the scorer ignores them, so they only waste budget) and clips that
+    touch are merged. Overlapping, unsorted or out-of-range input is an error.
+    """
+    if not isinstance(highlights, (list, tuple)):
+        raise TypeError(f"expected a list of Highlight, got {type(highlights).__name__}")
+    previous_end = -1.0
+    for i, h in enumerate(highlights):
+        if not isinstance(h, Highlight):
+            raise ValueError(f"item {i}: expected Highlight, got {type(h).__name__}")
+        if not (_finite(h.start) and _finite(h.end) and _finite(h.importance)):
+            raise ValueError(f"item {i}: non-finite values")
+        if not (0 <= h.start < h.end <= info.duration + 1e-6) or not 0 <= h.importance <= 1:
+            raise ValueError(f"item {i}: out of range ({h.start}, {h.end}, importance {h.importance})")
+        if h.start < previous_end:
+            raise ValueError(f"item {i}: not sorted / overlaps the previous clip")
+        previous_end = h.end
+
+    out, short = [], 0
+    for h in highlights:
+        start, end = schema.round_highlight(h.start, h.end, info.duration)
+        if end - start < config.MIN_CLIP_SECONDS - 1e-6:
+            short += 1
+            continue
+        if out and start <= out[-1].end:
+            prev = out[-1]
+            a, b = prev.end - prev.start, end - start
+            out[-1] = Highlight(prev.start, end, (prev.importance * a + float(h.importance) * b) / (a + b))
+        else:
+            out.append(Highlight(start, end, float(h.importance)))
+    if short:
+        log.warning("highlights: dropped %d of %d clips shorter than %gs", short, len(highlights),
+                    config.MIN_CLIP_SECONDS)
+    return out
 
 
 def sanitize_actions(actions, info, vocab):
@@ -143,6 +202,10 @@ def sanitize_actions(actions, info, vocab):
             kept.append(Action(a.verb, a.noun, start, end, min(1.0, max(0.0, float(a.score)))))
     if dropped:
         log.warning("actions: dropped %d of %d: %s", sum(dropped.values()), len(actions), dropped)
+    if len(kept) > config.MAX_ACTIONS:
+        log.warning("actions: keeping the %d highest-scoring of %d", config.MAX_ACTIONS, len(kept))
+        order = sorted(range(len(kept)), key=lambda i: -kept[i].score)[:config.MAX_ACTIONS]
+        kept = [kept[i] for i in sorted(order)]
     return kept
 
 
@@ -162,7 +225,10 @@ def _stage(name, compute, check, fallback, result_timings, result_fallbacks):
         if problem:
             raise ValueError(f"{name} returned invalid output: {problem}")
         status = "ok"
-    except Exception:
+    except Exception as error:
+        if config.strict():
+            log.error("stage %s failed (strict mode):\n%s", name, traceback.format_exc().rstrip())
+            raise StageError(f"stage {name} failed: {error}") from error
         log.error("stage %s failed, using fallback:\n%s", name, traceback.format_exc().rstrip())
         value = fallback()
         status = "FALLBACK"
@@ -182,6 +248,7 @@ def run(path) -> PipelineResult:
     """Full pipeline with intermediate results (for the demo app and tests)."""
     _seed()
     started = time.perf_counter()
+    team = config.team_id()
     info = video_io.inspect_video(path)
     low, high = config.EXPECTED_DURATION_RANGE
     if not low <= info.duration <= high:
@@ -204,16 +271,19 @@ def run(path) -> PipelineResult:
     cat = stage("category", lambda: _call("category", "classify_video", info, clip, imp),
                 lambda c: check_category(c, vocab.categories),
                 lambda: fallbacks.default_category(vocab.categories))
-    hls = stage("highlights", lambda: list(_call("optimizer", "select_highlights", info, acts, imp, clip)),
+    hls = stage("highlights",
+                lambda: normalize_highlights(_call("optimizer", "select_highlights", info, acts, imp, clip), info),
                 lambda h: check_highlights(h, info), lambda: fallbacks.uniform_highlights(info))
 
-    out = schema.to_output(info, cat, acts, hls)
-    schema.validate_output(out, info.duration, vocab)
+    out = schema.to_output(info, cat, acts, hls, team_id=team)
+    warnings = schema.validate_output(out, info.duration, vocab, team_id=team)
+    for w in warnings:
+        log.warning("output: %s", w)
     timings["total"] = time.perf_counter() - started
     log.info("done: %d actions, %d highlights, label %r, %.2fs total%s",
-             len(out["actions"]), len(out["highlights"]), out["label"], timings["total"],
+             len(out["actions"]), len(out["highlights"]), out["label"]["name"], timings["total"],
              f", fallbacks: {used_fallbacks}" if used_fallbacks else "")
-    return PipelineResult(info, clip, acts, imp, cat, hls, out, timings, used_fallbacks)
+    return PipelineResult(info, clip, acts, imp, cat, hls, out, timings, used_fallbacks, warnings)
 
 
 def predict(path) -> dict:
@@ -250,9 +320,12 @@ def main(argv=None):
     except video_io.VideoError as error:
         log.error("invalid input video: %s", error)
         return EXIT_VIDEO
-    except vocab_module.VocabError as error:
+    except (vocab_module.VocabError, config.ConfigError) as error:
         log.error("configuration error: %s", error)
         return EXIT_CONFIG
+    except StageError as error:
+        log.error("strict mode: %s; no JSON written", error)
+        return EXIT_STRICT
     except Exception:
         log.error("internal error:\n%s", traceback.format_exc().rstrip())
         return EXIT_INTERNAL

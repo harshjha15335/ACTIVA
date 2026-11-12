@@ -12,7 +12,7 @@ def write(tmp_path, data):
     return path
 
 
-BASE = {"verbs": ["take", "put"], "nouns": ["cup", "knife"], "categories": ["cooking", "walking"]}
+BASE = {"verbs": ["take", "put"], "nouns": ["cup", "knife"], "labels": ["cooking", "walking"]}
 
 
 def test_load_returns_four_tuple_m2_adapter_can_unpack(dev_vocab):
@@ -50,8 +50,8 @@ def test_pairs_restrict_combinations(tmp_path):
 @pytest.mark.parametrize("bad", [
     {**BASE, "verbs": []},
     {**BASE, "nouns": ["cup", "cup"]},
-    {**BASE, "categories": ["ok", ""]},
-    {**BASE, "categories": "cooking"},
+    {**BASE, "labels": ["ok", ""]},
+    {**BASE, "labels": "cooking"},
     {"verbs": ["take"], "nouns": ["cup"]},
     {**BASE, "pairs": [["take", "spoon"]]},
     {**BASE, "pairs": [["take"]]},
@@ -73,6 +73,23 @@ def test_edited_file_is_reloaded(tmp_path):
     path = write(tmp_path, BASE)
     assert vocab.load(path).categories == ("cooking", "walking")
     import os
-    path.write_text(json.dumps({**BASE, "categories": ["cleaning"]}))
+    path.write_text(json.dumps({**BASE, "labels": ["cleaning"]}))
     os.utime(path, ns=(1, 1))   # force a different mtime
     assert vocab.load(path).categories == ("cleaning",)
+
+
+def test_layout_matches_kit_and_needs_labels(tmp_path):
+    path = tmp_path / "v.json"
+    path.write_text(json.dumps({"version": "x", "labels": ["a", "other"], "verbs": ["v"], "nouns": ["n"], "notes": ""}))
+    loaded = vocab.load(path)
+    assert loaded.categories == ("a", "other") and loaded.is_valid_pair("v", "n")
+    path.write_text(json.dumps({"categories": ["a"], "verbs": ["v"], "nouns": ["n"]}))
+    with pytest.raises(vocab.VocabError, match="labels"):
+        vocab.load(path)
+
+
+def test_real_kit_vocabulary(kit_vocab):
+    v = vocab.load(kit_vocab)
+    assert (len(v.categories), len(v.verbs), len(v.nouns)) == (16, 98, 301)
+    assert {"cooking", "other", "ski"} <= set(v.categories) and "skiing" not in v.categories
+    assert v.is_valid_pair("open", "fridge") and v.is_valid_pair("other", "other")
