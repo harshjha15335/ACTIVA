@@ -1,6 +1,41 @@
 # M3 status
 
-## Current increment - 2026-11-11
+## Review handoff - 2026-11-13
+
+M4 reviewed PR #9 and requested it be marked ready; no code changes were
+requested. The original PR CI re-run is verified successful. Current main
+f01392f (including M2's official-kit test isolation fixes and category confidence
+update) is merged into this feature branch without changing M3's algorithms.
+Fresh full-suite evidence with the actual kit installed is in docs/results.md.
+Only the feature branch is pushed; M4 retains the human merge decision.
+
+Fresh local verification: **325 passed, 3 skipped, 0 failed** with the authentic
+kit installed. The previous three M2 isolation failures are resolved by the
+already-merged M2 changes. Skips are the configured-team-ID case and the two
+opt-in genuine-model tests whose local weights/media remain absent.
+
+The November 11 handoff was posted to the message board:
+https://github.com/harshjha15335/ACTIVA/issues/4#issuecomment-6801054556
+The older draft text below is historical, not the current coordination state.
+
+M2 reports successful genuine-cache acceptance on the 79.5-second vtest_full
+fixture in docs/M2_FINAL_REPORT.md and board comment 6802382981. That is M2's
+reported evidence, not a local rerun by M3. The manifest and its two NPZ payloads
+are still absent from this checkout. Request their transfer with original hashes
+and model identity; never create substitute features or pad cached timestamps.
+
+M1 offers real predictions and GT for ten non-manifest EPIC-100 train videos.
+M3 accepts that offer and asks M1 to select/post the IDs, source hashes, participant
+groups, durations, timestamp conventions and checkpoint/preprocessing identity.
+The source list and leakage review must be checked before experiments. Separate
+development/tuning inputs from held-out comparisons and report actual predicted
+inputs separately from oracle inputs. No list, review or results are fabricated.
+
+PR readiness covers the tested implementation, not completion of held-out quality
+evaluation or organizer scorer parity. The official validator/scorer, short-video
+clarification and reviewed labeled artifacts remain dependencies for those gates.
+
+## Implementation record - 2026-11-11
 
 Initial files landed through PR #7; no source files were missing. New work starts
 from shared main f16179c on m3-action-aware-selector. The board assigns replacing

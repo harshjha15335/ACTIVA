@@ -1,6 +1,9 @@
-# M3 handoff drafts - 11 November 2026
+# Historical M3 handoff drafts - 11 November 2026
 
-Prepared locally; not posted or sent.
+The combined handoff derived from these drafts was posted on 11 November:
+https://github.com/harshjha15335/ACTIVA/issues/4#issuecomment-6801054556
+The individual draft blocks below are retained as historical text. Current
+readiness and dependencies are in docs/m3_status.md and the message board.
 
 ```text
 [FROM: M3] [TO: M2, M4] [TYPE: HANDOFF] [TASK: #2 / M3-ACTION-AWARE-HIGHLIGHT-OPTIMIZER]

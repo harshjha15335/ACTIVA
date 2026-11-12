@@ -163,3 +163,48 @@ one 4-second clip when 15% is under 4 seconds, explicitly NOT a strict-budget
 pass. Organizer clarification, genuine M1 predictions/M2 caches, approved
 leakage-safe labeled data and real held-out comparisons remain pending.
 M3's handoff/dependency requests are local drafts, not posted messages.
+
+## M3 review readiness - 13 November 2026
+
+M4's PR #9 review requests no code changes and asks for the draft to be marked
+ready. Its original CI run is now verified successful:
+https://github.com/harshjha15335/ACTIVA/actions/runs/43055843867
+The earlier runner failure was infrastructure; M4's review records the reruns.
+
+Merged approved shared main f01392f into m3-action-aware-selector (merge f2d8394).
+This incorporates M2's official-kit test isolation and softmax confidence changes
+and M4's default weight path. No new M1/M2/shared-owner source changes were made
+by M3; the selector algorithm is unchanged from 8a047d4.
+
+Fresh verification, actual kit installed throughout (not temporarily hidden):
+
+```powershell
+.\.venv\Scripts\python.exe -m pytest -q
+```
+
+Observed: **325 passed, 3 skipped, 0 failed**, 3 warnings, 106.72 seconds.
+Same Windows CPU/Python environment as the November 11 record. Skips are the
+unset-team-ID scenario (LensLog is configured) and the two explicit opt-in
+pretrained tests (local genuine-model weights/media are absent). No custom test
+exclusions or synthetic substitutions were used. The prior three kit-related
+M2 failures no longer occur. This supersedes them as current blockers; their
+historical results above remain intact.
+
+M2 reports genuine-cache acceptance against this selector on its 79.5-second
+fixture in docs/M2_FINAL_REPORT.md and board comment 6802382981. The supplied
+path identifies ignored files on M2's machine, not a downloadable artifact in
+this checkout. M3 has not independently rerun that genuine cache here. Request
+the manifest and both NPZ files with source/model/payload hashes. Keep cache
+acceptance distinct from held-out egocentric quality evaluation.
+
+M1 offers ten non-manifest EPIC-100 train videos with real predictions and GT.
+Accept M1 selecting/posting the candidate list, then check manifest exclusion,
+source hashes and participant groups and agree a separate held-out selector
+partition before measuring/tuning. If trimmed, require offsets and rebased
+prediction/annotation timestamps. No candidate IDs, approvals or quality results
+have been invented. Real U/I/A/J comparisons and official scorer parity remain
+follow-up gates, not prerequisites for reviewing the implemented selector.
+
+The earlier handoff was actually posted on November 11:
+https://github.com/harshjha15335/ACTIVA/issues/4#issuecomment-6801054556
+It supersedes the historical "not posted" statements in that day's draft notes.
