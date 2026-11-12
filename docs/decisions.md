@@ -78,6 +78,12 @@ scores 0; strict mode is for release checks and the batch runner's verification.
 reading of the README while the official `validate.py` is missing. It is not the
 official validator; results are labelled that way.
 
+**D17 Default CLIP weights.** `config.settings().weights` defaults to
+`weights/ViT-B-32-laion400m_e32.safetensors`, the file M2's
+`scripts/prepare_weights.py --preset laion400m_e32` writes and validated. The old
+default (`weights/ViT-B-32.safetensors`) was never produced, so a plain
+`./run.sh` silently fell back without CLIP. `ACTIVA_CLIP_WEIGHTS` still overrides.
+
 ## M2 decisions proposed for review
 
 # M2 implementation decisions — pending shared-owner acceptance
