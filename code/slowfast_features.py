@@ -306,9 +306,38 @@ def run_clips(bundle: SlowFastBundle, clips: np.ndarray):
     return (feats.float().cpu().numpy(), v.float().cpu().numpy(), n.float().cpu().numpy())
 
 
+def prefetch(iterable, maxsize: int = 512):
+    """Run `iterable` in a background thread so decoding overlaps GPU inference.
+
+    Order is preserved; an exception raised by the producer is re-raised in the consumer.
+    """
+    import queue
+    import threading
+
+    q: queue.Queue = queue.Queue(maxsize=max(1, int(maxsize)))
+    done = object()
+
+    def worker():
+        try:
+            for item in iterable:
+                q.put(item)
+            q.put(done)
+        except BaseException as exc:  # noqa: BLE001 - forwarded to the consumer
+            q.put(("__error__", exc))
+
+    threading.Thread(target=worker, daemon=True).start()
+    while True:
+        item = q.get()
+        if item is done:
+            return
+        if isinstance(item, tuple) and len(item) == 2 and item[0] == "__error__":
+            raise item[1]
+        yield item
+
+
 def extract_features(path, bundle: SlowFastBundle, p: Preprocess = Preprocess(),
                      batch_size: int = 8, grid: FeatureGrid = GRID, frames=None,
-                     source: FrameSource = FrameSource()) -> dict:
+                     source: FrameSource = FrameSource(), prefetch_frames: int = 512) -> dict:
     """Raw video -> {'feats','v_prob','n_prob','starts','centres','n_frames'}.
 
     `frames` may be supplied (an iterable of RGB uint8 frames at grid.fps) for testing;
@@ -348,7 +377,8 @@ def extract_features(path, bundle: SlowFastBundle, p: Preprocess = Preprocess(),
         feats.append(f); vps.append(v); nps.append(n); starts.extend(batch_starts)
         batch.clear(); batch_starts.clear()
 
-    for start, clip in iter_windows(prepped(), grid, p.window_rule, count_adjust=shift):
+    stream = prefetch(prepped(), prefetch_frames) if prefetch_frames > 0 else prepped()
+    for start, clip in iter_windows(stream, grid, p.window_rule, count_adjust=shift):
         batch.append(np.stack(clip)); batch_starts.append(start)
         if len(batch) >= batch_size:
             flush()

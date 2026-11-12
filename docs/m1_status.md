@@ -174,6 +174,30 @@ likely the checkpoint or the authors' private extraction setup, which cannot be 
 from public files. The engine is real, offline and time-aligned; it is an approximation of
 ActionFormer's published input, and that should be stated in the README and deck.
 
+### Integration with current `main` (2026-11-12)
+
+Merged `origin/main` (f01392f: kit 6-field JSON, official vocab, M2 finalization) into
+`m1-real-action-inference`. With the official kit installed: the engine loads against
+`vocab.load()` (97/300 EPIC classes all present), emits the 2000-action cap and
+`main.sanitize_actions` keeps all of them. Full suite: 280 passed, 50 skipped; the only
+failures (3 failed + 3 errors) are M2 tests that need `ffmpeg` on PATH, absent on this laptop.
+
+Runtime for the 138 EPIC manifest videos (13.2 h of video, 89,058 windows, longest
+P24_09 32.8 min), extrapolated from measured speeds:
+
+| Hardware | Estimate |
+|---|---|
+| Kaggle T4 (measured: model 0.21 s/window, ffmpeg decode ~0.5x real time) | ~6 h model + ~6.8 h decode, ~12.8 h serial; decode now runs in a background thread, so less |
+| Laptop CPU (measured 7.1 s/window) | ~176 h: not feasible |
+
+So the EPIC action stage needs a GPU (ActionFormer README: >10 GB for its reference
+setting; Kaggle T4 16 GB works). FPVSum videos get the same engine (actions may be [] per kit).
+
+Dependencies beyond `requirements.txt` (M4-owned, request on the board): `fvcore`,
+`iopath`, `simplejson`, `pyyaml` (SlowFast / ActionFormer code), plus `gdown` only for the
+one-time `scripts/setup_m1_assets.py`. FFmpeg must be on PATH (already true for video_io).
+M1 does not need CLIP features.
+
 ## Not done / open
 
 - Close the feature gap (JPEG/ffmpeg frame path), fix window count (floor), speed up decode.

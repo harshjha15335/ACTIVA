@@ -141,3 +141,16 @@ def test_shift_moves_window_content_but_not_window_count(monkeypatch, shift):
 
 def test_default_shift_is_minus_one():
     assert sf.FrameSource().shift == -1
+
+
+def test_prefetch_preserves_order_and_raises():
+    assert list(sf.prefetch(iter(range(1000)), maxsize=7)) == list(range(1000))
+
+    def bad():
+        yield 1
+        raise RuntimeError("decoder died")
+
+    it = sf.prefetch(bad())
+    assert next(it) == 1
+    with pytest.raises(RuntimeError, match="decoder died"):
+        next(it)
