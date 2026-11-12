@@ -82,20 +82,28 @@ def test_category_uses_exact_configured_labels(sample, monkeypatch, tmp_path):
     path = tmp_path / 'labels.json'
     path.write_text(json.dumps(['test activity A', 'test activity B']))
     monkeypatch.setenv('ACTIVA_CATEGORIES', str(path))
+    monkeypatch.setenv('ACTIVA_VOCAB', str(tmp_path / 'absent_vocab.json'))
     def text(prompts, cfg):
         vectors = np.zeros((len(prompts), 512), np.float32)
         vectors[:5, 0], vectors[5:, 1] = 1, 1
         return vectors
     monkeypatch.setattr(category, 'text_features', text)
     imp = Importance(clip.times, np.zeros(240))
-    assert classify_video(info, clip, imp).label == 'test activity A'
+    res = classify_video(info, clip, imp)
+    assert res.label == 'test activity A'
+    assert 0.0 <= res.scores['test activity A'] <= 1.0
+    assert 0.0 <= res.scores['test activity B'] <= 1.0
+    assert sum(res.scores.values()) == pytest.approx(1.0)
+    assert res.scores['test activity A'] > res.scores['test activity B']
     with pytest.raises(ValueError, match='timestamps'):
         classify_video(info, clip, Importance(clip.times + 0.1, imp.values))
 
 
-def test_missing_categories_and_weights_fail(sample):
+def test_missing_categories_and_weights_fail(sample, monkeypatch, tmp_path):
     import clip_backend
     info, clip = sample
+    monkeypatch.setenv('ACTIVA_VOCAB', str(tmp_path / 'absent_vocab.json'))
+    monkeypatch.delenv('ACTIVA_CATEGORIES', raising=False)
     with pytest.raises(ValueError, match='ACTIVA_CATEGORIES'):
         classify_video(info, clip, Importance(clip.times, np.zeros(240)))
     with pytest.raises(FileNotFoundError, match='Local CLIP weights'):
@@ -192,6 +200,7 @@ def test_real_openclip_offline_with_tiny_random_checkpoint(short_video, tmp_path
     monkeypatch.setenv('ACTIVA_CLIP_MODEL', 'Tiny-Test-CLIP')
     monkeypatch.setenv('ACTIVA_CLIP_WEIGHTS', str(weights))
     monkeypatch.setenv('ACTIVA_CATEGORIES', str(labels))
+    monkeypatch.setenv('ACTIVA_VOCAB', str(tmp_path / 'absent_vocab.json'))
     monkeypatch.setenv('ACTIVA_BATCH_SIZE', '2')
     def deny_network(*args, **kwargs):
         raise AssertionError('Inference attempted network access')

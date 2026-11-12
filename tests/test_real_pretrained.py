@@ -51,6 +51,7 @@ def test_real_video_all_baselines_pooling_and_determinism(real_inputs,tmp_path,m
     monkeypatch.setenv('ACTIVA_CLIP_WEIGHTS',weights)
     labels=tmp_path/'labels.json';labels.write_text('["walking", "riding a bicycle", "cooking"]')
     monkeypatch.setenv('ACTIVA_CATEGORIES',str(labels))
+    monkeypatch.setenv('ACTIVA_VOCAB',str(tmp_path/'absent_vocab.json'))
     monkeypatch.setattr(socket.socket,'connect',lambda *_args,**_kwargs: (_ for _ in ()).throw(AssertionError('network')))
     info=inspect_video(media/'walking-smoke.mp4');clip=extract_clip_features(info)
     renamed=tmp_path/'unrelated-name.mp4';shutil.copyfile(info.path,renamed)

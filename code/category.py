@@ -24,6 +24,15 @@ def pool_features(feats, values, method):
         pooled = feats[0]
     return normalize(pooled)
 
+def softmax(logits, temperature=0.07):
+    """Numerically stable temperature-scaled softmax for probability normalization."""
+    t = float(temperature) if temperature and float(temperature) > 0 else 0.07
+    scaled = np.asarray(logits, dtype=np.float64) / t
+    shifted = scaled - np.max(scaled)
+    exp = np.exp(shifted)
+    probs = exp / np.sum(exp)
+    return probs.astype(np.float64)
+
 def classify_video(info, clip, imp):
     cfg = settings()
     vocabulary = load_categories(cfg)
@@ -36,5 +45,7 @@ def classify_video(info, clip, imp):
     video = pool_features(feats, imp.values, cfg.pooling)
     vectors = text_features([template.format(label) for label in labels for template in PROMPTS], cfg)
     prototypes = normalize(vectors.reshape(len(labels), len(PROMPTS), -1).mean(axis=1))
-    scores = prototypes @ video
-    return CategoryResult(labels[int(np.argmax(scores))], {label: float(score) for label, score in zip(labels, scores)})
+    cos_sims = prototypes @ video
+    probabilities = softmax(cos_sims, temperature=0.07)
+    best_idx = int(np.argmax(cos_sims))
+    return CategoryResult(labels[best_idx], {label: float(prob) for label, prob in zip(labels, probabilities)})
