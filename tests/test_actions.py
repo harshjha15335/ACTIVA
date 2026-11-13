@@ -145,7 +145,38 @@ def test_finalize_is_deterministic():
     assert finalize(p, 60, VERBS, NOUNS) == finalize(p, 60, VERBS, NOUNS)
 
 
-# ---------------- stub ---------------- #
-def test_stub_returns_empty_list():
+# ---------------- engine wiring ---------------- #
+def test_detect_actions_fails_loudly_without_assets(tmp_path, monkeypatch):
+    import actions
+    monkeypatch.setenv("ACTIVA_M1_ASSETS", str(tmp_path / "none"))
+    actions._ENGINE.clear()
     info = VideoInfo("x", "/tmp/x.mp4", 120.0, 30.0, 640, 360)
-    assert detect_actions(info) == []
+    with pytest.raises(actions.ActionEngineUnavailable):
+        detect_actions(info)
+
+
+def test_load_class_keys_uses_id_column(tmp_path):
+    from actions import load_class_keys
+    f = tmp_path / "c.csv"
+    f.write_text("id,key,instances,category\n1,put,5,x\n0,take,9,x\n2,turn-on,1,x\n", encoding="utf-8")
+    assert load_class_keys(f) == ["take", "put", "turn-on"]
+    f.write_text("id,key\n0,take\n2,put\n", encoding="utf-8")
+    with pytest.raises(ValueError):
+        load_class_keys(f)
+
+
+def test_map_to_vocab_rejects_unknown():
+    from actions import map_to_vocab
+    assert map_to_vocab(["take", "put"], ["take", "put", "other"], "verb") == ["take", "put"]
+    with pytest.raises(ValueError):
+        map_to_vocab(["take", "yeet"], ["take"], "verb")
+
+
+def test_detections_to_actions_end_to_end():
+    from actions import detections_to_actions
+    verb = (np.array([[10.0, 20.0], [40.0, 45.0]]), np.array([1, 2]), np.array([0.9, 0.6]))
+    noun = (np.array([[11.0, 19.0], [41.0, 44.0]]), np.array([7, 9]), np.array([0.5, 0.8]))
+    out = detections_to_actions(verb, noun, 60.0, VERBS, NOUNS, s=PairingSettings(exp_prior=0.0))
+    assert [(a.verb, a.noun) for a in out] == [("v2", "n9"), ("v1", "n7")]
+    assert out[0].score == pytest.approx(0.6 * 0.8) and out[0].start == 40.0
+    assert detections_to_actions(verb, noun, 60.0, VERBS, NOUNS, is_valid_pair=lambda v, n: False) == []
