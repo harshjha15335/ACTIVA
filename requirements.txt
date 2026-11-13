@@ -1,10 +1,17 @@
-# Shared runtime requirements for ./run.sh. Pins match the m2-perception branch.
-# Model owners add their pins here when their modules land on main
-# (M2: Pillow, torch, torchvision, open_clip_torch; M1: ActionFormer stack).
-# FFmpeg/ffprobe must also be on PATH.
+# Shared runtime requirements for ./run.sh. FFmpeg/ffprobe must also be on PATH.
+#
+# GPU: the action stage (M1) needs CUDA. pip's default torch is CPU-only; on a
+# CUDA 13.x driver install the GPU build of the same version first, then set
+# ACTIVA_DEVICE=cuda (measured on an RTX 4060 8 GB: peak 3.2 GB):
+#   pip install --no-deps torch==2.15.0+cu132 --index-url https://download.pytorch.org/whl/cu132
 numpy==2.3.5
 av==19.0.2
 Pillow==13.0.0
 torch==2.15.0
 torchvision==0.29.2
 open_clip_torch==4.2.1
+# M1 action engine (SlowFast / ActionFormer code under weights/m1, see scripts/setup_m1_assets.py)
+fvcore==0.1.5.post20221221
+iopath==0.1.10
+simplejson==4.3.0
+PyYAML==6.0.3
