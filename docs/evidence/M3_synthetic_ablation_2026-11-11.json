@@ -1,0 +1,470 @@
+{
+  "format": "activa-m3-ablation-v1",
+  "synthetic_only": true,
+  "official_metrics_verified": false,
+  "coverage_rule": "frac>=0.5",
+  "selector_inputs": "predicted",
+  "settings": {
+    "coverage_weight": 0.6,
+    "importance_weight": 0.4,
+    "tau_cov": 0.5,
+    "min_conf": 0.2,
+    "max_candidates": 500,
+    "alphas": [
+      0.0,
+      0.5,
+      1.0
+    ]
+  },
+  "seed": 1108,
+  "conventions": {
+    "intervals": "half-open seconds",
+    "f1": "annotation grid, ceil(.15*N), earliest ties",
+    "aggregation": "coverage mean on EPIC, F1/label mean on FPVSum, pooled detector AP on EPIC"
+  },
+  "videos": 2,
+  "dataset_counts": {
+    "epic_kitchens_100": 1,
+    "fpvsum": 1
+  },
+  "action_map": {
+    "pair": {
+      "mAP": 1.0,
+      "tious": [
+        0.1,
+        0.2,
+        0.3,
+        0.4,
+        0.5
+      ],
+      "per_tiou": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "per_class": [
+        {
+          "label": [
+            "cut",
+            "tomato"
+          ],
+          "AP": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "label": [
+            "wash",
+            "dish"
+          ],
+          "AP": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        }
+      ]
+    },
+    "verb": {
+      "mAP": 1.0,
+      "tious": [
+        0.1,
+        0.2,
+        0.3,
+        0.4,
+        0.5
+      ],
+      "per_tiou": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "per_class": [
+        {
+          "label": "cut",
+          "AP": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "label": "wash",
+          "AP": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        }
+      ]
+    },
+    "noun": {
+      "mAP": 1.0,
+      "tious": [
+        0.1,
+        0.2,
+        0.3,
+        0.4,
+        0.5
+      ],
+      "per_tiou": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "per_class": [
+        {
+          "label": "dish",
+          "AP": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "label": "tomato",
+          "AP": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        }
+      ]
+    }
+  },
+  "summary": {
+    "U": {
+      "coverage_proxy": 0.0,
+      "f1_proxy": 0.31884057971014496,
+      "label_accuracy": 1.0,
+      "weighted_total_proxy": 0.42971014492753623,
+      "strict_budget_violations": 0,
+      "short_policy_exceptions": 0,
+      "mean_clips": 3.0,
+      "mean_cut_fraction": 0.0,
+      "mean_runtime_seconds": 0.0007951500010676682,
+      "metric_video_counts": {
+        "coverage_proxy": 1,
+        "f1_proxy": 1,
+        "label_correct": 1
+      }
+    },
+    "I": {
+      "coverage_proxy": 0.0,
+      "f1_proxy": 0.3666666666666667,
+      "label_accuracy": 1.0,
+      "weighted_total_proxy": 0.44166666666666665,
+      "strict_budget_violations": 0,
+      "short_policy_exceptions": 0,
+      "mean_clips": 1.0,
+      "mean_cut_fraction": 0.0,
+      "mean_runtime_seconds": 0.010895750019699335,
+      "metric_video_counts": {
+        "coverage_proxy": 1,
+        "f1_proxy": 1,
+        "label_correct": 1
+      }
+    },
+    "A": {
+      "coverage_proxy": 1.0,
+      "f1_proxy": 0.31884057971014496,
+      "label_accuracy": 1.0,
+      "weighted_total_proxy": 0.8297101449275363,
+      "strict_budget_violations": 0,
+      "short_policy_exceptions": 0,
+      "mean_clips": 2.5,
+      "mean_cut_fraction": 0.0,
+      "mean_runtime_seconds": 0.00682344997767359,
+      "metric_video_counts": {
+        "coverage_proxy": 1,
+        "f1_proxy": 1,
+        "label_correct": 1
+      }
+    },
+    "J": {
+      "coverage_proxy": 1.0,
+      "f1_proxy": 0.3666666666666667,
+      "label_accuracy": 1.0,
+      "weighted_total_proxy": 0.8416666666666667,
+      "strict_budget_violations": 0,
+      "short_policy_exceptions": 0,
+      "mean_clips": 2.0,
+      "mean_cut_fraction": 0.0,
+      "mean_runtime_seconds": 0.009743899980094284,
+      "metric_video_counts": {
+        "coverage_proxy": 1,
+        "f1_proxy": 1,
+        "label_correct": 1
+      }
+    }
+  },
+  "records": [
+    {
+      "video_id": "synthetic_epic_kitchens_100",
+      "dataset": "epic_kitchens_100",
+      "variant": "U",
+      "coverage_proxy": 0.0,
+      "f1_proxy": null,
+      "label_correct": null,
+      "strict_budget_ok": true,
+      "short_video_policy_exception": false,
+      "highlight_seconds": 17.75999999999999,
+      "clips": 3,
+      "cut_action_fraction": 0.0,
+      "runtime_seconds": 0.0011552999494597316,
+      "highlights": [
+        {
+          "start": 17.04,
+          "end": 22.96,
+          "importance": 0.0
+        },
+        {
+          "start": 57.04,
+          "end": 62.96,
+          "importance": 0.0
+        },
+        {
+          "start": 97.04,
+          "end": 102.96,
+          "importance": 0.0
+        }
+      ],
+      "provenance": {
+        "synthetic": true
+      }
+    },
+    {
+      "video_id": "synthetic_epic_kitchens_100",
+      "dataset": "epic_kitchens_100",
+      "variant": "I",
+      "coverage_proxy": 0.0,
+      "f1_proxy": null,
+      "label_correct": null,
+      "strict_budget_ok": true,
+      "short_video_policy_exception": false,
+      "highlight_seconds": 12.0,
+      "clips": 1,
+      "cut_action_fraction": 0.0,
+      "runtime_seconds": 0.01326929999049753,
+      "highlights": [
+        {
+          "start": 83.5,
+          "end": 95.5,
+          "importance": 0.4583333333333333
+        }
+      ],
+      "provenance": {
+        "synthetic": true
+      }
+    },
+    {
+      "video_id": "synthetic_epic_kitchens_100",
+      "dataset": "epic_kitchens_100",
+      "variant": "A",
+      "coverage_proxy": 1.0,
+      "f1_proxy": null,
+      "label_correct": null,
+      "strict_budget_ok": true,
+      "short_video_policy_exception": false,
+      "highlight_seconds": 8.0,
+      "clips": 2,
+      "cut_action_fraction": 0.0,
+      "runtime_seconds": 0.013207299984060228,
+      "highlights": [
+        {
+          "start": 8.0,
+          "end": 12.0,
+          "importance": 0.0
+        },
+        {
+          "start": 48.0,
+          "end": 52.0,
+          "importance": 0.0
+        }
+      ],
+      "provenance": {
+        "synthetic": true
+      }
+    },
+    {
+      "video_id": "synthetic_epic_kitchens_100",
+      "dataset": "epic_kitchens_100",
+      "variant": "J",
+      "coverage_proxy": 1.0,
+      "f1_proxy": null,
+      "label_correct": null,
+      "strict_budget_ok": true,
+      "short_video_policy_exception": false,
+      "highlight_seconds": 14.0,
+      "clips": 3,
+      "cut_action_fraction": 0.0,
+      "runtime_seconds": 0.010882699978537858,
+      "highlights": [
+        {
+          "start": 8.0,
+          "end": 12.0,
+          "importance": 0.0
+        },
+        {
+          "start": 48.0,
+          "end": 52.0,
+          "importance": 0.0
+        },
+        {
+          "start": 87.0,
+          "end": 93.0,
+          "importance": 0.9166666666666666
+        }
+      ],
+      "provenance": {
+        "synthetic": true
+      }
+    },
+    {
+      "video_id": "synthetic_fpvsum",
+      "dataset": "fpvsum",
+      "variant": "U",
+      "coverage_proxy": null,
+      "f1_proxy": 0.31884057971014496,
+      "label_correct": 1.0,
+      "strict_budget_ok": true,
+      "short_video_policy_exception": false,
+      "highlight_seconds": 17.75999999999999,
+      "clips": 3,
+      "cut_action_fraction": 0.0,
+      "runtime_seconds": 0.0004350000526756048,
+      "highlights": [
+        {
+          "start": 17.04,
+          "end": 22.96,
+          "importance": 0.0
+        },
+        {
+          "start": 57.04,
+          "end": 62.96,
+          "importance": 0.0
+        },
+        {
+          "start": 97.04,
+          "end": 102.96,
+          "importance": 0.9285135135135152
+        }
+      ],
+      "provenance": {
+        "synthetic": true
+      }
+    },
+    {
+      "video_id": "synthetic_fpvsum",
+      "dataset": "fpvsum",
+      "variant": "I",
+      "coverage_proxy": null,
+      "f1_proxy": 0.3666666666666667,
+      "label_correct": 1.0,
+      "strict_budget_ok": true,
+      "short_video_policy_exception": false,
+      "highlight_seconds": 12.0,
+      "clips": 1,
+      "cut_action_fraction": 0.0,
+      "runtime_seconds": 0.00852220004890114,
+      "highlights": [
+        {
+          "start": 93.5,
+          "end": 105.5,
+          "importance": 0.4583333333333333
+        }
+      ],
+      "provenance": {
+        "synthetic": true
+      }
+    },
+    {
+      "video_id": "synthetic_fpvsum",
+      "dataset": "fpvsum",
+      "variant": "A",
+      "coverage_proxy": null,
+      "f1_proxy": 0.31884057971014496,
+      "label_correct": 1.0,
+      "strict_budget_ok": true,
+      "short_video_policy_exception": false,
+      "highlight_seconds": 17.75999999999999,
+      "clips": 3,
+      "cut_action_fraction": 0.0,
+      "runtime_seconds": 0.0004395999712869525,
+      "highlights": [
+        {
+          "start": 17.04,
+          "end": 22.96,
+          "importance": 0.0
+        },
+        {
+          "start": 57.04,
+          "end": 62.96,
+          "importance": 0.0
+        },
+        {
+          "start": 97.04,
+          "end": 102.96,
+          "importance": 0.9285135135135152
+        }
+      ],
+      "provenance": {
+        "synthetic": true
+      }
+    },
+    {
+      "video_id": "synthetic_fpvsum",
+      "dataset": "fpvsum",
+      "variant": "J",
+      "coverage_proxy": null,
+      "f1_proxy": 0.3666666666666667,
+      "label_correct": 1.0,
+      "strict_budget_ok": true,
+      "short_video_policy_exception": false,
+      "highlight_seconds": 12.0,
+      "clips": 1,
+      "cut_action_fraction": 0.0,
+      "runtime_seconds": 0.00860509998165071,
+      "highlights": [
+        {
+          "start": 93.5,
+          "end": 105.5,
+          "importance": 0.4583333333333333
+        }
+      ],
+      "provenance": {
+        "synthetic": true
+      }
+    }
+  ],
+  "platform": "Windows-11-10.0.26300-SP0",
+  "python": "3.13.9",
+  "hardware": "Intel64 Family 6 Model 165 Stepping 2, GenuineIntel",
+  "command": "C:\\Users\\adita\\anaconda3\\python.exe scripts/run_ablation.py --synthetic --coverage-rule frac>=0.5 --output docs/evidence/M3_synthetic_ablation_2026-11-11.json",
+  "source_sha256": {
+    "code/optimizer.py": "df5b0841e41e32897f89c822a2578e761e3577184ca9ff5d61cdfdbdc0a21bf5",
+    "code/candidates.py": "66f5cff1e4490875bf2003a0f0c7c227b676189aaa792baa783e7a1303a34b5c",
+    "eval/metrics.py": "c377d026b6eed28002062274810edeb30f0e1c0457293a49e02d064805127276",
+    "scripts/run_ablation.py": "b35000186ffb3cd30913e4a76a9b395c4f9040bae625aec4ef4294c08099dcb5"
+  }
+}

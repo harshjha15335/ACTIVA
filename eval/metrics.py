@@ -19,7 +19,13 @@ def _field(item, name):
 
 
 def _interval(item):
-    start, end = float(_field(item, "start")), float(_field(item, "end"))
+    # Support canonical internal objects and the actual kit's output boundary.
+    if isinstance(item, Mapping) and "segment" in item:
+        if "start" in item or "end" in item or len(item["segment"]) != 2:
+            raise ValueError("Ambiguous or malformed segment")
+        start, end = map(float, item["segment"])
+    else:
+        start, end = float(_field(item, "start")), float(_field(item, "end"))
     if not (isfinite(start) and isfinite(end) and 0 <= start < end):
         raise ValueError("Intervals require finite 0 <= start < end")
     return start, end
