@@ -127,18 +127,23 @@ def ffmpeg_frames(path, p: "Preprocess" = None, src: FrameSource = FrameSource()
 
     if src.jpeg_q is None:
         cmd = base + ["-pix_fmt", "rgb24", "-f", "rawvideo", "-"]
-        proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        nbytes = out_w * out_h * 3
-        try:
-            while True:
-                buf = proc.stdout.read(nbytes)
-                if len(buf) < nbytes:
-                    break
-                yield np.frombuffer(buf, np.uint8).reshape(out_h, out_w, 3)
-        finally:
-            proc.stdout.close()
-            err = proc.stderr.read().decode(errors="replace")
-            if proc.wait() != 0:
+        # stderr goes to a temp file, not a pipe: on a video with many damaged packets ffmpeg
+        # writes enough errors to fill an unread stderr pipe and blocks, while we block on stdout.
+        with tempfile.TemporaryFile() as errfile:
+            proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=errfile)
+            nbytes = out_w * out_h * 3
+            try:
+                while True:
+                    buf = proc.stdout.read(nbytes)
+                    if len(buf) < nbytes:
+                        break
+                    yield np.frombuffer(buf, np.uint8).reshape(out_h, out_w, 3)
+            finally:
+                proc.stdout.close()
+                code = proc.wait()
+                errfile.seek(0)
+                err = errfile.read().decode(errors="replace")
+            if code != 0:
                 raise RuntimeError(f"ffmpeg failed on {path}: {err.strip()[-500:]}")
         return
 
