@@ -1,2 +1,4 @@
-# Dev only: downloading the manifest videos (scripts/download_videos.py). Not used by run.sh.
+# Dev only, not used by run.sh: downloading the manifest videos (scripts/download_videos.py)
+# and the one-time M1 model setup (scripts/setup_m1_assets.py).
 yt-dlp==2026.10.26
+gdown==6.5.1
