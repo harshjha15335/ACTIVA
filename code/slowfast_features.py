@@ -123,7 +123,7 @@ def ffmpeg_frames(path, p: "Preprocess" = None, src: FrameSource = FrameSource()
         size = p.out_size(w, h)
     out_w, out_h = size
     vf = f"fps={src.fps},scale={out_w}:{out_h}:flags=bicubic,{_ffmpeg_select(src)}"
-    base = ["ffmpeg", "-nostdin", "-v", "error", "-i", str(path), "-vf", vf, "-vsync", "0"]
+    base = ["ffmpeg", "-nostdin", "-v", "error", "-i", str(path), "-vf", vf, "-fps_mode", "passthrough"]  # -vsync was removed in ffmpeg 7+
 
     if src.jpeg_q is None:
         cmd = base + ["-pix_fmt", "rgb24", "-f", "rawvideo", "-"]

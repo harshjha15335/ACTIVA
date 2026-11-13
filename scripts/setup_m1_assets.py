@@ -33,6 +33,14 @@ URLS = {
     "EPIC_100_verb_classes.csv": "https://raw.githubusercontent.com/epic-kitchens/epic-kitchens-100-annotations/master/EPIC_100_verb_classes.csv",
     "EPIC_100_noun_classes.csv": "https://raw.githubusercontent.com/epic-kitchens/epic-kitchens-100-annotations/master/EPIC_100_noun_classes.csv",
 }
+# Expected SHA-256 of the fetched weights, measured identically on M1's Kaggle run and
+# M4's laptop (PR #11 review). A mismatch aborts setup instead of running other weights.
+EXPECTED_SHA256 = {
+    "SlowFast.pyth": "0fc9e83d544544617471835bd345aa71a6b75d979124a492b793b786f0e90cf7",
+    "epic_slowfast_verb_reproduce/epoch_020.pth.tar": "88486434a71e1b17ac38dd4a93d9612612026be62d7a93a032a0953a30ac687b",
+    "epic_slowfast_noun_reproduce/epoch_020.pth.tar": "8d313a2dd69562bfb063cb1e3372ad056ee646283d1e32af95ff49318bf6bbf9",
+}
+
 GDRIVE = {  # ActionFormer README "Evaluating pretrained models"
     "epic_slowfast_verb_reproduce": "1Ta4ggKSj2YcszSrDbePlHe1ECF1CFKK4",
     "epic_slowfast_noun_reproduce": "1OTlxeiWj8JE9n1-LsRYogHmqgUdsE5PR",
@@ -99,6 +107,22 @@ def main():
             record["files"][str(p.relative_to(dest)).replace("\\", "/")] = {"bytes": p.stat().st_size, "sha256": sha256(p)}
     (dest / "ASSETS.json").write_text(json.dumps(record, indent=1))
     print(json.dumps(record, indent=1))
+    bad = verify(record["files"])
+    if bad:
+        sys.exit("SHA-256 mismatch (delete the file and re-run): " + "; ".join(bad))
+    print("all expected SHA-256 hashes verified", file=sys.stderr)
+
+
+def verify(files):
+    """Compare recorded hashes with EXPECTED_SHA256; return a list of problems."""
+    bad = []
+    for name, want in EXPECTED_SHA256.items():
+        got = files.get(name, {}).get("sha256")
+        if got is None:
+            bad.append(f"{name}: missing")
+        elif got != want:
+            bad.append(f"{name}: got {got}, expected {want}")
+    return bad
 
 
 if __name__ == "__main__":
