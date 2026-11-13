@@ -84,6 +84,13 @@ official validator; results are labelled that way.
 default (`weights/ViT-B-32.safetensors`) was never produced, so a plain
 `./run.sh` silently fell back without CLIP. `ACTIVA_CLIP_WEIGHTS` still overrides.
 
+**D18 (2026-11-13) Skip damaged packets.** `video_io.iter_frames` skips a packet
+the decoder rejects and logs the count, as ffmpeg does, instead of failing the
+clip stage. Found in the full run: P29_05 and P30_08 have such packets, and their
+MD5s match EPIC's official list, so the organisers' copies are the same. With the
+fix, all 2,245 CLIP frames of P30_08 decode (16 packets skipped, no gap over
+0.5 s). A file with no decodable frames is still an error.
+
 ## M2 decisions proposed for review
 
 # M2 implementation decisions — pending shared-owner acceptance

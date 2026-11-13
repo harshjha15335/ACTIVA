@@ -68,3 +68,40 @@ def test_missing_input_raises_video_error(tmp_path):
 def test_bad_target_fps(media):
     with pytest.raises(ValueError):
         next(video_io.iter_frames(media["short"], 0))
+
+
+def _damage_packets(src, dst, bad):
+    """Remux src's video, overwriting the 4-byte NAL length of packets in bad (as in two EPIC files)."""
+    import av
+    with av.open(str(src)) as inp, av.open(str(dst), "w") as out:
+        stream = inp.streams.video[0]
+        target = out.add_stream_from_template(stream)
+        for n, packet in enumerate(inp.demux(stream)):
+            if packet.dts is None:
+                continue
+            if n in bad:
+                broken = av.Packet(b"\xff\xff\xff\xff" + bytes(packet)[4:])
+                broken.pts, broken.dts, broken.time_base = packet.pts, packet.dts, packet.time_base
+                broken.is_keyframe = packet.is_keyframe
+                packet = broken
+            packet.stream = target
+            out.mux(packet)
+
+
+def test_damaged_packets_are_skipped_not_fatal(tmp_path, caplog):
+    import av
+    src, damaged = tmp_path / "src.mp4", tmp_path / "damaged.mp4"
+    subprocess.run(["ffmpeg", "-y", "-v", "error", "-f", "lavfi", "-i", "testsrc2=size=320x180:rate=15",
+                    "-t", "20", "-c:v", "libx264", "-preset", "ultrafast", "-pix_fmt", "yuv420p", str(src)],
+                   check=True)
+    _damage_packets(src, damaged, {40, 41, 150})
+    with pytest.raises(av.error.InvalidDataError):   # a plain decode loop stops at the first bad packet
+        with av.open(str(damaged)) as container:
+            for _ in container.decode(video=0):
+                pass
+    clean = [t for t, _ in video_io.iter_frames(src, CLIP_FPS)]
+    with caplog.at_level("WARNING", logger="activa.video_io"):
+        times = [t for t, _ in video_io.iter_frames(damaged, CLIP_FPS)]
+    assert len(times) == len(clean) == 40 and times[-1] > 19
+    assert np.all(np.diff(times) > 0) and np.max(np.diff(times)) < 1.0
+    assert "skipped 3 damaged packet" in caplog.text

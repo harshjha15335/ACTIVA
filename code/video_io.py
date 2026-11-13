@@ -12,8 +12,14 @@ Time convention, shared by every module:
 Rotation convention: VideoInfo.rotation is the display-matrix rotation,
 normalised to 0/90/180/270 degrees counter-clockwise. iter_frames applies it,
 so frames come out the way a player shows them.
+
+Damaged packets: some published videos (e.g. two EPIC-KITCHENS test files whose
+MD5s match the official list) contain packets the H.264 decoder rejects. Like
+ffmpeg, iter_frames skips such a packet and carries on, logging the count; only
+a file with no decodable frames at all is an error.
 """
 import json
+import logging
 import math
 from pathlib import Path
 import subprocess
@@ -22,6 +28,8 @@ import av
 import numpy as np
 
 from contracts import VideoInfo
+
+log = logging.getLogger("activa.video_io")
 
 
 class VideoError(ValueError):
@@ -99,18 +107,30 @@ def inspect_video(path) -> VideoInfo:
     return VideoInfo(path.stem, str(path), duration, fps, width, height, _rotation(stream))
 
 
+def _decoded_frames(container, stream, skipped):
+    """container.decode(stream), but a packet the decoder rejects is skipped (counted in skipped[0])."""
+    for packet in container.demux(stream):
+        try:
+            frames = packet.decode()
+        except av.error.InvalidDataError:
+            skipped[0] += 1
+            continue
+        yield from frames
+
+
 def iter_frames(path, target_fps):
     """Yield (t_seconds, rgb_uint8_HxWx3) at most target_fps times per second."""
     if not math.isfinite(target_fps) or target_fps <= 0:
         raise ValueError("target_fps must be positive and finite.")
     info = inspect_video(path)
     next_time, previous = 0.0, -1.0
+    skipped = [0]
     try:
         with av.open(info.path) as container:
             stream = container.streams.video[0]
             stream.thread_type = "AUTO"
             origin = float(stream.start_time * stream.time_base) if stream.start_time is not None else None
-            for frame in container.decode(stream):
+            for frame in _decoded_frames(container, stream, skipped):
                 if frame.pts is None:
                     raise VideoError("Decoded frame lacks a presentation timestamp.")
                 timestamp = float(frame.pts * frame.time_base)
@@ -129,5 +149,8 @@ def iter_frames(path, target_fps):
                 next_time = (math.floor(timestamp * target_fps + 1e-8) + 1) / target_fps
     except av.error.FFmpegError as error:
         raise VideoError(f"Decoding failed for {info.path}: {error}") from None
+    finally:
+        if skipped[0]:
+            log.warning("%s: skipped %d damaged packet(s) the decoder rejected", info.video_id, skipped[0])
     if previous < 0:
         raise VideoError(f"No timestamped frames could be decoded from {info.path}")
