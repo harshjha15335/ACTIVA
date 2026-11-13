@@ -125,7 +125,12 @@ def download_fpvsum(manifest, out, limit=None, dry_run=False):
                "-f", YTDLP_FORMAT, "--merge-output-format", "mp4",
                "-o", str(folder / f"{name}.%(ext)s"), f"https://www.youtube.com/watch?v={ids[name]}"]
         if subprocess.run(cmd).returncode != 0:
-            failed.append(name)
+            # Some videos list no formats to the default clients but still serve one to the
+            # Android client (Scuba_Um4kqB8bQBg: 360p only, checked 2026-11-13).
+            log(f"  retrying {name} with the Android client")
+            retry = cmd[:-1] + ["--extractor-args", "youtube:player_client=android", cmd[-1]]
+            if subprocess.run(retry).returncode != 0:
+                failed.append(name)
     if failed:
         log(f"FPVSum: {len(failed)} failed (re-run to retry): {failed}")
 
