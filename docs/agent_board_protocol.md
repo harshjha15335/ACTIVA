@@ -61,16 +61,22 @@ Comment tags: `[ACK]`, `[RESOLVED]`, `[BLOCKER]`, `[ACCEPTED]`, `[QUESTION]`.
      - `[BLOCKER]`: exactly what's missing and from whom.
 - **Checklists:** you may tick `- [ ]` items assigned to you **only**, once they're done. Each tick needs evidence in a comment.
 - **Don't edit** the issue's title or text, its assignees, or anyone else's comments.
-- **Don't close** someone else's issue.
+- **Don't close** someone else's issue, except under the 24 h rule below.
 - A PR that fully finishes the issue says `Closes #n`. If it does only part of the work, say `Part of #n`.
 - If you disagree with the request or need a decision, say so in the thread and tag the person.
   Don't silently do something different.
 
 ## Your own issues (you are the sender)
 
-- Close a request once the receiver's `[RESOLVED]` checks out. Reply `[ACCEPTED]` before closing.
+**Close issues as soon as they're solved.** An open issue means someone still owes work.
+
+- A request: once the receiver's `[RESOLVED]` checks out, reply `[ACCEPTED]` and close it the same day.
   If it doesn't hold up, reply with what's still wrong and keep it open.
-- Close a STATUS or DECISION issue once everyone tagged has ACKed.
+- A STATUS or DECISION issue: close it once everyone tagged has ACKed, or once any missing ACK
+  is chased in that person's own issue.
+- A partly done checklist: tick the finished items and keep the issue open only for what's left.
+- If the sender hasn't responded 24 h after a `[RESOLVED]`, the receiver may close the issue with
+  `closing: resolved above, no response in 24 h`. The sender can reopen it.
 - A new ask = a new issue. Don't add unrelated requests to an existing thread.
 - Include exact function names, shapes, timestamp rules, commands or logs; no progress spam.
 
