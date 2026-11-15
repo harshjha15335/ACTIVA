@@ -1,0 +1,11 @@
+video_id,duration_sec,dataset
+P01_06,492.23,epic_kitchens_100
+P02_04,422.39,epic_kitchens_100
+P08_06,486.64,epic_kitchens_100
+P21_03,585.97,epic_kitchens_100
+P24_04,493.81,epic_kitchens_100
+P26_21,465.46,epic_kitchens_100
+P03_19,550.35,epic_kitchens_100
+P11_15,490.57,epic_kitchens_100
+P22_13,500.42,epic_kitchens_100
+P30_06,401.35,epic_kitchens_100
