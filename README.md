@@ -1,85 +1,152 @@
 # ACTIVA
 
-Samsung PRISM XR Hackathon 2026, Track 04.
+**Team LensLog** (VIT Vellore) · Samsung PRISM XR Hackathon 2026 · Track 04
 
-ACTIVA takes a first-person MP4 and writes one JSON in the student kit's format:
-the video's label, every action (verb + noun + segment + score), and highlight
-segments of at least 4 s totalling at most 15% of the video. The highlight
-selector favours covering many different actions plus the moments people find
-important.
+ACTIVA turns a first-person (egocentric) MP4 into one JSON in the student kit's format:
+- the video's **label**, e.g. `cooking` or `ski`;
+- every **action** it finds, as verb + noun + time segment + confidence;
+- **highlight** segments of at least 4 s, together at most 15% of the video.
 
-**Status: integration skeleton on the official output format.** `run.sh` works
-end to end and its output passes our local spec validator, but the models are
-not ready: no actions are detected yet, highlights fall back to evenly spaced
-clips, and CLIP needs local weights. No benchmark numbers have been measured.
-Kit rules and open questions: `docs/kit_compliance.md`.
-
-## Run
-
-Requirements: Python 3.11+, FFmpeg (`ffmpeg` and `ffprobe` on PATH), the student
-kit's files in `kit/` (see `kit/README.md`).
+The highlight selector picks moments that cover many different actions and that people are likely to find important.
 
 ```sh
-python -m venv .venv
-.venv/bin/pip install -r requirements-dev.txt        # Windows: .venv\Scripts\pip
-ACTIVA_PYTHON=.venv/bin/python ./run.sh input.mp4 outputs/input.json
+./run.sh input.mp4 output.json
 ```
 
-Output (`code/schema.py`):
+## Quick start
+
+Requirements:
+- the student kit's `supported_classes.json` (the label/verb/noun list), which you copy in; it isn't in this repo
+- Python 3.12+
+- FFmpeg 5.1+ (`ffmpeg` and `ffprobe` on PATH)
+- about 2 GB of disk for the model files
+- recommended: an NVIDIA GPU with 4 GB+ VRAM (see [Hardware and runtime](#hardware-and-runtime))
+
+```sh
+git clone https://github.com/harshjha15335/ACTIVA.git && cd ACTIVA
+python -m venv .venv && . .venv/bin/activate          # Windows: .venv\Scripts\activate
+pip install -r requirements.txt
+# NVIDIA GPU (CUDA 13.x driver): swap in the CUDA build of the same torch version
+pip install --no-deps --force-reinstall torch==2.15.0+cu132 --index-url https://download.pytorch.org/whl/cu132
+python scripts/setup_weights.py                      # one-time, ~1.8 GB, every file SHA-256 checked
+cp /path/to/student-kit/supported_classes.json kit/  # from the organisers' kit (not redistributed here)
+./run.sh input.mp4 outputs/input.json
+```
+
+- `setup_weights.py` downloads the model files from this repo's [`weights-v1` release](https://github.com/harshjha15335/ACTIVA/releases/tag/weights-v1).
+  - Those are unchanged mirrors of the upstream files (see [Credits](#credits-and-licences)).
+  - `--check` verifies an existing install. `--upstream` rebuilds it from the original authors instead.
+- **`run.sh` itself never touches the network.**
+- It picks the GPU automatically when CUDA is available. To force a device, set `ACTIVA_DEVICE=cpu` or `ACTIVA_DEVICE=cuda`.
+- On Windows, run `run.sh` from Git Bash. A `.venv` is not picked up automatically: put it on PATH, or set `ACTIVA_PYTHON`.
+
+Output (`code/schema.py`). The team ID is the same in every file (`code/config.py`, override with `ACTIVA_TEAM_ID`):
 
 ```json
-{"team_id": "...", "video_id": "P01_11", "duration_sec": 561.53,
+{"team_id": "LensLog", "video_id": "P01_11", "duration_sec": 561.53,
  "label": {"name": "cooking", "score": 0.93},
  "actions": [{"segment": [12.4, 18.9], "verb": "open", "noun": "fridge", "score": 0.82}],
  "highlights": [{"segment": [12.0, 23.0]}]}
 ```
 
-Logs go to stderr; stdout stays empty. Exit codes: 0 ok, 2 usage, 3 input not
-found, 4 invalid video, 5 configuration (no vocabulary or team_id), 6 a stage
-failed in strict mode (`ACTIVA_STRICT=1`), 1 internal error.
-On Windows, run `run.sh` from Git Bash.
+- Logs go to stderr; stdout stays empty.
+- Exit codes:
+  - 0 ok · 1 internal error · 2 usage · 3 input not found
+  - 4 invalid video · 5 configuration (missing model files or vocabulary)
+  - 6 a stage failed in strict mode
+- **Fallbacks:** if a stage fails, the default is to log it and write a valid file using a safe fallback for that stage, because a missing file scores 0. `ACTIVA_STRICT=1` turns any fallback into exit 6 instead; we use it to verify releases.
 
-All manifest videos, resumable, with a per-video report in `tmp/run_report.json`:
+## How it works
 
-```sh
-python scripts/run_manifest.py --videos /data/videos --out outputs
-python scripts/validate_outputs.py --dir outputs      # local spec validator, not the official validate.py
+```
+MP4 ─┬─ PyAV, 2 fps ─ CLIP ViT-B-32 ─┬─ importance (novelty) ─────┐
+     │                               └─ label (zero-shot, pooled) ─┼─ highlight selector ─ JSON
+     └─ ffmpeg, 30 fps ─ SlowFast (EPIC-100) ─ ActionFormer verb + noun ─ pairs + NMS ─┘
 ```
 
-## Test
+| Stage | Files | Owner |
+|---|---|---|
+| Entry point, stage orchestration with fallbacks, output schema | `run.sh`, `code/main.py`, `code/schema.py`, `code/fallbacks.py` | M4 |
+| Video decoding (real timestamps, rotation, damaged packets skipped) | `code/video_io.py` | M4 |
+| Actions: EPIC-100 SlowFast features → ActionFormer verb and noun detection → pairs → NMS, up to 2000 scored actions | `code/actions.py`, `code/slowfast_features.py`, `code/action_config.py` | M1 |
+| Perception: CLIP features at 2 fps, frame importance, zero-shot label | `code/clip_features.py`, `code/importance.py`, `code/category.py` | M2 |
+| Highlights: bounded greedy packing that rewards distinct action coverage and importance, within the 15% budget | `code/optimizer.py`, `code/candidates.py` | M3 |
+| Shared types and settings | `code/contracts.py`, `code/config.py`, `code/vocab.py` | M4 |
+
+- Labels, verbs and nouns come only from the kit's `kit/supported_classes.json`; nothing is hardcoded.
+  - We don't publish kit files until the organisers say we may, so copy that file in from your kit.
+  - Without it, `run.sh` exits 5 and says so. `ACTIVA_VOCAB` can point to it elsewhere.
+- Inference never reads video IDs, annotations or development caches.
+- Design decisions: [`docs/decisions.md`](docs/decisions.md).
+
+## Hardware and runtime
+
+Measured on one laptop: RTX 4060 Laptop (8 GB), i7-14650HX, 16 GB RAM, strict mode, all 187 manifest videos.
+
+| | |
+|---|---|
+| Whole manifest (56,094 s of video) | ~6 h, about **0.39 s per second of video** |
+| A 9.4 min EPIC video | 217 s |
+| A 2 min FPVSum video | 32 s |
+| Peak GPU memory | 3.2 GB |
+
+- The run is limited by video decoding on the CPU, so the GPU is mostly idle.
+- **Without a GPU, ACTIVA still runs**, but the action stage is about 13× slower.
+
+## Outputs and checks
+
+`outputs/` holds our 187 output files for the kit manifest (`kit/manifest.csv`, which stays local; the videos aren't included). To regenerate them:
 
 ```sh
+pip install -r requirements-download.txt
+python scripts/download_videos.py fpvsum && python scripts/download_videos.py epic   # EPIC is ~184 GB
+ACTIVA_STRICT=1 python scripts/run_manifest.py --videos data/videos --out outputs      # resumable
+python scripts/validate_outputs.py --dir outputs
+```
+
+- `run_manifest.py` writes a per-video report to `tmp/run_report.json`.
+- `validate_outputs.py` is our local implementation of the kit README's rules. The official `validate.py` is listed in the kit but was missing from our copy, and we've asked the organisers for it.
+- Latest full run, 14 Nov: **187/187 valid**, no fallbacks.
+- **Two published EPIC files contain damaged H.264 packets: P29_05 and P30_08.** Their MD5s match EPIC's official list, so everyone's copies are the same. ACTIVA skips those packets, as ffmpeg does (D18).
+
+Provisional choices, pending the organisers' answers (`docs/kit_compliance.md`):
+- **Team ID:** `team_id` is `LensLog`.
+- **Short videos:** for videos where 15% is under 4 s (3 in the manifest), we output one 4.0 s highlight.
+
+## Tests
+
+```sh
+pip install -r requirements-dev.txt
 python -m pytest -q
 ```
 
-The tests generate synthetic videos with FFmpeg (2 and 10 minute, black, VFR,
-rotated, corrupt, empty, audio-only) and use a placeholder vocabulary in
-`tests/fixtures/`. CI runs the same suite on every push and pull request.
+- The tests build synthetic videos with FFmpeg: short, long, black, VFR, rotated, corrupt, damaged-packet, empty and audio-only.
+- They use a fixture vocabulary and need no model weights.
+- CI runs them on every push and pull request.
+- Opt-in tests with the real model weights skip unless their environment variables are set.
 
-## Layout
+## Team
 
-| Path | What | Owner |
-|------|------|-------|
-| `run.sh`, `code/main.py` | Entry point and stage orchestration with fallbacks | M4 |
-| `code/contracts.py` | Shared types every module uses | M4 |
-| `code/config.py`, `code/vocab.py` | Settings, official vocabulary loader | M4 |
-| `code/video_io.py` | ffprobe metadata, PyAV frames with real timestamps | M4 |
-| `code/schema.py`, `code/fallbacks.py` | Official output JSON build/validate, safe fallbacks | M4 |
-| `scripts/run_manifest.py`, `scripts/validate_outputs.py` | Batch run over the manifest, local spec validator | M4 |
-| `code/actions.py` | Action detection (stub until M1 lands) | M1 |
-| `code/clip_features.py`, `importance.py`, `category.py` | Perception (stubs until M2 lands) | M2 |
-| `code/optimizer.py` | Highlight selection (stub until M3 lands) | M3 |
-| `kit/` | Official student kit (git-ignored) | M4 |
-| `docs/` | Decisions, kit checklist, integration plan, agent rules | all |
+| Role | Member |
+|---|---|
+| M1 Action engine | Arham Jain ([@Arhamj1](https://github.com/Arhamj1)) |
+| M2 Perception | Harsh Jha ([@harshjha15335](https://github.com/harshjha15335)) |
+| M3 Highlight selector | Anuj Deshpande ([@ANUJ-DESHPANDE](https://github.com/ANUJ-DESHPANDE)) |
+| M4 Integration, demo, submission | Aarush Shetty ([@AarushShetty346](https://github.com/AarushShetty346)) |
 
-## Team workflow
+How we work:
+- Each member works on their own branch and merges into `main` through PRs that pass CI.
+- Coordination happens on the [message board](https://github.com/harshjha15335/ACTIVA/issues/4); rules are in [`docs/agent_board_protocol.md`](docs/agent_board_protocol.md).
+- Coding agents start from [`AGENTS.md`](AGENTS.md).
 
-Each member works on their role branch (`m1-actions`, `m2-perception`,
-`m3-selector`, `m4-integration`) and opens a pull request into `main`.
-Read `AGENTS.md` and `docs/agent_board_protocol.md` first; landing an existing
-branch on `main` is described in `docs/integration_plan.md`.
+## Credits and licences
 
-## Credits
+ACTIVA's own code is by the team above. It builds on these projects, whose licences still apply to their parts:
 
-ActionFormer, OpenCLIP, EPIC-KITCHENS-100 and FPVSum; licences are listed with
-each module as it lands.
+| Component | Used for | Licence |
+|---|---|---|
+| [OpenCLIP](https://github.com/mlfoundations/open_clip), ViT-B-32 QuickGELU LAION-400M e32 weights | Frame features, zero-shot label | MIT |
+| [epic-kitchens-slowfast](https://github.com/epic-kitchens/epic-kitchens-slowfast) code and EPIC-100 SlowFast checkpoint | Action features | CC BY-NC-SA 4.0 (non-commercial) |
+| [ActionFormer](https://github.com/happyharrycn/actionformer_release) code and EPIC-100 checkpoints | Verb and noun detection | MIT |
+| [EPIC-KITCHENS-100](https://epic-kitchens.github.io/) class lists | Class ID → name mapping | per the EPIC-KITCHENS terms |
+| EPIC-KITCHENS-100, FPVSum | The manifest's videos (not redistributed here) | per their owners |

@@ -1,5 +1,10 @@
 # M2 local CLIP weights
 
+> **M4 note (15 Nov): to install every model file, run `python scripts/setup_weights.py`.**
+> It downloads them from the repo's `weights-v1` release, which holds this CLIP file plus M1's
+> SlowFast/ActionFormer files, unchanged, and checks every SHA-256. The section below
+> documents how M2 produced the CLIP file; `setup_weights.py --upstream` repeats that route.
+
 ## Explicit validated development candidate
 
 Architecture: OpenCLIP ViT-B-32 with QuickGELU;512 dimensions; image224center crop,

@@ -98,3 +98,13 @@ def test_strict_mode_exit_6_when_a_stage_fails(media, dev_vocab, tmp_path):
 
 def test_run_sh_has_lf_line_endings():
     assert b"\r" not in RUN_SH.read_bytes()
+
+
+def test_missing_model_files_exit_5_with_setup_hint(media, dev_vocab, tmp_path):
+    out = tmp_path / "out.json"
+    proc = run_sh(media["short"], out, vocab_path=dev_vocab, ACTIVA_REQUIRE_MODELS="1",
+                  ACTIVA_CLIP_WEIGHTS=str(tmp_path / "no-such-clip.safetensors"),
+                  ACTIVA_M1_ASSETS=str(tmp_path / "no-m1"))
+    assert proc.returncode == 5, proc.stderr
+    assert "setup_weights.py" in proc.stderr and "no-such-clip" in proc.stderr
+    assert not out.exists()

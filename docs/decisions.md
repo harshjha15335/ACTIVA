@@ -91,6 +91,22 @@ MD5s match EPIC's official list, so the organisers' copies are the same. With th
 fix, all 2,245 CLIP frames of P30_08 decode (16 packets skipped, no gap over
 0.5 s). A file with no decodable frames is still an error.
 
+**D19 (2026-11-15) Submission packaging.** A clean clone must run `./run.sh`:
+- **Model files:** the ~1.75 GB of weights are git-ignored and too large for Git
+  (GitHub's 100 MB limit). They live in the repo's `weights-v1` release, as unchanged
+  mirrors of the upstream files, and `scripts/setup_weights.py` installs them with
+  every SHA-256 checked. `--upstream` rebuilds them from the original authors.
+- **Missing models are an error:** `main.py` exits 5 with a pointer to
+  `setup_weights.py`, instead of quietly writing fallback outputs.
+  `ACTIVA_REQUIRE_MODELS=0` restores the old behaviour; the test suite uses it, since
+  it has no weights.
+- **Device:** `ACTIVA_DEVICE` defaults to `auto`, so CUDA is used when available. The
+  action stage is about 13x slower on CPU.
+- **Class list:** `kit/supported_classes.json` stays local, like the rest of the kit,
+  until the organisers answer Q7 (team vote, 15 Nov). The README tells whoever runs
+  `run.sh` to copy it from their kit first; without it, `run.sh` exits 5 with that
+  hint. The organisers re-running `run.sh` have the kit.
+
 ## M2 decisions proposed for review
 
 # M2 implementation decisions — pending shared-owner acceptance

@@ -307,6 +307,20 @@ def write_json_atomic(obj, out_path):
         raise
 
 
+def missing_model_files():
+    """Model files run.sh needs but cannot find (scripts/setup_weights.py installs them).
+
+    ACTIVA_REQUIRE_MODELS=0 skips this check, so a run without models falls back stage
+    by stage instead (the test suite does this; it has no weights).
+    """
+    if os.environ.get("ACTIVA_REQUIRE_MODELS", "1").strip() == "0":
+        return []
+    clip = Path(os.environ.get("ACTIVA_CLIP_WEIGHTS") or config.ROOT / config.settings().weights).expanduser()
+    missing = [] if clip.is_file() else [str(clip)]
+    import action_config
+    return missing + action_config.engine_assets().missing()
+
+
 def main(argv=None):
     args = sys.argv[1:] if argv is None else argv
     if len(args) != 2:
@@ -315,6 +329,11 @@ def main(argv=None):
     logging.basicConfig(stream=sys.stderr, level=config.LOG_LEVEL,
                         format="[activa] %(levelname)s %(message)s")
     source, target = args
+    missing = missing_model_files()
+    if missing:
+        log.error("configuration error: model files missing (%s); run: python scripts/setup_weights.py",
+                  ", ".join(missing[:3]) + (f" and {len(missing) - 3} more" if len(missing) > 3 else ""))
+        return EXIT_CONFIG
     try:
         output = predict(source)
     except video_io.VideoError as error:
