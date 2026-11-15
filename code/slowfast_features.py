@@ -91,12 +91,74 @@ class FrameSource:
     step: int = 2
     offset: int = 0                  # first kept frame index at `fps`
     jpeg_q: Optional[int] = None     # None: raw frames
+    hwaccel: str = "auto"            # "auto": NVDEC (-hwaccel cuda) when ACTIVA_DEVICE is cuda and ffmpeg
+                                     # supports it, else CPU; "cuda": force (CPU retry on failure); "none"
     shift: int = -1                  # frames (at 30 fps) to start windows earlier (<0) or later (>0);
                                      # gate v3: -1/-2 best match the published features (0 -> 0.938, -1 -> 0.943)
 
 
 def _ffmpeg_select(src: FrameSource) -> str:
     return f"select='gte(n\\,{src.offset})*not(mod(n-{src.offset}\\,{src.step}))'"
+
+
+_HWACCELS: Optional[frozenset] = None
+
+
+def ffmpeg_hwaccels() -> frozenset:
+    """Hardware decoders this ffmpeg build offers (`ffmpeg -hwaccels`), cached."""
+    global _HWACCELS
+    if _HWACCELS is None:
+        import subprocess
+        try:
+            out = subprocess.run(["ffmpeg", "-hide_banner", "-hwaccels"], capture_output=True, text=True,
+                                 timeout=30).stdout
+            _HWACCELS = frozenset(l.strip() for l in out.splitlines()[1:] if l.strip())
+        except (OSError, subprocess.SubprocessError):
+            _HWACCELS = frozenset()
+    return _HWACCELS
+
+
+def use_nvdec(src: "FrameSource") -> bool:
+    """Whether to pass -hwaccel cuda for this source (see FrameSource.hwaccel)."""
+    if src.hwaccel == "none":
+        return False
+    if src.hwaccel == "cuda":
+        return True
+    if src.hwaccel != "auto":
+        raise ValueError(f"hwaccel must be 'auto', 'cuda' or 'none', got {src.hwaccel!r}")
+    import config
+    return str(config.DEVICE).startswith("cuda") and "cuda" in ffmpeg_hwaccels()
+
+
+def _ffmpeg_vf(src: "FrameSource", out_w: int, out_h: int) -> str:
+    # select BEFORE scale: only the kept frames are resized (half the work at step 2);
+    # the selected frames and their pixels are the same as scaling first.
+    return f"fps={src.fps},{_ffmpeg_select(src)},scale={out_w}:{out_h}:flags=bicubic"
+
+
+def _raw_frames(cmd, path, out_w, out_h, counter):
+    import subprocess
+    import tempfile
+
+    # stderr goes to a temp file, not a pipe: on a video with many damaged packets ffmpeg
+    # writes enough errors to fill an unread stderr pipe and blocks, while we block on stdout.
+    with tempfile.TemporaryFile() as errfile:
+        proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=errfile)
+        nbytes = out_w * out_h * 3
+        try:
+            while True:
+                buf = proc.stdout.read(nbytes)
+                if len(buf) < nbytes:
+                    break
+                counter[0] += 1
+                yield np.frombuffer(buf, np.uint8).reshape(out_h, out_w, 3)
+        finally:
+            proc.stdout.close()
+            code = proc.wait()
+            errfile.seek(0)
+            err = errfile.read().decode(errors="replace")
+        if code != 0:
+            raise RuntimeError(f"ffmpeg failed on {path}: {err.strip()[-500:]}")
 
 
 def ffmpeg_frames(path, p: "Preprocess" = None, src: FrameSource = FrameSource(),
@@ -122,33 +184,30 @@ def ffmpeg_frames(path, p: "Preprocess" = None, src: FrameSource = FrameSource()
         w, h = (info.height, info.width) if info.rotation in (90, 270) else (info.width, info.height)
         size = p.out_size(w, h)
     out_w, out_h = size
-    vf = f"fps={src.fps},scale={out_w}:{out_h}:flags=bicubic,{_ffmpeg_select(src)}"
-    base = ["ffmpeg", "-nostdin", "-v", "error", "-i", str(path), "-vf", vf, "-fps_mode", "passthrough"]  # -vsync was removed in ffmpeg 7+
+    vf = _ffmpeg_vf(src, out_w, out_h)
+    hw = ["-hwaccel", "cuda"] if use_nvdec(src) else []
+    tail = ["-i", str(path), "-vf", vf, "-fps_mode", "passthrough"]  # -vsync was removed in ffmpeg 7+
+    base = ["ffmpeg", "-nostdin", "-v", "error"] + tail
 
     if src.jpeg_q is None:
-        cmd = base + ["-pix_fmt", "rgb24", "-f", "rawvideo", "-"]
-        # stderr goes to a temp file, not a pipe: on a video with many damaged packets ffmpeg
-        # writes enough errors to fill an unread stderr pipe and blocks, while we block on stdout.
-        with tempfile.TemporaryFile() as errfile:
-            proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=errfile)
-            nbytes = out_w * out_h * 3
+        out = ["-pix_fmt", "rgb24", "-f", "rawvideo", "-"]
+        if hw:
+            counter = [0]
             try:
-                while True:
-                    buf = proc.stdout.read(nbytes)
-                    if len(buf) < nbytes:
-                        break
-                    yield np.frombuffer(buf, np.uint8).reshape(out_h, out_w, 3)
-            finally:
-                proc.stdout.close()
-                code = proc.wait()
-                errfile.seek(0)
-                err = errfile.read().decode(errors="replace")
-            if code != 0:
-                raise RuntimeError(f"ffmpeg failed on {path}: {err.strip()[-500:]}")
+                yield from _raw_frames(["ffmpeg", "-nostdin", "-v", "error"] + hw + tail + out,
+                                       path, out_w, out_h, counter)
+                return
+            except RuntimeError as exc:
+                if counter[0]:          # failed mid-stream: frames already used, do not mix decoders
+                    raise
+                import logging
+                logging.getLogger("activa.actions").warning(
+                    "NVDEC decode failed before the first frame, retrying on CPU: %s", str(exc)[-200:])
+        yield from _raw_frames(base + out, path, out_w, out_h, [0])
         return
 
     with tempfile.TemporaryDirectory(prefix="activa_frames_") as tmp:
-        cmd = base + ["-q:v", str(int(src.jpeg_q)), f"{tmp}/%010d.jpg"]
+        cmd = ["ffmpeg", "-nostdin", "-v", "error"] + hw + tail + ["-q:v", str(int(src.jpeg_q)), f"{tmp}/%010d.jpg"]
         res = subprocess.run(cmd, capture_output=True, text=True)
         if res.returncode != 0:
             raise RuntimeError(f"ffmpeg failed on {path}: {res.stderr.strip()[-500:]}")
