@@ -1,5 +1,35 @@
 # M3 status
 
+## Current task - 2026-11-15 (#16)
+
+PR #9 is merged. The board is now an index of assigned sub-issues; replies go
+inside the relevant issue, not #4. The confirmed internal code freeze is 20 Nov
+and final submission is 22 Nov. M3 acknowledged #13/#16 on #16.
+
+Completed the split gate: independently checked M1's ten-video proposal against
+the local manifest and pinned official EPIC train/video metadata, then approved
+the exact six-tune/four-held-out participant split on #15. M1 can run the data.
+The first checklist item on #16 is supported by that evidence. Ground truth
+must use the canonical class-ID-to-key mapping used by the predictions; raw
+annotation wording has different distinct-pair counts.
+
+Received vtest_handoff.zip, independently matched its sender SHA-256 and every
+payload checksum, loaded the genuine 159x512 cache and passed the existing
+importance-sensitive handoff checker. Acceptance was posted on #14, so M2's
+recipient-verification item is complete. Private ZIP/NPZ files remain ignored.
+This public-video consumer smoke test has no M1 actions or human labels and
+does not satisfy the real held-out comparison gate.
+
+Open dependencies: M1's real predictions/canonical GT/provenance on #15, and
+matching M2 importance/CLIP caches requested in #18 (a sub-issue of #4). No
+quality scores, winning settings or human data-clearance records are invented.
+Current defaults remain unchanged. #16 stays open for comparisons and reporting.
+Fresh checks and exact evidence are in the 15 November section of docs/results.md.
+
+Split agreement: https://github.com/harshjha15335/ACTIVA/issues/15#issuecomment-6893650165
+Cache acceptance: https://github.com/harshjha15335/ACTIVA/issues/14#issuecomment-6893650150
+Matched-input request: https://github.com/harshjha15335/ACTIVA/issues/18
+
 ## Review handoff - 2026-11-13
 
 M4 reviewed PR #9 and requested it be marked ready; no code changes were

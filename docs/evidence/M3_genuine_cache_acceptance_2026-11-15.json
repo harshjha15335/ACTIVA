@@ -1,0 +1,97 @@
+{
+  "purpose": "genuine M2 cache consumer integration; not M1-action or held-out quality evaluation",
+  "archive_sha256": "20f8cf0053a6454e1d059c37aede4f10fa31bd434b2ebea47e00c91bd267417b",
+  "checksum_match": true,
+  "all_payload_hashes_match": true,
+  "source_video_sha256": "45cddc9490be69345cbdab64ca583be65987e864ca408038e648db99e10516cf",
+  "model_name": "ViT-B-32/sha256:e9997f5060079ffdcb2412062673e039e9292309b46961c4bcbffe64ae1b17a1",
+  "duration_seconds": 79.5,
+  "feature_shape": [
+    159,
+    512
+  ],
+  "feature_dtype": "float32",
+  "feature_norm_min": 0.9999999403953552,
+  "feature_norm_max": 1.0,
+  "importance_grid_equal": true,
+  "actual_actions_supplied": false,
+  "handoff_checker_exit": 0,
+  "modes": [
+    {
+      "variant": "U",
+      "intervals": [
+        [
+          16.94,
+          22.82
+        ],
+        [
+          56.68,
+          62.56
+        ]
+      ],
+      "highlight_seconds": 11.760000000000002,
+      "clips": 2,
+      "m2_importance_mass_diagnostic": 7.363652855837346,
+      "runtime_seconds": 0.000451300002168864,
+      "canonical_normalization_valid": true
+    },
+    {
+      "variant": "I",
+      "intervals": [
+        [
+          16.0,
+          20.0
+        ],
+        [
+          51.0,
+          57.0
+        ]
+      ],
+      "highlight_seconds": 10.0,
+      "clips": 2,
+      "m2_importance_mass_diagnostic": 8.723270438611507,
+      "runtime_seconds": 0.0051503999857231975,
+      "canonical_normalization_valid": true
+    },
+    {
+      "variant": "A",
+      "intervals": [
+        [
+          16.94,
+          22.82
+        ],
+        [
+          56.68,
+          62.56
+        ]
+      ],
+      "highlight_seconds": 11.760000000000002,
+      "clips": 2,
+      "m2_importance_mass_diagnostic": 7.363652855837346,
+      "runtime_seconds": 0.0003266999847255647,
+      "canonical_normalization_valid": true
+    },
+    {
+      "variant": "J",
+      "intervals": [
+        [
+          16.0,
+          20.0
+        ],
+        [
+          51.0,
+          57.0
+        ]
+      ],
+      "highlight_seconds": 10.0,
+      "clips": 2,
+      "m2_importance_mass_diagnostic": 8.723270438611507,
+      "runtime_seconds": 0.004855899984249845,
+      "canonical_normalization_valid": true
+    }
+  ],
+  "official_metric_results": null,
+  "private_payloads_committed": false,
+  "acceptance_comment": "https://github.com/harshjha15335/ACTIVA/issues/14#issuecomment-6893650150",
+  "source_commit": "08d1cb1"
+}
