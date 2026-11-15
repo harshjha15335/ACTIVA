@@ -4,6 +4,7 @@ Lives at the repo root (not tests/conftest.py) so it never collides with a
 member's own tests/conftest.py. Fixtures are opt-in, so members' tests are
 unaffected unless they ask for them.
 """
+import os
 from pathlib import Path
 import shutil
 import sys
@@ -14,6 +15,10 @@ ROOT = Path(__file__).resolve().parent
 sys.path.insert(0, str(ROOT / "scripts"))
 
 DEV_VOCAB = ROOT / "tests" / "fixtures" / "dev_vocab.json"
+
+# CI has no model weights: let run.sh fall back stage by stage instead of exiting 5
+# (main.missing_model_files). Tests of that check set the variable themselves.
+os.environ.setdefault("ACTIVA_REQUIRE_MODELS", "0")
 
 
 @pytest.fixture(scope="session")
@@ -44,3 +49,14 @@ def kit_vocab():
     if not KIT_VOCAB.exists():
         pytest.skip("student kit not installed in kit/")
     return KIT_VOCAB
+
+
+@pytest.fixture
+def kit_file():
+    """kit_file(name): another kit file (manifest, examples). Local-only, so the test skips when absent (CI)."""
+    def get(name):
+        path = KIT_VOCAB.parent / name
+        if not path.exists():
+            pytest.skip(f"kit/{name} is local-only (not committed)")
+        return path
+    return get

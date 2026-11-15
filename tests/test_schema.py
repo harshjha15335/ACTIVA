@@ -47,14 +47,13 @@ def test_empty_actions_are_allowed(v):
     assert schema.validate_output(d, 120.0, v) == []
 
 
-def test_kit_examples_against_real_vocabulary(kit_vocab):
+def test_kit_examples_against_real_vocabulary(kit_vocab, kit_file):
     """P02_109.json passes; skiing_03.json fails only because its label 'skiing' is not in the kit's labels."""
     import json
     real = vocab.load(kit_vocab)
-    kit = kit_vocab.parent
-    epic = json.loads((kit / "P02_109.json").read_text())
+    epic = json.loads(kit_file("P02_109.json").read_text())
     assert schema.validate_output(epic, epic["duration_sec"], real) == []
-    ski = json.loads((kit / "skiing_03.json").read_text())
+    ski = json.loads(kit_file("skiing_03.json").read_text())
     with pytest.raises(SchemaError, match=r"^label.name: 'skiing' is not a supported label$"):
         schema.validate_output(ski, ski["duration_sec"], real)
 

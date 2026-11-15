@@ -26,6 +26,7 @@ weights/*
 *.pkl
 *.tar.gz
 
-# Official student kit: keep local until we confirm it may go in a public repo.
+# Official student kit: keep local until we confirm it may go in a public repo
+# (team decision 15 Nov, D19: copy supported_classes.json from your own kit).
 kit/*
 !kit/README.md

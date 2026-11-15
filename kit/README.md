@@ -9,8 +9,10 @@ for it) and copy its files here:
 - `TEAM_README.md`, `P02_109.json`, `skiing_03.json`
 
 Everything here except this README is git-ignored until the organisers confirm
-the kit may be published (`docs/kit_checklist.md` #9). Tests that need the real
-kit skip when it is absent (CI never has it).
+the kit may be published (`docs/kit_compliance.md` Q7). **`run.sh` needs
+`supported_classes.json`**, so copy it here from your copy of the kit before the
+first run (team decision, D19). Tests that need kit files skip when they are
+absent (CI never has them).
 
 ## Downloading the videos
 

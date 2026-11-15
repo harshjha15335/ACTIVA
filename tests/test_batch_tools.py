@@ -119,7 +119,7 @@ def test_validator_catches_cross_file_problems(setup):
     assert any("team_id differs" in e for e in results["<submission>"][0])
 
 
-def test_real_manifest_shape(kit_vocab):
-    rows = validate_outputs.read_manifest(kit_vocab.parent / "manifest.csv")
+def test_real_manifest_shape(kit_vocab, kit_file):
+    rows = validate_outputs.read_manifest(kit_file("manifest.csv"))
     datasets = [ds for _, ds in rows.values()]
     assert len(rows) == 187 and datasets.count("epic_kitchens_100") == 138 and datasets.count("fpvsum") == 49

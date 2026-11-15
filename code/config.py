@@ -15,7 +15,26 @@ ROOT = Path(__file__).resolve().parents[1]
 
 # --- Runtime -----------------------------------------------------------------
 SEED = 0
-DEVICE = os.environ.get("ACTIVA_DEVICE", "cpu")      # "cpu" or "cuda"; same variable M2 reads
+
+
+def device():
+    """ACTIVA_DEVICE: "cpu", "cuda" (or "cuda:N"), or "auto" (the default): CUDA when available.
+
+    The action stage needs a GPU in practice (measured: 0.22 s per video-second on an
+    RTX 4060, about 13x slower on CPU), so organisers re-running run.sh get CUDA
+    automatically when their machine has it, and CPU otherwise.
+    """
+    value = os.environ.get("ACTIVA_DEVICE", "").strip() or "auto"
+    if value != "auto":
+        return value
+    try:
+        import torch
+    except ImportError:
+        return "cpu"
+    return "cuda" if torch.cuda.is_available() else "cpu"
+
+
+DEVICE = device()      # same variable M2 reads
 LOG_LEVEL = os.environ.get("ACTIVA_LOG_LEVEL", "INFO")
 
 # --- Team -------------------------------------------------------------------------
@@ -100,4 +119,4 @@ def settings():
     batch = int(os.environ.get("ACTIVA_BATCH_SIZE", "16"))
     if batch < 1:
         raise ValueError("Batch size must be positive.")
-    return Settings(os.environ.get("ACTIVA_CLIP_WEIGHTS", "weights/ViT-B-32-laion400m_e32.safetensors"), tuple(categories), os.environ.get("ACTIVA_CLIP_MODEL", "ViT-B-32"), os.environ.get("ACTIVA_DEVICE", "cpu"), batch, os.environ.get("ACTIVA_IMPORTANCE", "novelty"), os.environ.get("ACTIVA_POOLING", "mean"))
+    return Settings(os.environ.get("ACTIVA_CLIP_WEIGHTS", "weights/ViT-B-32-laion400m_e32.safetensors"), tuple(categories), os.environ.get("ACTIVA_CLIP_MODEL", "ViT-B-32"), device(), batch, os.environ.get("ACTIVA_IMPORTANCE", "novelty"), os.environ.get("ACTIVA_POOLING", "mean"))
