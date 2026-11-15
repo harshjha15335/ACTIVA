@@ -208,3 +208,112 @@ follow-up gates, not prerequisites for reviewing the implemented selector.
 The earlier handoff was actually posted on November 11:
 https://github.com/harshjha15335/ACTIVA/issues/4#issuecomment-6801054556
 It supersedes the historical "not posted" statements in that day's draft notes.
+
+## M3 split agreement and genuine cache acceptance - 15 November 2026
+
+Source base: current shared main 08d1cb1, branch m3-real-prediction-study.
+No optimizer, metric or shared-owner code/defaults were changed. PR #9 has
+landed; this record covers the next steps of assigned issue #16.
+
+### Fixed six-tuning / four-held-out partition
+
+Agreed to M1's exact proposal after independent checks. The approval unblocks
+M1's predictions run:
+https://github.com/harshjha15335/ACTIVA/issues/15#issuecomment-6893650165
+
+| Split | Video | Participant | Duration (s) | GT segments | Distinct class pairs | Distinct text pairs |
+|---|---|---|---:|---:|---:|---:|
+| tune | P01_06 | P01 | 492.225 | 119 | 55 | 78 |
+| tune | P02_04 | P02 | 422.389 | 168 | 67 | 83 |
+| tune | P08_06 | P08 | 486.636 | 122 | 66 | 85 |
+| tune | P21_03 | P21 | 585.969 | 75 | 58 | 62 |
+| tune | P24_04 | P24 | 493.810 | 122 | 50 | 75 |
+| tune | P26_21 | P26 | 465.465 | 89 | 49 | 63 |
+| held-out | P03_19 | P03 | 550.350 | 168 | 86 | 92 |
+| held-out | P11_15 | P11 | 490.573 | 109 | 64 | 73 |
+| held-out | P22_13 | P22 | 500.417 | 246 | 88 | 123 |
+| held-out | P30_06 | P30 | 401.351 | 144 | 84 | 90 |
+
+All ten are in the official train CSV, 3-10 minutes, 1920x1080 and approximately
+59.94 fps. Total 4,889.1843 seconds. Zero IDs overlap the actual 187-row kit
+manifest; zero duplicates and zero tuning/held-out participant overlap.
+The local manifest SHA-256 is
+`6414e13f5a0c2d7a0d2bc07edf776125cd03a133342a91eb38ad3d729dd150fd`.
+
+Verified against the official epic-kitchens-100-annotations repository pinned
+to `ea8b40457a400c3fffa1c7f406ef3dc169cc2522`:
+
+- [EPIC_100_train.csv](https://github.com/epic-kitchens/epic-kitchens-100-annotations/blob/ea8b40457a400c3fffa1c7f406ef3dc169cc2522/EPIC_100_train.csv), SHA-256 `a3a7ef2e397bd8af12bd0496b09d61b1f2c1f3f6e1726fa86af50a27f4855e87`.
+- [EPIC_100_video_info.csv](https://github.com/epic-kitchens/epic-kitchens-100-annotations/blob/ea8b40457a400c3fffa1c7f406ef3dc169cc2522/EPIC_100_video_info.csv), SHA-256 `75fd040f6662cb407b4ca2eed4811ca94df280a1aba00b6bf8a5cd286deff382`.
+
+The proposed selection rule reproduces 98 eligible videos across 25 participants
+and the exact top ten when diversity uses raw verb/noun text. The class-pair
+ranking is different. For coverage and mAP, request canonical GT labels using
+the same class-ID-to-vocabulary mapping as M1 predictions. Narration synonyms
+must not inflate the scoring denominator. These counts are annotation metadata,
+not measured model performance. Raw CSVs and action timestamp rows stay local.
+Machine-readable audit: docs/evidence/M3_train_split_audit_2026-11-15.json.
+
+Important limits: ActionFormer trained on these same EPIC train sources; the
+held-out partition is for selector decisions relative to the tuning six, not
+unseen detector generalization. Diversity-based selection also biases this
+small development set. Keep real-prediction and oracle-input experiments
+separate, fix choices using the six tuning videos, and avoid repeated tuning
+against the four held-out results. No model-quality/default change is made here.
+
+### Received private M2 cache: independently verified
+
+Input: vtest_handoff.zip, provided privately; archive SHA-256
+`20f8cf0053a6454e1d059c37aede4f10fa31bd434b2ebea47e00c91bd267417b`.
+It exactly matches M2's published checksum. Independently checked every receipt
+member hash, then loaded the received manifest with perception_cache.read_cache
+and ran the actual selector. The archive and arrays remain local and ignored.
+
+- Public source: 79.5-second OpenCV vtest.avi; source SHA-256
+  `45cddc9490be69345cbdab64ca583be65987e864ca408038e648db99e10516cf`.
+- Model identity: `ViT-B-32/sha256:e9997f5060079ffdcb2412062673e039e9292309b46961c4bcbffe64ae1b17a1`.
+- Actual features: 159x512 float32, norm range [0.99999994, 1.0].
+- Importance and CLIP timestamps match exactly. The model checkpoint/video are
+  not included; this validates consumption of M2's genuine supplied cache, not
+  independent checkpoint inference on this machine.
+
+```powershell
+.\.venv\Scripts\python.exe scripts/check_m3_handoff.py --optimizer code/optimizer.py --manifest <extracted>/manifests/vtest.45cddc9490be.4eec0295c921.json --output tmp/m3/2026-11-15/genuine-m2-handoff.json --require-importance-sensitive
+```
+
+Observed exit 0. Selected [16,20] and [51,57], 10.0 seconds total (12.58%).
+Controlled early/late peaks select [0,4] and [75.5,79.5]. Budget/interval and
+importance-sensitivity flags are true. Also explicitly checked >=4-second clips
+and idempotent canonical normalize_highlights/check_highlights on each mode.
+
+| Mode | Selected seconds | Clips | Integrated M2 importance (diagnostic) | Normalization valid |
+|---|---:|---:|---:|---|
+| U | 11.76 | 2 | 7.363653 | yes |
+| I | 10.00 | 2 | 8.723270 | yes |
+| A | 11.76 | 2 | 7.363653 | yes |
+| J | 10.00 | 2 | 8.723270 | yes |
+
+All modes were called with empty actions, so A uses uniform and J uses
+importance-only by design. Importance mass is the supplied model curve's
+objective diagnostic, not human F1 or an official score. This is not the real
+M1-prediction U/I/A/J study requested by #16. Derived acceptance summary:
+docs/evidence/M3_genuine_cache_acceptance_2026-11-15.json. Recipient acceptance:
+https://github.com/harshjha15335/ACTIVA/issues/14#issuecomment-6893650150
+
+### Fresh tests and remaining study gate
+
+Project environment, authentic kit installed throughout:
+
+```powershell
+.\.venv\Scripts\python.exe -m pytest -q
+```
+
+Observed **398 passed, 3 skipped, 0 failed**, 3 warnings, 105.72 seconds.
+Skips: configured-team-ID scenario and two opt-in genuine-checkpoint tests
+without their separate local model/media assets. The cache consumer acceptance
+above was actually run and is not substituted by those skipped inference tests.
+
+Still needed: real M1 predictions and canonical GT/checkpoint/settings/source
+hashes from #15, then matching M2 cache inputs requested in #18. #16's first
+split item is done; real-prediction comparisons and their quality results table
+remain open. No setting is frozen or changed without those measurements.

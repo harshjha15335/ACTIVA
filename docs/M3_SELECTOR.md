@@ -30,6 +30,12 @@ are not present in M3's checkout yet, so that result remains attributed to M2.
 The reader uses each artifact's actual model_name and payload hashes; it does
 not require one machine's older converted-checkpoint file hash.
 
+15 November update: M3 received the replacement vtest_handoff.zip, verified its
+archive/payload checksums, loaded its actual 159x512 cache, and passed the existing
+handoff checker and canonical rounding/minimum checks. This is now local genuine
+cache-consumer evidence; see docs/results.md. Real-action quality comparison is
+still pending the ten agreed EPIC train sources and matched M1/M2 artifacts.
+
 The objective uses M2 importance directly, including novelty if M2 selects that
 baseline. It does not directly score CLIP embeddings. Distinct action pairs
 provide diversity. Facility-location embedding diversity is deferred until

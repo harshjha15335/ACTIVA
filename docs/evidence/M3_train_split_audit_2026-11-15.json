@@ -1,0 +1,174 @@
+{
+  "source": "M1 proposal in issue #15 comment 6875038087",
+  "split": {
+    "tune": [
+      "P01_06",
+      "P02_04",
+      "P08_06",
+      "P21_03",
+      "P24_04",
+      "P26_21"
+    ],
+    "held_out": [
+      "P03_19",
+      "P11_15",
+      "P22_13",
+      "P30_06"
+    ]
+  },
+  "manifest_sha256": "6414e13f5a0c2d7a0d2bc07edf776125cd03a133342a91eb38ad3d729dd150fd",
+  "manifest_videos": 187,
+  "manifest_overlap": [],
+  "duplicate_ids": 0,
+  "participant_overlap": [],
+  "train_membership_and_duration": "verified",
+  "metadata": {
+    "commit": "ea8b40457a400c3fffa1c7f406ef3dc169cc2522",
+    "files": {
+      "EPIC_100_video_info.csv": {
+        "url": "https://raw.githubusercontent.com/epic-kitchens/epic-kitchens-100-annotations/ea8b40457a400c3fffa1c7f406ef3dc169cc2522/EPIC_100_video_info.csv",
+        "sha256": "75fd040f6662cb407b4ca2eed4811ca94df280a1aba00b6bf8a5cd286deff382",
+        "bytes": 27721
+      },
+      "EPIC_100_train.csv": {
+        "url": "https://raw.githubusercontent.com/epic-kitchens/epic-kitchens-100-annotations/ea8b40457a400c3fffa1c7f406ef3dc169cc2522/EPIC_100_train.csv",
+        "sha256": "a3a7ef2e397bd8af12bd0496b09d61b1f2c1f3f6e1726fa86af50a27f4855e87",
+        "bytes": 8415872
+      }
+    }
+  },
+  "eligible_videos": 98,
+  "eligible_participants": 25,
+  "videos": [
+    {
+      "video_id": "P01_06",
+      "participant": "P01",
+      "split": "tune",
+      "duration_seconds": 492.22506699999997,
+      "fps": 59.9400599400599,
+      "resolution": "1920x1080",
+      "train_annotation_segments": 119,
+      "eligible": true,
+      "distinct_class_pairs": 55,
+      "distinct_raw_text_pairs": 78
+    },
+    {
+      "video_id": "P02_04",
+      "participant": "P02",
+      "split": "tune",
+      "duration_seconds": 422.388633,
+      "fps": 59.9400599400599,
+      "resolution": "1920x1080",
+      "train_annotation_segments": 168,
+      "eligible": true,
+      "distinct_class_pairs": 67,
+      "distinct_raw_text_pairs": 83
+    },
+    {
+      "video_id": "P03_19",
+      "participant": "P03",
+      "split": "held_out",
+      "duration_seconds": 550.3498,
+      "fps": 59.9400599400599,
+      "resolution": "1920x1080",
+      "train_annotation_segments": 168,
+      "eligible": true,
+      "distinct_class_pairs": 86,
+      "distinct_raw_text_pairs": 92
+    },
+    {
+      "video_id": "P08_06",
+      "participant": "P08",
+      "split": "tune",
+      "duration_seconds": 486.63615,
+      "fps": 59.9400599400599,
+      "resolution": "1920x1080",
+      "train_annotation_segments": 122,
+      "eligible": true,
+      "distinct_class_pairs": 66,
+      "distinct_raw_text_pairs": 85
+    },
+    {
+      "video_id": "P11_15",
+      "participant": "P11",
+      "split": "held_out",
+      "duration_seconds": 490.573417,
+      "fps": 59.9400599400599,
+      "resolution": "1920x1080",
+      "train_annotation_segments": 109,
+      "eligible": true,
+      "distinct_class_pairs": 64,
+      "distinct_raw_text_pairs": 73
+    },
+    {
+      "video_id": "P21_03",
+      "participant": "P21",
+      "split": "tune",
+      "duration_seconds": 585.968717,
+      "fps": 59.9400599400599,
+      "resolution": "1920x1080",
+      "train_annotation_segments": 75,
+      "eligible": true,
+      "distinct_class_pairs": 58,
+      "distinct_raw_text_pairs": 62
+    },
+    {
+      "video_id": "P22_13",
+      "participant": "P22",
+      "split": "held_out",
+      "duration_seconds": 500.416583,
+      "fps": 59.9400599400599,
+      "resolution": "1920x1080",
+      "train_annotation_segments": 246,
+      "eligible": true,
+      "distinct_class_pairs": 88,
+      "distinct_raw_text_pairs": 123
+    },
+    {
+      "video_id": "P24_04",
+      "participant": "P24",
+      "split": "tune",
+      "duration_seconds": 493.809983,
+      "fps": 59.9400599400599,
+      "resolution": "1920x1080",
+      "train_annotation_segments": 122,
+      "eligible": true,
+      "distinct_class_pairs": 50,
+      "distinct_raw_text_pairs": 75
+    },
+    {
+      "video_id": "P26_21",
+      "participant": "P26",
+      "split": "tune",
+      "duration_seconds": 465.465,
+      "fps": 59.9400599400599,
+      "resolution": "1920x1080",
+      "train_annotation_segments": 89,
+      "eligible": true,
+      "distinct_class_pairs": 49,
+      "distinct_raw_text_pairs": 63
+    },
+    {
+      "video_id": "P30_06",
+      "participant": "P30",
+      "split": "held_out",
+      "duration_seconds": 401.35095,
+      "fps": 59.9400599400599,
+      "resolution": "1920x1080",
+      "train_annotation_segments": 144,
+      "eligible": true,
+      "distinct_class_pairs": 84,
+      "distinct_raw_text_pairs": 90
+    }
+  ],
+  "total_duration_seconds": 4889.1843,
+  "selector_split_is_participant_disjoint": true,
+  "action_model_training_overlap": true,
+  "scope": "Fixed selector tuning/held-out partition; metadata eligibility audit only. Source-content checks await private artifacts.",
+  "ranking_definition": "raw annotation verb/noun text for reproducing proposal only; benchmark credit uses canonical class-pair labels",
+  "raw_text_top10_matches_proposal": true,
+  "all_videos_eligible": true,
+  "all_ids_in_official_train": true,
+  "class_pair_top10_matches_proposal": false,
+  "agreement": "https://github.com/harshjha15335/ACTIVA/issues/15#issuecomment-6893650165"
+}
