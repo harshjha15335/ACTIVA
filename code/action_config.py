@@ -56,7 +56,7 @@ DEFAULT_ASSETS = REPO_ROOT / "weights" / "m1"
 class EngineAssets:
     """Where the action engine finds its code and weights. Layout under ACTIVA_M1_ASSETS:
 
-        epic-kitchens-slowfast/                 code @ bf50519 (Apache-2.0)
+        epic-kitchens-slowfast/                 code @ bf50519 (CC BY-NC-SA 4.0)
         SlowFast.pyth                           EPIC-100 SlowFast 8x8 R50 checkpoint
         actionformer_release/                   code @ 61ea7eb (MIT)
         epic_slowfast_verb_reproduce/*.pth.tar  ActionFormer EPIC verb checkpoint
