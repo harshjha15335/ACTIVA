@@ -66,8 +66,15 @@ def evaluate(inventory_path: Path, manifest_path: Path, check_online: bool = Fal
     if missing:
         raise ValueError(f"Missing {len(missing)} manifest IDs from upstream inventory")
     protected = {inventory[name] for name in manifest}
-    selected = {name: source for name, source in inventory.items()
-                if name not in manifest and source not in protected}
+    by_source = {}
+    for name, source in inventory.items():
+        if name not in manifest and source not in protected:
+            by_source.setdefault(source, []).append(name)
+    # Select one representative per original YouTube source; alternate filenames
+    # are not independent validation videos.
+    selected = {sorted(names)[0]: source for source, names in by_source.items()}
+    alias_groups = {source: sorted(names) for source, names in by_source.items()
+                    if len(names) > 1}
     excluded_by_shared_source = sum(
         name not in manifest and source in protected
         for name, source in inventory.items())
@@ -82,6 +89,7 @@ def evaluate(inventory_path: Path, manifest_path: Path, check_online: bool = Fal
         "upstream_inventory_records": len(inventory),
         "shared_youtube_source_exclusions": excluded_by_shared_source,
         "distinct_source_id_candidates": len(selected),
+        "duplicate_candidate_source_groups": alias_groups,
         "metadata_online_confirmed": sum(v == "metadata-available" for v in online.values())
             if check_online else None,
         "metadata_online_checked": check_online,
