@@ -1,4 +1,47 @@
-# FPVSum leakage status: BLOCKED BY MANIFEST
+# Data leakage and evaluation protocol (17 Nov 2026)
+
+**Current binding rules for Issue #27 and freeze week.** Earlier November
+remediation notes are preserved below as history; their statement that the
+official manifest was unavailable is outdated. The team now has the 187-video
+manifest locally, and the M3 audit recorded its SHA-256 and confirmed an
+independent 6-tune/4-held-out EPIC development split outside that manifest.
+
+## Allowed and prohibited uses (decisions proposed in #25)
+
+- **D-a — EPIC validation annotations:** only after the final 187 output files
+  are committed and SHA-256-recorded on 21–22 Nov, run a single **report-only**
+  action-mAP / GT coverage evaluation against the 138 EPIC manifest videos.
+  It must not change model prompts, weights, thresholds, defaults, code or
+  already frozen outputs. These annotations do not provide tuning data.
+- **D-b — CLIP title-card masking:** PR #29 is an experimental candidate.
+  Its text prompts were fixed before independent development-video review.
+  The mask is **off by default** until all three go/no-go conditions in #27
+  pass; ACTIVA_CARD_MASK=0 always disables it. Do not infer safety from
+  opening-card observations on the 49 competition FPVSum videos.
+- **D-c — non-manifest FPVSum validation:** use **base-source-disjoint** videos
+  compared with every manifest FPVSum source, not merely disjoint output IDs.
+  Dry-run source availability first; exclude unresolved/renamed/duplicate
+  sources. Keep video URLs, source hashes and screening evidence locally.
+  Visual review must cover every masked frame plus each video's first and
+  last 15 seconds. At least eight approved non-manifest videos must include
+  ski and scuba; false masking must be <=1% of real footage frames and
+  card/black detection >=80%. The ten agreed EPIC development videos must
+  each have <=1% of frames masked. The selector owner independently checks
+  J no-harm. **No GO when any required sample or inspection is unavailable.**
+- **Category labels:** the 39/49 FPVSum category observation comes from the
+  evaluation manifest. Do **not** edit prompts/pooling on the basis of those
+  ten misses; close #14 item 3 as not doing for that reason.
+- **Provenance and security:** never publish student kit assets, evaluation
+  answers/GT, source videos, private caches, weights or raw annotations in PRs.
+  Development artifacts under dev_cache/ and data/ remain ignored.
+
+Source-of-truth requests: https://github.com/harshjha15335/ACTIVA/issues/25
+and https://github.com/harshjha15335/ACTIVA/issues/27.
+The original historical remediation notes follow.
+
+---
+
+# Historical FPVSum remediation (before manifest was available)
 
 **No video IDs are approved for training or tuning.** No supervised training,
 protected evaluation tuning, held-out quality evaluation or model-selection run
