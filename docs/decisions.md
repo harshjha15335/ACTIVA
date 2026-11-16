@@ -105,7 +105,22 @@ fix, all 2,245 CLIP frames of P30_08 decode (16 packets skipped, no gap over
 - **Class list:** `kit/supported_classes.json` stays local, like the rest of the kit,
   until the organisers answer Q7 (team vote, 15 Nov). The README tells whoever runs
   `run.sh` to copy it from their kit first; without it, `run.sh` exits 5 with that
-  hint. The organisers re-running `run.sh` have the kit.
+  hint. The organisers re-running `run.sh` have the kit. *(Superseded by D20.)*
+
+**D20 (2026-11-17) `run.sh` works without the kit.** An independent review pointed out
+that the kit never says the organisers' re-run environment has `kit/`, so relying on it
+risks every output. The kit file still stays local (D19's vote), but `vocab.load()` no
+longer needs it:
+- If `ACTIVA_VOCAB` is unset and `kit/supported_classes.json` is absent, the vocabulary
+  is rebuilt the way the kit's own notes describe it: verbs and nouns are the `key`
+  column of the EPIC-100 class CSVs the action engine already installs, in file order,
+  plus `other`; labels are the 14 FPVSum categories plus `cooking`, sorted, then `other`
+  (`config.FPVSUM_CATEGORIES`). A warning is logged.
+- `tests/test_vocab_fallback.py` checks the rebuilt lists equal the kit file exactly,
+  order included (local only, since CI has neither). A kit file that is present always
+  wins; an explicit `ACTIVA_VOCAB` that doesn't exist, or a malformed file, is still exit 5.
+- Measured 17 Nov on non-manifest P30_06 with `ACTIVA_STRICT=1`: exit 0 with and
+  without `kit/`, byte-identical JSON.
 
 ## M2 decisions proposed for review
 

@@ -16,7 +16,6 @@ The highlight selector picks moments that cover many different actions and that 
 ## Quick start
 
 Requirements:
-- the student kit's `supported_classes.json` (the label/verb/noun list), which you copy in; it isn't in this repo
 - Python 3.12+
 - FFmpeg 5.1+ (`ffmpeg` and `ffprobe` on PATH)
 - about 2 GB of disk for the model files
@@ -29,9 +28,10 @@ pip install -r requirements.txt
 # NVIDIA GPU (CUDA 13.x driver): swap in the CUDA build of the same torch version
 pip install --no-deps --force-reinstall torch==2.15.0+cu132 --index-url https://download.pytorch.org/whl/cu132
 python scripts/setup_weights.py                      # one-time, ~1.8 GB, every file SHA-256 checked
-cp /path/to/student-kit/supported_classes.json kit/  # from the organisers' kit (not redistributed here)
 ./run.sh input.mp4 outputs/input.json
 ```
+
+- **The student kit is optional.** If `kit/supported_classes.json` is there, its label/verb/noun list is used. If not, `run.sh` rebuilds the identical list (EPIC-100 class keys from the installed model files, FPVSum categories + `cooking` + `other`) and logs a warning. A test checks the two match exactly (D20).
 
 - `setup_weights.py` downloads the model files from this repo's [`weights-v1` release](https://github.com/harshjha15335/ACTIVA/releases/tag/weights-v1).
   - Those are unchanged mirrors of the upstream files (see [Credits](#credits-and-licences)).
@@ -73,9 +73,9 @@ MP4 ─┬─ PyAV, 2 fps ─ CLIP ViT-B-32 ─┬─ importance (novelty) ─�
 | Highlights: bounded greedy packing that rewards distinct action coverage and importance, within the 15% budget | `code/optimizer.py`, `code/candidates.py` | M3 |
 | Shared types and settings | `code/contracts.py`, `code/config.py`, `code/vocab.py` | M4 |
 
-- Labels, verbs and nouns come only from the kit's `kit/supported_classes.json`; nothing is hardcoded.
-  - We don't publish kit files until the organisers say we may, so copy that file in from your kit.
-  - Without it, `run.sh` exits 5 and says so. `ACTIVA_VOCAB` can point to it elsewhere.
+- Labels, verbs and nouns come from the kit's `kit/supported_classes.json` when it is present (`ACTIVA_VOCAB` can point to it elsewhere).
+  - We don't publish kit files until the organisers say we may.
+  - Without it, the same list is rebuilt from public sources: the EPIC-100 class keys in the installed model files, and the 14 FPVSum category names (`config.FPVSUM_CATEGORIES`) + `cooking` + `other`. A test checks the result equals the kit file exactly (D20).
 - Inference never reads video IDs, annotations or development caches.
 - Design decisions: [`docs/decisions.md`](docs/decisions.md).
 
