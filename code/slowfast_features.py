@@ -22,7 +22,7 @@ Time base: frames come from `video_io.iter_frames(path, 30)`, the team-wide deco
 (seconds from the first decoded frame). Window i starts at sampled frame 16 i, so its
 centre is (16 i + 16) / 30 s, the same formula ActionFormer uses (`actions.grid_to_seconds`).
 
-The SlowFast model code itself (Apache-2.0) is loaded from `code_root`, a local copy
+The SlowFast model code itself (CC BY-NC-SA 4.0) is loaded from `code_root`, a local copy
 of epic-kitchens-slowfast. No network access happens here.
 """
 from __future__ import annotations

@@ -3,7 +3,7 @@
     python scripts/setup_m1_assets.py [--dest weights/m1]
 
 Creates the EngineAssets layout from code/action_config.py:
-  epic-kitchens-slowfast/   git @ bf50519   (Apache-2.0)  SlowFast model code
+  epic-kitchens-slowfast/   git @ bf50519   (CC BY-NC-SA 4.0)  SlowFast model code
   SlowFast.pyth             EPIC-100 SlowFast 8x8 R50 checkpoint (epic-kitchens-slowfast README)
   actionformer_release/     git @ 61ea7eb   (MIT)         ActionFormer model code
   epic_slowfast_{verb,noun}_reproduce/   ActionFormer EPIC checkpoints (ActionFormer README)
