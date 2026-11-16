@@ -1,0 +1,199 @@
+{
+  "bundle_sha256": "a149caa8edadafaa88821e9581630f26023d12d6e5fb7a1e399c9546fded4837",
+  "received_cache_count": 10,
+  "private_payloads_committed": false,
+  "quality_metrics_evaluated": false,
+  "checks": [
+    {
+      "video_id": "P01_06",
+      "split": "tune",
+      "source_sha256": "5d6caf55d8bc3214009928f64dde990f2044c9cdbd01e5b0151d9d45038a3127",
+      "zip_sha256": "9dd232721876e11845590c4d2a89cea9b5ae9ee2fa25fb9fe8ac8b93500e6db6",
+      "feature_shape": [
+        985,
+        512
+      ],
+      "duration_seconds": 492.225067,
+      "model_name": "ViT-B-32/sha256:c2ea63325cebca85a9eb509481f37ea991cb20199cab6642e68dbc8f973382f5",
+      "configuration_sha256": "11ba40022bdb54b1df0d5f7b1c7b60b7bedf0a05d43dd11e042a864988ff8bd3",
+      "payload_hashes_match": true,
+      "grid_equal": true,
+      "reader_pass": true,
+      "handoff_exit": 0,
+      "importance_sensitive": true,
+      "canonical_highlights_valid": true
+    },
+    {
+      "video_id": "P02_04",
+      "split": "tune",
+      "source_sha256": "3a2291c31652942badf510102590e2deec376edbbd9eb3c4ec17a6c6ce64e092",
+      "zip_sha256": "ca371908a617a38d1b0105c087e86e726d2c1d8054369ae060452921e88b58d5",
+      "feature_shape": [
+        845,
+        512
+      ],
+      "duration_seconds": 422.388633,
+      "model_name": "ViT-B-32/sha256:c2ea63325cebca85a9eb509481f37ea991cb20199cab6642e68dbc8f973382f5",
+      "configuration_sha256": "11ba40022bdb54b1df0d5f7b1c7b60b7bedf0a05d43dd11e042a864988ff8bd3",
+      "payload_hashes_match": true,
+      "grid_equal": true,
+      "reader_pass": true,
+      "handoff_exit": 0,
+      "importance_sensitive": true,
+      "canonical_highlights_valid": true
+    },
+    {
+      "video_id": "P08_06",
+      "split": "tune",
+      "source_sha256": "72b8b1b3555a8cbab3c6df27507d076cac99fdf0fe3ea2cd8a51776f54d5261f",
+      "zip_sha256": "89b4a52c5abb057bae79311534fa98aae98a253ce6274d378bf26bcc709f333f",
+      "feature_shape": [
+        974,
+        512
+      ],
+      "duration_seconds": 486.63615,
+      "model_name": "ViT-B-32/sha256:c2ea63325cebca85a9eb509481f37ea991cb20199cab6642e68dbc8f973382f5",
+      "configuration_sha256": "11ba40022bdb54b1df0d5f7b1c7b60b7bedf0a05d43dd11e042a864988ff8bd3",
+      "payload_hashes_match": true,
+      "grid_equal": true,
+      "reader_pass": true,
+      "handoff_exit": 0,
+      "importance_sensitive": true,
+      "canonical_highlights_valid": true
+    },
+    {
+      "video_id": "P21_03",
+      "split": "tune",
+      "source_sha256": "e11d8b8115c2bb1e19bba4280db109a1f1acdf805fc3bc1b560fb6f2db598fd1",
+      "zip_sha256": "2e5582b5308b2060586ebdd366344747cf6cc56da802cb2fa4a943f781b91c11",
+      "feature_shape": [
+        1172,
+        512
+      ],
+      "duration_seconds": 585.968717,
+      "model_name": "ViT-B-32/sha256:c2ea63325cebca85a9eb509481f37ea991cb20199cab6642e68dbc8f973382f5",
+      "configuration_sha256": "11ba40022bdb54b1df0d5f7b1c7b60b7bedf0a05d43dd11e042a864988ff8bd3",
+      "payload_hashes_match": true,
+      "grid_equal": true,
+      "reader_pass": true,
+      "handoff_exit": 0,
+      "importance_sensitive": true,
+      "canonical_highlights_valid": true
+    },
+    {
+      "video_id": "P24_04",
+      "split": "tune",
+      "source_sha256": "c7bfbabf3ddafd3e66caa67bbedebc2f7c39df5b02f98411609447d2cb8228f4",
+      "zip_sha256": "54250481873a46f096e06d6b40d7c0ef9b2ac4b0c940bea35eae33f834ae64a5",
+      "feature_shape": [
+        988,
+        512
+      ],
+      "duration_seconds": 493.809983,
+      "model_name": "ViT-B-32/sha256:c2ea63325cebca85a9eb509481f37ea991cb20199cab6642e68dbc8f973382f5",
+      "configuration_sha256": "11ba40022bdb54b1df0d5f7b1c7b60b7bedf0a05d43dd11e042a864988ff8bd3",
+      "payload_hashes_match": true,
+      "grid_equal": true,
+      "reader_pass": true,
+      "handoff_exit": 0,
+      "importance_sensitive": true,
+      "canonical_highlights_valid": true
+    },
+    {
+      "video_id": "P26_21",
+      "split": "tune",
+      "source_sha256": "26cc84972d1951c81c63f19e5d10a98b8cf5ded3d9300700b6136bd07f05ca95",
+      "zip_sha256": "d8cfe6afca42541a000983323fd7a48b85a724eb9f31b15f6bcdded03905c847",
+      "feature_shape": [
+        931,
+        512
+      ],
+      "duration_seconds": 465.465,
+      "model_name": "ViT-B-32/sha256:c2ea63325cebca85a9eb509481f37ea991cb20199cab6642e68dbc8f973382f5",
+      "configuration_sha256": "11ba40022bdb54b1df0d5f7b1c7b60b7bedf0a05d43dd11e042a864988ff8bd3",
+      "payload_hashes_match": true,
+      "grid_equal": true,
+      "reader_pass": true,
+      "handoff_exit": 0,
+      "importance_sensitive": true,
+      "canonical_highlights_valid": true
+    },
+    {
+      "video_id": "P03_19",
+      "split": "held-out",
+      "source_sha256": "0cf17b125e2a130867111800c8bb041941ec7c935cdf5ad29e2f52da4d06fbac",
+      "zip_sha256": "21bc77c25888d7f27030e1a35ddde1b2b5c6687c5dba3928d40fe00348d8af34",
+      "feature_shape": [
+        1101,
+        512
+      ],
+      "duration_seconds": 550.3498,
+      "model_name": "ViT-B-32/sha256:c2ea63325cebca85a9eb509481f37ea991cb20199cab6642e68dbc8f973382f5",
+      "configuration_sha256": "11ba40022bdb54b1df0d5f7b1c7b60b7bedf0a05d43dd11e042a864988ff8bd3",
+      "payload_hashes_match": true,
+      "grid_equal": true,
+      "reader_pass": true,
+      "handoff_exit": 0,
+      "importance_sensitive": true,
+      "canonical_highlights_valid": true
+    },
+    {
+      "video_id": "P11_15",
+      "split": "held-out",
+      "source_sha256": "c3f1883163d9cce4be18d99b0f7532f1d44600a80be7c9a92082305a6aeabfe4",
+      "zip_sha256": "d2bbdd9a1ab1100ee652d3619df631b766ca09114366995deb5b0ee1ae443830",
+      "feature_shape": [
+        982,
+        512
+      ],
+      "duration_seconds": 490.573417,
+      "model_name": "ViT-B-32/sha256:c2ea63325cebca85a9eb509481f37ea991cb20199cab6642e68dbc8f973382f5",
+      "configuration_sha256": "11ba40022bdb54b1df0d5f7b1c7b60b7bedf0a05d43dd11e042a864988ff8bd3",
+      "payload_hashes_match": true,
+      "grid_equal": true,
+      "reader_pass": true,
+      "handoff_exit": 0,
+      "importance_sensitive": true,
+      "canonical_highlights_valid": true
+    },
+    {
+      "video_id": "P22_13",
+      "split": "held-out",
+      "source_sha256": "807693a4b12459af1263d115b7f5db5604f8986e9f7b85ab669644efdc0c00b1",
+      "zip_sha256": "2275acf49f2d7890913dc8bd036977f4b9606ecf8f808218e2202afec05a3fe0",
+      "feature_shape": [
+        1001,
+        512
+      ],
+      "duration_seconds": 500.416583,
+      "model_name": "ViT-B-32/sha256:c2ea63325cebca85a9eb509481f37ea991cb20199cab6642e68dbc8f973382f5",
+      "configuration_sha256": "11ba40022bdb54b1df0d5f7b1c7b60b7bedf0a05d43dd11e042a864988ff8bd3",
+      "payload_hashes_match": true,
+      "grid_equal": true,
+      "reader_pass": true,
+      "handoff_exit": 0,
+      "importance_sensitive": true,
+      "canonical_highlights_valid": true
+    },
+    {
+      "video_id": "P30_06",
+      "split": "held-out",
+      "source_sha256": "aeeccbbab6985d47a778d399913206712a8b2cf8557e8e7952604678eddfccb8",
+      "zip_sha256": "6b952566e244e4ed09aad48d06fd9d59f6abda5d4a1a19dfd702aff2109ed039",
+      "feature_shape": [
+        803,
+        512
+      ],
+      "duration_seconds": 401.35095,
+      "model_name": "ViT-B-32/sha256:c2ea63325cebca85a9eb509481f37ea991cb20199cab6642e68dbc8f973382f5",
+      "configuration_sha256": "11ba40022bdb54b1df0d5f7b1c7b60b7bedf0a05d43dd11e042a864988ff8bd3",
+      "payload_hashes_match": true,
+      "grid_equal": true,
+      "reader_pass": true,
+      "handoff_exit": 0,
+      "importance_sensitive": true,
+      "canonical_highlights_valid": true
+    }
+  ],
+  "m1_source_identities_verified": true
+}
