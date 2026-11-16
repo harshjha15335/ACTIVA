@@ -101,7 +101,7 @@ Measured on one laptop: RTX 4060 Laptop (8 GB), i7-14650HX, 16 GB RAM, strict mo
 
   - So a 33-minute video takes about 2 h on this CPU, and the whole manifest about 57 h.
   - Same label and highlights as the GPU run. 1,696 of the 1,927 actions are identical; the rest differ by floating-point rounding.
-  - Sports-labelled videos skip the action stage (D21), so on CPU they cost about the CLIP time: about 0.7 s per video-second.
+  - The CLIP part alone (label and importance) runs at about 0.7 s per video-second on this CPU.
 
 ## Outputs and checks
 
