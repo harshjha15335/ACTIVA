@@ -65,6 +65,10 @@ def strict():
 DEFAULT_VOCAB_PATH = ROOT / "kit" / "supported_classes.json"
 DEFAULT_MANIFEST_PATH = ROOT / "kit" / "manifest.csv"
 FALLBACK_LABEL = "other"   # official label for "none of the categories"
+# The 14 FPVSum dataset categories (public), lowercased. The kit's notes say its labels are
+# "FPVSum categories + cooking + other"; vocab.py uses this to rebuild them without the kit.
+FPVSUM_CATEGORIES = ("bike", "bikepolo", "boxing", "horse", "jumping", "longboarding", "motor",
+                     "parkour", "plane", "rockclimbing", "scuba", "skate", "ski", "surfing")
 
 
 def vocab_path():

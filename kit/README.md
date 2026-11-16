@@ -9,10 +9,11 @@ for it) and copy its files here:
 - `TEAM_README.md`, `P02_109.json`, `skiing_03.json`
 
 Everything here except this README is git-ignored until the organisers confirm
-the kit may be published (`docs/kit_compliance.md` Q7). **`run.sh` needs
-`supported_classes.json`**, so copy it here from your copy of the kit before the
-first run (team decision, D19). Tests that need kit files skip when they are
-absent (CI never has them).
+the kit may be published (`docs/kit_compliance.md` Q7). **`run.sh` doesn't need the
+kit** (D20): without `supported_classes.json`, `code/vocab.py` rebuilds the same list
+from the EPIC-100 class files that `scripts/setup_weights.py` installs plus the FPVSum
+categories, and logs a warning. If the file is here, it is used. Tests that need kit
+files skip when they are absent (CI never has them).
 
 ## Downloading the videos
 
