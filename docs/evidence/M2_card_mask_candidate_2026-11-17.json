@@ -1,0 +1,37 @@
+{
+  "schema": "activa-m2-card-mask-candidate-v1",
+  "date": "2026-11-17",
+  "scope": "non-manifest-only validation plan; NOT benchmark evidence",
+  "implementation": {
+    "feature": "frozen CLIP zero-shot card vs footage prompts",
+    "method": "argmax; >=2 consecutive predicted card frames",
+    "novelty": "exclude detected cards from ±10 s neighbourhood and rank/smoothing; card importance=0",
+    "flag": "ACTIVA_CARD_MASK=1 opt-in candidate; 0 preserves existing production; enable-by-default only after go/no-go",
+    "label_pooling": "unchanged"
+  },
+  "thresholds": {
+    "epic_development_ten_max_masked_fraction_per_video": 0.01,
+    "fpvsum_min_source_disjoint_videos": 8,
+    "fpvsum_requires": [
+      "ski",
+      "scuba"
+    ],
+    "fpvsum_max_footage_masked_fraction": 0.01,
+    "fpvsum_min_intro_outro_black_masked_fraction": 0.8,
+    "fpvsum_human_check": "every masked frame plus first and last 15 seconds",
+    "selector_no_harm": "M3 J coverage change at each density <=0.5 percentage points"
+  },
+  "status": {
+    "epic_ten": "NOT RUN",
+    "fpvsum_download_dry_run": "NOT RUN",
+    "fpvsum_human_review": "NOT RUN",
+    "selector_no_harm": "NOT RUN",
+    "full_suite": "NOT VERIFIED",
+    "ship_decision": "NO-GO until all required checks pass"
+  },
+  "prohibited": [
+    "no tuning on any of 187 competition manifest videos",
+    "do not publish private media or student kit",
+    "no merge without human review and GO evidence"
+  ]
+}
