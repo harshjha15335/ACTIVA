@@ -134,6 +134,8 @@ python -m pytest -q
 | M3 Highlight selector | Anuj Deshpande ([@ANUJ-DESHPANDE](https://github.com/ANUJ-DESHPANDE)) |
 | M4 Integration, demo, submission | Aarush Shetty ([@AarushShetty346](https://github.com/AarushShetty346)) |
 
+**Contributor account clarification:** [@Aqualil234](https://github.com/Aqualil234) is an alternate GitHub account used by Harsh Jha (M2), not a fifth team member. ACTIVA has four participating students, as listed above.
+
 How we work:
 - Each member works on their own branch and merges into `main` through PRs that pass CI.
 - Coordination happens on the [message board](https://github.com/harshjha15335/ACTIVA/issues/4); rules are in [`docs/agent_board_protocol.md`](docs/agent_board_protocol.md).
