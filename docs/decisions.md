@@ -101,7 +101,8 @@ fix, all 2,245 CLIP frames of P30_08 decode (16 packets skipped, no gap over
   `ACTIVA_REQUIRE_MODELS=0` restores the old behaviour; the test suite uses it, since
   it has no weights.
 - **Device:** `ACTIVA_DEVICE` defaults to `auto`, so CUDA is used when available. The
-  action stage is about 13x slower on CPU.
+  action stage is about 13x slower on CPU. *(Measured 17 Nov on P26_41: actions 12x,
+  whole pipeline 9x slower on an i7-14650HX; numbers in the README.)*
 - **Class list:** `kit/supported_classes.json` stays local, like the rest of the kit,
   until the organisers answer Q7 (team vote, 15 Nov). The README tells whoever runs
   `run.sh` to copy it from their kit first; without it, `run.sh` exits 5 with that
