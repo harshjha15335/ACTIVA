@@ -204,3 +204,57 @@ def test_missing_team_id_fails_before_any_work(media, dev_vocab, monkeypatch):
     monkeypatch.setattr(config, "TEAM_ID", None)
     with pytest.raises(config.ConfigError):
         main.run(media["short"])
+
+
+# --- D21: the kitchen action model is skipped for a confident sports label ----------------
+
+def label_as(monkeypatch, label):
+    fake_module(monkeypatch, "category", classify_video=lambda info, c, i: CategoryResult(label, {label: 0.9}))
+
+
+def count_action_calls(monkeypatch):
+    calls = []
+    act = Action("dev-verb-a", "dev-noun-a", 1.0, 3.0, 0.9)
+    fake_module(monkeypatch, "actions", detect_actions=lambda info: calls.append(info) or [act])
+    return calls
+
+
+def test_sports_label_skips_the_action_model(media, dev_vocab, monkeypatch):
+    monkeypatch.setattr(config, "FPVSUM_CATEGORIES", ("dev-category-b",))
+    label_as(monkeypatch, "dev-category-b")
+    calls = count_action_calls(monkeypatch)
+    result = main.run(media["short"])
+    assert calls == [] and result.output["actions"] == [] and result.fallbacks == []
+    assert "actions" not in result.timings
+    assert_valid(result)
+
+
+@pytest.mark.parametrize("label", ["dev-category-a", "other"])
+def test_kitchen_or_unknown_label_runs_the_action_model(media, dev_vocab, monkeypatch, label):
+    monkeypatch.setattr(config, "FPVSUM_CATEGORIES", ("dev-category-b",))
+    label_as(monkeypatch, label)
+    calls = count_action_calls(monkeypatch)
+    result = main.run(media["short"])
+    assert len(calls) == 1 and len(result.output["actions"]) == 1
+
+
+def test_category_fallback_runs_the_action_model(media, dev_vocab, monkeypatch):
+    monkeypatch.setattr(config, "FPVSUM_CATEGORIES", ("dev-category-b", "other"))
+    fake_module(monkeypatch, "category", classify_video=boom)       # falls back to "other"
+    calls = count_action_calls(monkeypatch)
+    result = main.run(media["short"])
+    assert result.fallbacks == ["category"] and len(calls) == 1
+
+
+def test_action_gate_can_be_switched_off(media, dev_vocab, monkeypatch):
+    monkeypatch.setattr(config, "FPVSUM_CATEGORIES", ("dev-category-b",))
+    monkeypatch.setenv("ACTIVA_ACTION_GATE", "0")
+    label_as(monkeypatch, "dev-category-b")
+    calls = count_action_calls(monkeypatch)
+    main.run(media["short"])
+    assert len(calls) == 1
+
+
+def test_gate_labels_are_the_kit_sports(kit_vocab):
+    labels = vocab.load(kit_vocab).categories
+    assert set(config.FPVSUM_CATEGORIES) == set(labels) - {"cooking", "other"}

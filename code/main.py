@@ -239,6 +239,15 @@ def _stage(name, compute, check, fallback, result_timings, result_fallbacks):
     return value
 
 
+def skip_actions(cat, used_fallbacks):
+    """D21: skip the action stage only for a confident sports label.
+
+    'cooking', 'other' and a category stage that fell back all run the action model, so an
+    uncertain label never costs a kitchen video its actions."""
+    return (config.action_gate() and "category" not in used_fallbacks
+            and cat.label in config.FPVSUM_CATEGORIES)
+
+
 def _seed():
     random.seed(config.SEED)
     np.random.seed(config.SEED)
@@ -264,13 +273,20 @@ def run(path) -> PipelineResult:
 
     clip = stage("clip", lambda: _call("clip_features", "extract_clip_features", info),
                  lambda c: check_clip(c, info), lambda: fallbacks.empty_clip(info))
-    acts = stage("actions", lambda: sanitize_actions(_call("actions", "detect_actions", info), info, vocab),
-                 lambda a: None, lambda: [])
     imp = stage("importance", lambda: _call("importance", "predict_importance", info, clip),
                 lambda i: check_importance(i, clip), lambda: fallbacks.flat_importance(clip))
     cat = stage("category", lambda: _call("category", "classify_video", info, clip, imp),
                 lambda c: check_category(c, vocab.categories),
                 lambda: fallbacks.default_category(vocab.categories))
+    if skip_actions(cat, used_fallbacks):
+        # D21: the action model only knows EPIC-KITCHENS verbs and nouns. The kit allows
+        # actions [] for FPVSum videos; kitchen actions on a ski run are only false positives.
+        log.info("stage %-11s %-8s (label %r is a sport; the action model is kitchen-only)",
+                 "actions", "skipped", cat.label)
+        acts = []
+    else:
+        acts = stage("actions", lambda: sanitize_actions(_call("actions", "detect_actions", info), info, vocab),
+                     lambda a: None, lambda: [])
     hls = stage("highlights",
                 lambda: normalize_highlights(_call("optimizer", "select_highlights", info, acts, imp, clip), info),
                 lambda h: check_highlights(h, info), lambda: fallbacks.uniform_highlights(info))

@@ -122,6 +122,24 @@ longer needs it:
 - Measured 17 Nov on non-manifest P30_06 with `ACTIVA_STRICT=1`: exit 0 with and
   without `kit/`, byte-identical JSON.
 
+**D21 (2026-11-17) No kitchen actions on sports videos.** The action model knows only
+EPIC-KITCHENS verbs and nouns, so on FPVSum videos it produced ~2,000 low-score kitchen
+actions each ("eat light" on a ski run); the kit allows `actions: []` for FPVSum.
+- `main.py` now runs clip → importance → category → actions → highlights (no stage
+  used another's output out of order, so nothing else changes), and skips the action
+  stage when the category stage succeeded **and** its label is in
+  `config.FPVSUM_CATEGORIES`. `cooking`, `other` and a category fallback run actions as
+  before, so an uncertain label never costs a kitchen video its actions.
+  `ACTIVA_ACTION_GATE=0` restores the old behaviour.
+- Robust to either reading of the action metrics: no effect if they are EPIC-only (as
+  the kit says), fewer false positives if every file is pooled.
+- Risk: an EPIC video labelled as a sport would lose its actions. Exposure: 138/138
+  manifest EPIC outputs and 10/10 non-manifest dev videos are labelled `cooking`.
+- Measured 17 Nov (`ACTIVA_STRICT=1`): non-manifest P30_06 and P02_04 byte-identical
+  to `main`. FPVSum `Ski_-Z5a4UQmZLs` (a validity and timing check only): same label and
+  highlights as the 14 Nov run, 0 actions instead of 2,000, 17.4 s instead of a full
+  action pass. FPVSum highlights change only where an action scored >= 0.2 (2/49 videos).
+
 ## M2 decisions proposed for review
 
 # M2 implementation decisions — pending shared-owner acceptance
