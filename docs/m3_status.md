@@ -14,8 +14,13 @@ M2's #29 remains experimental/default-off. The standalone M3 no-harm checker
 loads its explicitly supplied source without editing inference files and needs
 the exact real CLIP checkpoint. It audits all ten mask rates and scores tune
 only, comparing enabled importance to both original caches and recomputed OFF.
-Human non-manifest FPVSum review is separately required. D-a remains pending
-until final frozen outputs are committed/hashed; no manifest scoring now.
+Real check is now complete: candidate 4ef1248 is **NO-GO**, with 3/10 sources
+over the 1% mask-rate bound and absolute tune coverage changes over 0.5 points
+at 3/4 densities. All coverage changes are positive; this is a failed stability
+bound, not a coverage loss. Recomputed OFF importance matches every cache
+exactly. Evidence: docs/evidence/M3_card_mask_no_harm_2026-11-17.json.
+Human non-manifest FPVSum review remains unmeasured; mask stays OFF. D-a is
+pending until final frozen outputs are committed/hashed; no manifest scoring now.
 
 ## Real study complete - 2026-11-17 (#16)
 

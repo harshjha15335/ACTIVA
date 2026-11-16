@@ -524,3 +524,57 @@ fallback): `.\.venv\Scripts\python.exe -m pytest -q` -> **417 passed, 4 skipped,
 0 failed**, 3 warnings, 150.43 s. The additional skip is vocabulary/kit equality
 with absent local M1 public class CSVs. Focused density, source-identity and
 JSON-roundtrip checks pass; the synthetic density CLI also exits zero.
+
+## M2 card-mask review and real no-harm check - 17 November 2026 (#27/#28)
+
+**NO-GO for candidate `4ef1248a9ba10c12cd221eba513c2f1ecdac2330`.
+Keep the mask OFF.** The exact CLIP checkpoint was downloaded from the existing
+release and verified as SHA-256 `c2ea63325cebca85a9eb509481f37ea991cb20199cab6642e68dbc8f973382f5`,
+matching all ten cached image-encoder identities. The M2 importance source was
+loaded under an isolated module name; inference files were not replaced.
+The candidate's eight mechanics tests pass independently. Its fixed prompts,
+argmax/two-row runs, non-card-only novelty context/ranking/smoothing and default
+OFF match the requested mechanics, but the real gates below fail.
+
+Recomputed candidate OFF importance is **bit-identical** to the supplied cache
+on every one of the ten sources (maximum absolute difference 0). This removes
+the baseline/numerical confound. Three sources exceed the required <=1% sampled
+frame mask-rate limit; the other seven pass:
+
+| Source | Masked samples / total | Mask rate |
+|---|---:|---:|
+| P21_03 (tune) | 91 / 1172 | 7.7645% |
+| P26_21 (tune) | 22 / 931 | 2.3631% |
+| P11_15 (rate audit only) | 12 / 982 | 1.2220% |
+
+Tune-only J0.6 coverage, with exactly the frozen thinning and settings above:
+
+| Density | Original / recomputed OFF | Mask ON | Change (percentage points) | Absolute <=0.5-point gate |
+|---|---:|---:|---:|---|
+| 2 | 32.7996% | 34.7000% | +1.9004 | fail |
+| 3.5 | 36.1449% | 36.6500% | +0.5051 | fail |
+| 6 | 38.3079% | 38.4357% | +0.1278 | pass |
+| all | 37.6539% | 38.7413% | +1.0874 | fail |
+
+All observed coverage changes are increases, not losses. The rule declared in
+the #28 ACK limits **absolute change**, so three densities fail that stability
+gate even though coverage improves. The independent mask-rate failure already
+prevents GO. No threshold, prompt or default was retuned after these results.
+All ten were used for label-free mask rates/fidelity, but the other four sources'
+GT coverage was not scored in this check. No manifest annotations were scored.
+
+These are algorithmic mask rates, not visual false-positive labels. No source
+frames or non-manifest FPVSum human annotations were reviewed here; the required
+human card/footage checks remain unmeasured. This report neither claims that the
+masked kitchen frames are cards nor that the candidate improves FPVSum F1.
+
+[Real check evidence](evidence/M3_card_mask_no_harm_2026-11-17.json) records all
+ten counts, four comparisons, hashes, CPU/library settings and per-tune-video
+J outcomes. Reproduce using `scripts/m3_card_mask_check.py` and the private
+study adapters as documented in M3_SELECTOR.md. Production mask activation is
+not part of this PR; M2/M4 retain the go/no-go decision and source ownership.
+
+After the real checkpoint check, the fresh full suite is **417 passed, 4 skipped,
+0 failed** (246.82 s, 3 warnings). All 240 ON/OFF comparison selections pass
+interval and budget checks. No skip is used as a substitute for this separately
+executed real-cache/text-encoder measurement.

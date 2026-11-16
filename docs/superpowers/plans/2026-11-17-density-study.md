@@ -16,9 +16,9 @@ partition and must not be described as a fresh independent holdout.
 - [x] Add thin_actions and run_density_cases plus --densities to run_ablation.py.
 - [x] Run focused tests. Execute tuning densities, save fixed rule/choice lock.
 - [x] Execute new held-out density conditions once; report all conditions.
-- [ ] Review #29 in an isolated source copy; run tune-only no-harm checks if its
+- [x] Review #29 in an isolated source copy; run tune-only no-harm checks if its
       actual checkpoint/text inputs are available. Do not activate the mask.
-- [ ] Report evidence/limitations, full tests, push PR and update #28/#25.
+- [x] Report evidence/limitations, full tests, push PR and update #28/#25.
 
 Future D-a is report-only after frozen final outputs are committed/hashed; do not
 score manifest annotations now. Human card review and source-disjoint FPVSum
