@@ -455,3 +455,72 @@ Fresh full suite on unchanged code with the real kit installed:
 3 warnings, 144.59 s. Skips are the configured-team-ID case and two opt-in local
 checkpoint inference tests. Actual received-cache and real-action comparisons
 above ran successfully; they are not replaced by the skipped inference tests.
+
+## Fixed action-density sensitivity study - 17 November 2026 (#28)
+
+**Decision: retain J 0.6/0.4.** M4's rule was fixed before these runs: change
+only if the same alternative strictly beats J0.6 at every density on both
+partitions. No alternative passes even the tune-only condition. Production
+selector settings and inference code are unchanged.
+
+The inputs and participant-disjoint 6/4 partition are the same verified private
+archives described above. Per video, filter confidence >=0.2, sort by decreasing
+score then start/end/verb/noun, and keep `floor(density * duration_sec / 60)`.
+`all` keeps every confident prediction. These explicit floor/tie conventions
+were recorded on #28 before the experiment; sparse values differ slightly from
+M4's illustrative table, whose rounding/tie convention was unspecified. The
+method was not adjusted to reproduce that table. No GT chooses retained actions.
+All selector parameters except the two specified J weight pairs remain fixed.
+
+Local distinct canonical GT-pair coverage at union overlap >=50%, macro mean
+over videos, in percent:
+
+| Partition | Confident actions/min cap | U | I | A | J0.6/0.4 | J0.8/0.2 |
+|---|---:|---:|---:|---:|---:|---:|
+| Tune | 2 | 25.43 | 31.30 | 23.10 | 32.80 | 32.49 |
+| Tune | 3.5 | 25.43 | 31.30 | 30.62 | 36.14 | 32.02 |
+| Tune | 6 | 25.43 | 31.30 | 38.38 | 38.31 | 39.25 |
+| Tune | all | 25.43 | 31.30 | 41.99 | 37.65 | 40.83 |
+| Held-out | 2 | 24.89 | 28.27 | 18.92 | 29.71 | 28.83 |
+| Held-out | 3.5 | 24.89 | 28.27 | 27.58 | 34.07 | 32.53 |
+| Held-out | 6 | 24.89 | 28.27 | 33.26 | 33.83 | 35.00 |
+| Held-out | all | 24.89 | 28.27 | 40.78 | 37.41 | 39.75 |
+
+The six tune sources were evaluated first. An exclusively created decision-lock
+file recorded zero eligible alternatives and the fixed rule before the density
+held-out command. Sparse held-out conditions and J0.8 then ran in one frozen
+stage. **Full-density U/I/A/J0.6 held-out results were already seen and published
+in the preceding study before #28 arrived.** This is reuse of the existing
+partition, not a fresh independent holdout. No post-held-out parameter search
+or rule change followed. The lock, source hashes, exact counts, per-video
+outcomes, settings and raw-report digests are in the
+[density evidence JSON](evidence/M3_density_study_2026-11-17.json).
+The [density chart](evidence/M3_density_study_2026-11-17.png) shows both partitions.
+
+All **200** density selections (120 tune, 80 held-out) pass strict budget,
+>=4-second clips, sorted/disjoint/in-range intervals and unchanged canonical
+inward normalization. U/I are invariant to action density, as expected. J0.6
+leads at 2 and 3.5 on both partitions; higher-density wins for A or J0.8 do not
+satisfy the fixed decision rule. This supports retaining the existing trade-off
+on these inputs; it does not establish FPVSum human F1 or an official total.
+The source-training overlap and small, nonrandom cohort limitations above still
+apply. Score-based thinning simulates fewer retained detections; it does not
+reproduce the error distribution of a different action model.
+
+Reproduction with the private matched study adapters:
+
+```powershell
+python scripts/run_ablation.py --study <tune-study.json> --review <study-review.json> --official-manifest kit/manifest.csv --coverage-rule 'frac>=0.5' --densities 2,3.5,6,all --output tmp/m3/density-tune.json
+# Record the fixed decision rule, tune report digest and eligibility before proceeding.
+python scripts/run_ablation.py --study <held_out-study.json> --review <study-review.json> --official-manifest kit/manifest.csv --coverage-rule 'frac>=0.5' --densities 2,3.5,6,all --output tmp/m3/density-held-out.json
+```
+
+Manifest annotations have not been scored. D-a remains a single report-only
+measurement after the final outputs are committed and hashed; it cannot be used
+to revise this selector. Card-mask no-harm and human FPVSum GO are separate gates.
+
+Fresh full-suite verification after merging current `main` (D20 vocabulary
+fallback): `.\.venv\Scripts\python.exe -m pytest -q` -> **417 passed, 4 skipped,
+0 failed**, 3 warnings, 150.43 s. The additional skip is vocabulary/kit equality
+with absent local M1 public class CSVs. Focused density, source-identity and
+JSON-roundtrip checks pass; the synthetic density CLI also exits zero.

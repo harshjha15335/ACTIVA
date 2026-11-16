@@ -1,5 +1,22 @@
 # M3 status
 
+## Density study complete - 2026-11-17 (#28)
+
+Fixed five-variant/four-density study completed on tune first, then the reused
+held-out partition in one frozen stage. No alternative wins every density on
+both splits; retain J0.6/0.4. All 200 selections pass budget, minimum length,
+interval and canonical normalization checks. Full-density held-out results were
+already published, so this is explicitly partition reuse. Evidence and the
+fixed tune-only decision lock are in docs/evidence/M3_density_study_2026-11-17.json;
+the table and commands are in docs/results.md. No production code changed.
+
+M2's #29 remains experimental/default-off. The standalone M3 no-harm checker
+loads its explicitly supplied source without editing inference files and needs
+the exact real CLIP checkpoint. It audits all ten mask rates and scores tune
+only, comparing enabled importance to both original caches and recomputed OFF.
+Human non-manifest FPVSum review is separately required. D-a remains pending
+until final frozen outputs are committed/hashed; no manifest scoring now.
+
 ## Real study complete - 2026-11-17 (#16)
 
 Received and independently verified both real archives. Every M1 prediction/GT
