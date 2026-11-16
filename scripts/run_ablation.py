@@ -10,6 +10,7 @@ import argparse
 from dataclasses import asdict
 import hashlib
 import json
+import math
 from pathlib import Path
 import platform
 import subprocess
@@ -181,6 +182,76 @@ def run_cases(cases, *, coverage_rule, synthetic=False, oracle=False):
             "hardware": platform.processor()}
 
 
+def thin_actions(actions, duration, density, min_conf=.2):
+    """Score-only sensitivity control; cap counts, never use GT to choose rows."""
+    if not math.isfinite(duration) or duration <= 0:
+        raise ValueError("Density thinning needs a positive finite duration")
+    if not math.isfinite(min_conf) or not 0 <= min_conf <= 1:
+        raise ValueError("Confidence must be in [0, 1]")
+    if density != "all" and (not math.isfinite(float(density)) or float(density) <= 0):
+        raise ValueError("Density must be positive and finite, or all")
+    actions = list(actions)
+    if any(not math.isfinite(a.score) or not 0 <= a.score <= 1 for a in actions):
+        raise ValueError("Action confidence must be finite and in [0, 1]")
+    ranked = sorted((a for a in actions if a.score >= min_conf),
+                    key=lambda a: (-a.score, a.start, a.end, a.verb, a.noun))
+    return ranked if density == "all" else ranked[:math.floor(float(density)*duration/60)]
+
+
+def run_density_cases(cases, *, densities=(2, 3.5, 6, "all"), coverage_rule):
+    """Fixed EPIC sensitivity study requested in #28, not detector calibration."""
+    cases = list(cases)
+    densities = list(densities)
+    if not cases or not densities or any(c["dataset"] != "epic_kitchens_100" for c in cases):
+        raise ValueError("Density studies need EPIC cases and at least one density")
+    settings = SelectorSettings()
+    variants = {"U": ("U", settings), "I": ("I", settings), "A": ("A", settings),
+                "J0.6": ("J", settings),
+                "J0.8": ("J", SelectorSettings(coverage_weight=.8, importance_weight=.2))}
+    reports = {}
+    for density in densities:
+        key = "all" if density == "all" else format(float(density), "g")
+        if key in reports:
+            raise ValueError("Duplicate density")
+        records = []
+        for case in cases:
+            info = case["info"]
+            actions = thin_actions(case["actions"], info.duration, density, settings.min_conf)
+            for variant, (mode, variant_settings) in variants.items():
+                started = time.perf_counter()
+                highlights = select_variant(info, actions, case["imp"], case["clip"],
+                                            mode=mode, settings=variant_settings)
+                elapsed = time.perf_counter()-started
+                valid_intervals = all(0 <= h.start < h.end <= info.duration and
+                                      h.end-h.start >= config.MIN_CLIP_SECONDS-1e-9 and
+                                      0 <= h.importance <= 1 for h in highlights)
+                valid_intervals = valid_intervals and all(a.end < b.start for a, b in zip(highlights, highlights[1:]))
+                records.append({"video_id": info.video_id, "variant": variant,
+                                "coverage_proxy": coverage(case["gt_actions"], highlights, coverage_rule),
+                                "strict_budget_ok": budget_ok(highlights, info.duration),
+                                "valid_intervals": valid_intervals,
+                                "retained_actions": len(actions),
+                                "retained_actions_per_minute": len(actions)*60/info.duration,
+                                "highlight_seconds": union_duration(highlights), "clips": len(highlights),
+                                "runtime_seconds": elapsed,
+                                "highlights": [asdict(h) for h in highlights],
+                                "provenance": case["provenance"]})
+        summary = {}
+        for variant in variants:
+            rows = [r for r in records if r["variant"] == variant]
+            summary[variant] = {"coverage_proxy": float(np.mean([r["coverage_proxy"] for r in rows])),
+                                "strict_budget_violations": sum(not r["strict_budget_ok"] for r in rows),
+                                "interval_violations": sum(not r["valid_intervals"] for r in rows),
+                                "mean_clips": float(np.mean([r["clips"] for r in rows])),
+                                "mean_runtime_seconds": float(np.mean([r["runtime_seconds"] for r in rows]))}
+        reports[key] = {"summary": summary, "records": records}
+    return {"format": "activa-m3-density-study-v1", "official_metrics_verified": False,
+            "coverage_rule": coverage_rule, "videos": len(cases),
+            "thinning": "score >=0.2; floor(density*duration/60); ties start,end,verb,noun; all=no cap",
+            "variants": {k: {"mode": mode, "settings": asdict(s)} for k, (mode, s) in variants.items()},
+            "densities": reports, "python": platform.python_version(), "platform": platform.platform()}
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     source = parser.add_mutually_exclusive_group(required=True)
@@ -190,12 +261,22 @@ def main():
     parser.add_argument("--official-manifest")
     parser.add_argument("--coverage-rule", required=True)
     parser.add_argument("--oracle", action="store_true", help="Oracle selector-input experiment, reported separately")
+    parser.add_argument("--densities", help="Fixed EPIC sensitivity conditions, e.g. 2,3.5,6,all")
     parser.add_argument("--output", required=True)
     args = parser.parse_args()
     if args.study and not (args.review and args.official_manifest):
         parser.error("Real studies need --review and --official-manifest")
     cases = synthetic_cases() if args.synthetic else load_study(args.study, args.review, args.official_manifest)
-    result = run_cases(cases, coverage_rule=args.coverage_rule, synthetic=args.synthetic, oracle=args.oracle)
+    if args.densities:
+        if args.oracle:
+            parser.error("Density studies use real predictions, not --oracle")
+        densities = [v.strip() if v.strip() == "all" else float(v) for v in args.densities.split(",")]
+        if args.synthetic:
+            cases = (c for c in cases if c["dataset"] == "epic_kitchens_100")
+        result = run_density_cases(cases, densities=densities, coverage_rule=args.coverage_rule)
+        result["synthetic_only"] = args.synthetic
+    else:
+        result = run_cases(cases, coverage_rule=args.coverage_rule, synthetic=args.synthetic, oracle=args.oracle)
     result["command"] = subprocess.list2cmdline([sys.executable, *sys.argv])
     result["source_sha256"] = {p: digest(ROOT / p) for p in ("code/optimizer.py", "code/candidates.py", "eval/metrics.py", "scripts/run_ablation.py")}
     if args.study:
@@ -203,7 +284,8 @@ def main():
     path = Path(args.output)
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(result, indent=2, allow_nan=False) + "\n")
-    print(json.dumps(result["summary"], indent=2))
+    display = {d: r["summary"] for d, r in result["densities"].items()} if args.densities else result["summary"]
+    print(json.dumps(display, indent=2))
 
 
 if __name__ == "__main__":

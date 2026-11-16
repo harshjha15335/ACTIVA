@@ -455,3 +455,126 @@ Fresh full suite on unchanged code with the real kit installed:
 3 warnings, 144.59 s. Skips are the configured-team-ID case and two opt-in local
 checkpoint inference tests. Actual received-cache and real-action comparisons
 above ran successfully; they are not replaced by the skipped inference tests.
+
+## Fixed action-density sensitivity study - 17 November 2026 (#28)
+
+**Decision: retain J 0.6/0.4.** M4's rule was fixed before these runs: change
+only if the same alternative strictly beats J0.6 at every density on both
+partitions. No alternative passes even the tune-only condition. Production
+selector settings and inference code are unchanged.
+
+The inputs and participant-disjoint 6/4 partition are the same verified private
+archives described above. Per video, filter confidence >=0.2, sort by decreasing
+score then start/end/verb/noun, and keep `floor(density * duration_sec / 60)`.
+`all` keeps every confident prediction. These explicit floor/tie conventions
+were recorded on #28 before the experiment; sparse values differ slightly from
+M4's illustrative table, whose rounding/tie convention was unspecified. The
+method was not adjusted to reproduce that table. No GT chooses retained actions.
+All selector parameters except the two specified J weight pairs remain fixed.
+
+Local distinct canonical GT-pair coverage at union overlap >=50%, macro mean
+over videos, in percent:
+
+| Partition | Confident actions/min cap | U | I | A | J0.6/0.4 | J0.8/0.2 |
+|---|---:|---:|---:|---:|---:|---:|
+| Tune | 2 | 25.43 | 31.30 | 23.10 | 32.80 | 32.49 |
+| Tune | 3.5 | 25.43 | 31.30 | 30.62 | 36.14 | 32.02 |
+| Tune | 6 | 25.43 | 31.30 | 38.38 | 38.31 | 39.25 |
+| Tune | all | 25.43 | 31.30 | 41.99 | 37.65 | 40.83 |
+| Held-out | 2 | 24.89 | 28.27 | 18.92 | 29.71 | 28.83 |
+| Held-out | 3.5 | 24.89 | 28.27 | 27.58 | 34.07 | 32.53 |
+| Held-out | 6 | 24.89 | 28.27 | 33.26 | 33.83 | 35.00 |
+| Held-out | all | 24.89 | 28.27 | 40.78 | 37.41 | 39.75 |
+
+The six tune sources were evaluated first. An exclusively created decision-lock
+file recorded zero eligible alternatives and the fixed rule before the density
+held-out command. Sparse held-out conditions and J0.8 then ran in one frozen
+stage. **Full-density U/I/A/J0.6 held-out results were already seen and published
+in the preceding study before #28 arrived.** This is reuse of the existing
+partition, not a fresh independent holdout. No post-held-out parameter search
+or rule change followed. The lock, source hashes, exact counts, per-video
+outcomes, settings and raw-report digests are in the
+[density evidence JSON](evidence/M3_density_study_2026-11-17.json).
+The [density chart](evidence/M3_density_study_2026-11-17.png) shows both partitions.
+
+All **200** density selections (120 tune, 80 held-out) pass strict budget,
+>=4-second clips, sorted/disjoint/in-range intervals and unchanged canonical
+inward normalization. U/I are invariant to action density, as expected. J0.6
+leads at 2 and 3.5 on both partitions; higher-density wins for A or J0.8 do not
+satisfy the fixed decision rule. This supports retaining the existing trade-off
+on these inputs; it does not establish FPVSum human F1 or an official total.
+The source-training overlap and small, nonrandom cohort limitations above still
+apply. Score-based thinning simulates fewer retained detections; it does not
+reproduce the error distribution of a different action model.
+
+Reproduction with the private matched study adapters:
+
+```powershell
+python scripts/run_ablation.py --study <tune-study.json> --review <study-review.json> --official-manifest kit/manifest.csv --coverage-rule 'frac>=0.5' --densities 2,3.5,6,all --output tmp/m3/density-tune.json
+# Record the fixed decision rule, tune report digest and eligibility before proceeding.
+python scripts/run_ablation.py --study <held_out-study.json> --review <study-review.json> --official-manifest kit/manifest.csv --coverage-rule 'frac>=0.5' --densities 2,3.5,6,all --output tmp/m3/density-held-out.json
+```
+
+Manifest annotations have not been scored. D-a remains a single report-only
+measurement after the final outputs are committed and hashed; it cannot be used
+to revise this selector. Card-mask no-harm and human FPVSum GO are separate gates.
+
+Fresh full-suite verification after merging current `main` (D20 vocabulary
+fallback): `.\.venv\Scripts\python.exe -m pytest -q` -> **417 passed, 4 skipped,
+0 failed**, 3 warnings, 150.43 s. The additional skip is vocabulary/kit equality
+with absent local M1 public class CSVs. Focused density, source-identity and
+JSON-roundtrip checks pass; the synthetic density CLI also exits zero.
+
+## M2 card-mask review and real no-harm check - 17 November 2026 (#27/#28)
+
+**NO-GO for candidate `4ef1248a9ba10c12cd221eba513c2f1ecdac2330`.
+Keep the mask OFF.** The exact CLIP checkpoint was downloaded from the existing
+release and verified as SHA-256 `c2ea63325cebca85a9eb509481f37ea991cb20199cab6642e68dbc8f973382f5`,
+matching all ten cached image-encoder identities. The M2 importance source was
+loaded under an isolated module name; inference files were not replaced.
+The candidate's eight mechanics tests pass independently. Its fixed prompts,
+argmax/two-row runs, non-card-only novelty context/ranking/smoothing and default
+OFF match the requested mechanics, but the real gates below fail.
+
+Recomputed candidate OFF importance is **bit-identical** to the supplied cache
+on every one of the ten sources (maximum absolute difference 0). This removes
+the baseline/numerical confound. Three sources exceed the required <=1% sampled
+frame mask-rate limit; the other seven pass:
+
+| Source | Masked samples / total | Mask rate |
+|---|---:|---:|
+| P21_03 (tune) | 91 / 1172 | 7.7645% |
+| P26_21 (tune) | 22 / 931 | 2.3631% |
+| P11_15 (rate audit only) | 12 / 982 | 1.2220% |
+
+Tune-only J0.6 coverage, with exactly the frozen thinning and settings above:
+
+| Density | Original / recomputed OFF | Mask ON | Change (percentage points) | Absolute <=0.5-point gate |
+|---|---:|---:|---:|---|
+| 2 | 32.7996% | 34.7000% | +1.9004 | fail |
+| 3.5 | 36.1449% | 36.6500% | +0.5051 | fail |
+| 6 | 38.3079% | 38.4357% | +0.1278 | pass |
+| all | 37.6539% | 38.7413% | +1.0874 | fail |
+
+All observed coverage changes are increases, not losses. The rule declared in
+the #28 ACK limits **absolute change**, so three densities fail that stability
+gate even though coverage improves. The independent mask-rate failure already
+prevents GO. No threshold, prompt or default was retuned after these results.
+All ten were used for label-free mask rates/fidelity, but the other four sources'
+GT coverage was not scored in this check. No manifest annotations were scored.
+
+These are algorithmic mask rates, not visual false-positive labels. No source
+frames or non-manifest FPVSum human annotations were reviewed here; the required
+human card/footage checks remain unmeasured. This report neither claims that the
+masked kitchen frames are cards nor that the candidate improves FPVSum F1.
+
+[Real check evidence](evidence/M3_card_mask_no_harm_2026-11-17.json) records all
+ten counts, four comparisons, hashes, CPU/library settings and per-tune-video
+J outcomes. Reproduce using `scripts/m3_card_mask_check.py` and the private
+study adapters as documented in M3_SELECTOR.md. Production mask activation is
+not part of this PR; M2/M4 retain the go/no-go decision and source ownership.
+
+After the real checkpoint check, the fresh full suite is **417 passed, 4 skipped,
+0 failed** (246.82 s, 3 warnings). All 240 ON/OFF comparison selections pass
+interval and budget checks. No skip is used as a substitute for this separately
+executed real-cache/text-encoder measurement.
