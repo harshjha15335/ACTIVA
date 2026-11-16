@@ -1,5 +1,31 @@
 # M3 status
 
+## Real study complete - 2026-11-17 (#16)
+
+Received and independently verified both real archives. Every M1 prediction/GT
+file matches its M2 cache by source SHA-256, video ID, duration and agreed split.
+All ten M2 readers, payload receipts and importance-sensitive checks pass.
+The matched-cache request #18 is accepted and closed. #22's intro observation
+is acknowledged without tuning against manifest videos or changing behavior.
+
+Executed the existing U/I/A/J baselines on six tuning and four held-out videos.
+The EPIC coverage-only choice A was recorded on tuning results before the
+held-out selector comparison. Oracle-input runs are separate. No parameter
+search or retuning followed held-out results. All 80 selections pass budget,
+minimum-length and canonical normalization checks.
+
+Held-out local coverage: U 24.89%, I 28.27%, A 40.78%, J 37.41%. J beats U on
+all four participants (+12.52 percentage points on average). Keep current J:
+A wins this EPIC metric, but its no-action policy is uniform and the cohort
+has no FPVSum human F1 to establish a safe global trade-off. Defaults unchanged.
+ActionFormer trained on these videos; this is selector validation, not unseen
+action-engine or official competition performance.
+
+Results, per-participant outcomes, provenance, reproduction commands and chart:
+the 17 November section of docs/results.md and linked evidence files. Fresh
+full suite with the actual kit: 409 passed, 3 skipped, zero failures. #16 is
+ready for M4's acceptance after the results PR; M3 does not close M4's issue.
+
 ## Current task - 2026-11-15 (#16)
 
 PR #9 is merged. The board is now an index of assigned sub-issues; replies go

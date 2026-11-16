@@ -36,6 +36,13 @@ handoff checker and canonical rounding/minimum checks. This is now local genuine
 cache-consumer evidence; see docs/results.md. Real-action quality comparison is
 still pending the ten agreed EPIC train sources and matched M1/M2 artifacts.
 
+17 November update: the real matched-input U/I/A/J study is complete on the
+fixed six-tuning/four-held-out selector split. J reaches 37.41% held-out local
+coverage versus U's 24.89%; A reaches 40.78%. Retain J because the EPIC-only
+coverage winner does not establish the full coverage/F1 trade-off and A's
+no-action behavior is uniform. See the dated results/evidence for limitations,
+separate oracle results and exact provenance. No production defaults changed.
+
 The objective uses M2 importance directly, including novelty if M2 selects that
 baseline. It does not directly score CLIP embeddings. Distinct action pairs
 provide diversity. Facility-location embedding diversity is deferred until
