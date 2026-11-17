@@ -123,6 +123,16 @@ longer needs it:
 - Measured 17 Nov on non-manifest P30_06 with `ACTIVA_STRICT=1`: exit 0 with and
   without `kit/`, byte-identical JSON.
 
+**D22 (2026-11-17) 4.00 s clips pass a literal float check.** On the 0.01 s grid a
+4.00 s clip is often 3.9999999999999964 s as floats (`32.19 - 28.19`). Our validator
+allowed 1e-6 slack, so it never flagged this; a validator testing `end - start >= 4.0`
+would. In the 14 Nov outputs, 35 clips in 33 files were float-short, and in 3 files
+(P02_14, P26_37, P28_23) every clip was, which would fail "at least one segment
+>= 4 s" and score 0. `schema.to_output` now widens such a clip by 0.01 s at its end,
+or else its start, staying inside the video and clear of its neighbours, and
+`validate_output` checks 4 s literally. Applied to the 187 outputs: all 35 fixed, no
+file over 15%. Found by the edge-case review; the 21 Nov run picks it up.
+
 ## M2 decisions proposed for review
 
 # M2 implementation decisions — pending shared-owner acceptance
