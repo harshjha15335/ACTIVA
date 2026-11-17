@@ -133,6 +133,15 @@ or else its start, staying inside the video and clear of its neighbours, and
 `validate_output` checks 4 s literally. Applied to the 187 outputs: all 35 fixed, no
 file over 15%. Found by the edge-case review; the 21 Nov run picks it up.
 
+**D23 (2026-11-17) CUDA out-of-memory retries on the CPU.** On a small or shared GPU
+the action stage ran out of memory, the category stage then failed too, and the run
+wrote 0 actions and label `other` with exit 0, which a re-run can't tell from a real
+result. `main._stage` now retries a stage once on the CPU after a CUDA out-of-memory
+error (`ACTIVA_DEVICE=cpu` for the rest of the run, the action engine reloaded). Other
+errors, a second failure and strict mode behave as before. Measured 17 Nov on a 40 s
+test clip with the GPU capped at 1.2 GB: before, 0 actions and `other`; after, exit 0
+and a JSON identical to a pure-CPU run (1,849 actions, same label and highlights).
+
 ## M2 decisions proposed for review
 
 # M2 implementation decisions — pending shared-owner acceptance
