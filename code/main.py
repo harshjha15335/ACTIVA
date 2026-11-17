@@ -217,10 +217,50 @@ def _call(module_name, function_name, *args):
     return getattr(module, function_name)(*args)
 
 
+def _is_cuda_oom(error):
+    """torch.cuda.OutOfMemoryError, or an older/wrapped error with its message."""
+    return type(error).__name__ == "OutOfMemoryError" or "CUDA out of memory" in str(error)
+
+
+def _switch_to_cpu():
+    """Move the rest of the run to the CPU after a CUDA out-of-memory error.
+
+    clip_backend reads ACTIVA_DEVICE on every call (and caches models per device);
+    actions reads config.DEVICE when it builds its engine, so that cache is dropped.
+    """
+    os.environ["ACTIVA_DEVICE"] = "cpu"
+    config.DEVICE = "cpu"
+    actions = sys.modules.get("actions")
+    if actions is not None and isinstance(getattr(actions, "_ENGINE", None), dict):
+        actions._ENGINE.clear()
+    try:
+        import torch
+        torch.cuda.empty_cache()
+    except Exception:  # torch missing or no CUDA: nothing to free
+        pass
+
+
+def _compute_with_cpu_retry(name, compute):
+    """Run a stage; on a CUDA out-of-memory error, retry it once on the CPU (D23).
+
+    A small or shared GPU would otherwise turn the stage into its fallback (no
+    actions, label "other") with exit 0, which an organiser re-run can't tell apart
+    from a real result. The CPU is slower but gives real outputs.
+    """
+    try:
+        return compute()
+    except Exception as error:
+        if not _is_cuda_oom(error) or config.device() == "cpu":
+            raise
+        log.warning("stage %s: CUDA out of memory; retrying on the CPU for the rest of the run", name)
+    _switch_to_cpu()
+    return compute()
+
+
 def _stage(name, compute, check, fallback, result_timings, result_fallbacks):
     started = time.perf_counter()
     try:
-        value = compute()
+        value = _compute_with_cpu_retry(name, compute)
         problem = check(value)
         if problem:
             raise ValueError(f"{name} returned invalid output: {problem}")
