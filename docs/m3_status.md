@@ -1,5 +1,53 @@
 # M3 status
 
+## Density study complete - 2026-11-17 (#28)
+
+Fixed five-variant/four-density study completed on tune first, then the reused
+held-out partition in one frozen stage. No alternative wins every density on
+both splits; retain J0.6/0.4. All 200 selections pass budget, minimum length,
+interval and canonical normalization checks. Full-density held-out results were
+already published, so this is explicitly partition reuse. Evidence and the
+fixed tune-only decision lock are in docs/evidence/M3_density_study_2026-11-17.json;
+the table and commands are in docs/results.md. No production code changed.
+
+M2's #29 remains experimental/default-off. The standalone M3 no-harm checker
+loads its explicitly supplied source without editing inference files and needs
+the exact real CLIP checkpoint. It audits all ten mask rates and scores tune
+only, comparing enabled importance to both original caches and recomputed OFF.
+Real check is now complete: candidate 4ef1248 is **NO-GO**, with 3/10 sources
+over the 1% mask-rate bound and absolute tune coverage changes over 0.5 points
+at 3/4 densities. All coverage changes are positive; this is a failed stability
+bound, not a coverage loss. Recomputed OFF importance matches every cache
+exactly. Evidence: docs/evidence/M3_card_mask_no_harm_2026-11-17.json.
+Human non-manifest FPVSum review remains unmeasured; mask stays OFF. D-a is
+pending until final frozen outputs are committed/hashed; no manifest scoring now.
+
+## Real study complete - 2026-11-17 (#16)
+
+Received and independently verified both real archives. Every M1 prediction/GT
+file matches its M2 cache by source SHA-256, video ID, duration and agreed split.
+All ten M2 readers, payload receipts and importance-sensitive checks pass.
+The matched-cache request #18 is accepted and closed. #22's intro observation
+is acknowledged without tuning against manifest videos or changing behavior.
+
+Executed the existing U/I/A/J baselines on six tuning and four held-out videos.
+The EPIC coverage-only choice A was recorded on tuning results before the
+held-out selector comparison. Oracle-input runs are separate. No parameter
+search or retuning followed held-out results. All 80 selections pass budget,
+minimum-length and canonical normalization checks.
+
+Held-out local coverage: U 24.89%, I 28.27%, A 40.78%, J 37.41%. J beats U on
+all four participants (+12.52 percentage points on average). Keep current J:
+A wins this EPIC metric, but its no-action policy is uniform and the cohort
+has no FPVSum human F1 to establish a safe global trade-off. Defaults unchanged.
+ActionFormer trained on these videos; this is selector validation, not unseen
+action-engine or official competition performance.
+
+Results, per-participant outcomes, provenance, reproduction commands and chart:
+the 17 November section of docs/results.md and linked evidence files. Fresh
+full suite with the actual kit: 409 passed, 3 skipped, zero failures. #16 is
+ready for M4's acceptance after the results PR; M3 does not close M4's issue.
+
 ## Current task - 2026-11-15 (#16)
 
 PR #9 is merged. The board is now an index of assigned sub-issues; replies go

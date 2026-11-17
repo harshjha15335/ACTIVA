@@ -1,0 +1,1488 @@
+{
+  "format": "activa-m3-card-mask-evidence-v1",
+  "candidate_commit": "4ef1248a9ba10c12cd221eba513c2f1ecdac2330",
+  "candidate_source_sha256": "94e7f563c261a48c18325785a8d0b4cc9fe03ba7714746c8001727e0fe06de77",
+  "checkpoint_identity": "ViT-B-32/sha256:c2ea63325cebca85a9eb509481f37ea991cb20199cab6642e68dbc8f973382f5",
+  "baseline_report_sha256": "7f6010ae283e523e7a97c5a3c99ced635dc21057b32df270fe095ed155d52fe2",
+  "audits": [
+    {
+      "video_id": "P01_06",
+      "source_sha256": "5d6caf55d8bc3214009928f64dde990f2044c9cdbd01e5b0151d9d45038a3127",
+      "split": "tune",
+      "frames": 985,
+      "masked_frames": 6,
+      "masked_fraction": 0.006091370558375634,
+      "epic_rate_gate": true,
+      "disabled_vs_cache_max_abs": 0.0,
+      "enabled_vs_disabled_max_abs": 0.7730964422225952
+    },
+    {
+      "video_id": "P02_04",
+      "source_sha256": "3a2291c31652942badf510102590e2deec376edbbd9eb3c4ec17a6c6ce64e092",
+      "split": "tune",
+      "frames": 845,
+      "masked_frames": 0,
+      "masked_fraction": 0.0,
+      "epic_rate_gate": true,
+      "disabled_vs_cache_max_abs": 0.0,
+      "enabled_vs_disabled_max_abs": 0.0
+    },
+    {
+      "video_id": "P08_06",
+      "source_sha256": "72b8b1b3555a8cbab3c6df27507d076cac99fdf0fe3ea2cd8a51776f54d5261f",
+      "split": "tune",
+      "frames": 974,
+      "masked_frames": 5,
+      "masked_fraction": 0.00513347022587269,
+      "epic_rate_gate": true,
+      "disabled_vs_cache_max_abs": 0.0,
+      "enabled_vs_disabled_max_abs": 0.9933264851570129
+    },
+    {
+      "video_id": "P21_03",
+      "source_sha256": "e11d8b8115c2bb1e19bba4280db109a1f1acdf805fc3bc1b560fb6f2db598fd1",
+      "split": "tune",
+      "frames": 1172,
+      "masked_frames": 91,
+      "masked_fraction": 0.07764505119453925,
+      "epic_rate_gate": false,
+      "disabled_vs_cache_max_abs": 0.0,
+      "enabled_vs_disabled_max_abs": 0.9995733499526978
+    },
+    {
+      "video_id": "P24_04",
+      "source_sha256": "c7bfbabf3ddafd3e66caa67bbedebc2f7c39df5b02f98411609447d2cb8228f4",
+      "split": "tune",
+      "frames": 988,
+      "masked_frames": 0,
+      "masked_fraction": 0.0,
+      "epic_rate_gate": true,
+      "disabled_vs_cache_max_abs": 0.0,
+      "enabled_vs_disabled_max_abs": 0.0
+    },
+    {
+      "video_id": "P26_21",
+      "source_sha256": "26cc84972d1951c81c63f19e5d10a98b8cf5ded3d9300700b6136bd07f05ca95",
+      "split": "tune",
+      "frames": 931,
+      "masked_frames": 22,
+      "masked_fraction": 0.023630504833512353,
+      "epic_rate_gate": false,
+      "disabled_vs_cache_max_abs": 0.0,
+      "enabled_vs_disabled_max_abs": 0.9930182695388794
+    },
+    {
+      "video_id": "P03_19",
+      "source_sha256": "0cf17b125e2a130867111800c8bb041941ec7c935cdf5ad29e2f52da4d06fbac",
+      "split": "mask-rate-only",
+      "frames": 1101,
+      "masked_frames": 2,
+      "masked_fraction": 0.0018165304268846503,
+      "epic_rate_gate": true,
+      "disabled_vs_cache_max_abs": 0.0,
+      "enabled_vs_disabled_max_abs": 0.9459581971168518
+    },
+    {
+      "video_id": "P11_15",
+      "source_sha256": "c3f1883163d9cce4be18d99b0f7532f1d44600a80be7c9a92082305a6aeabfe4",
+      "split": "mask-rate-only",
+      "frames": 982,
+      "masked_frames": 12,
+      "masked_fraction": 0.012219959266802444,
+      "epic_rate_gate": false,
+      "disabled_vs_cache_max_abs": 0.0,
+      "enabled_vs_disabled_max_abs": 0.9638493061065674
+    },
+    {
+      "video_id": "P22_13",
+      "source_sha256": "807693a4b12459af1263d115b7f5db5604f8986e9f7b85ab669644efdc0c00b1",
+      "split": "mask-rate-only",
+      "frames": 1001,
+      "masked_frames": 0,
+      "masked_fraction": 0.0,
+      "epic_rate_gate": true,
+      "disabled_vs_cache_max_abs": 0.0,
+      "enabled_vs_disabled_max_abs": 0.0
+    },
+    {
+      "video_id": "P30_06",
+      "source_sha256": "aeeccbbab6985d47a778d399913206712a8b2cf8557e8e7952604678eddfccb8",
+      "split": "mask-rate-only",
+      "frames": 803,
+      "masked_frames": 2,
+      "masked_fraction": 0.0024906600249066002,
+      "epic_rate_gate": true,
+      "disabled_vs_cache_max_abs": 0.0,
+      "enabled_vs_disabled_max_abs": 0.8574097156524658
+    }
+  ],
+  "comparisons": {
+    "2": {
+      "baseline_coverage": 0.3279958289714925,
+      "masked_coverage": 0.3470000868920066,
+      "recomputed_disabled_coverage": 0.3279958289714925,
+      "delta_percentage_points": 1.9004257920514134,
+      "isolated_mask_delta_percentage_points": 1.9004257920514134,
+      "disabled_vs_cache_delta_percentage_points": 0.0,
+      "no_harm_gate": false
+    },
+    "3.5": {
+      "baseline_coverage": 0.36144923878252305,
+      "masked_coverage": 0.36649974383302814,
+      "recomputed_disabled_coverage": 0.36144923878252305,
+      "delta_percentage_points": 0.5050505050505083,
+      "isolated_mask_delta_percentage_points": 0.5050505050505083,
+      "disabled_vs_cache_delta_percentage_points": 0.0,
+      "no_harm_gate": false
+    },
+    "6": {
+      "baseline_coverage": 0.3830789689197159,
+      "masked_coverage": 0.38435705591208863,
+      "recomputed_disabled_coverage": 0.3830789689197159,
+      "delta_percentage_points": 0.12780869923727511,
+      "isolated_mask_delta_percentage_points": 0.12780869923727511,
+      "disabled_vs_cache_delta_percentage_points": 0.0,
+      "no_harm_gate": true
+    },
+    "all": {
+      "baseline_coverage": 0.3765389417826739,
+      "masked_coverage": 0.3874129883710062,
+      "recomputed_disabled_coverage": 0.3765389417826739,
+      "delta_percentage_points": 1.0874046588332298,
+      "isolated_mask_delta_percentage_points": 1.0874046588332298,
+      "disabled_vs_cache_delta_percentage_points": 0.0,
+      "no_harm_gate": false
+    }
+  },
+  "epic_rate_pass": false,
+  "selector_no_harm_pass": false,
+  "human_frame_review_done": false,
+  "fpvsum_quality_measured": false,
+  "go_no_go": "NO-GO: 3/10 EPIC sources exceed 1% mask-rate gate; 3/4 densities exceed absolute 0.5-point-change gate. Mask remains OFF.",
+  "masked_tune_report": {
+    "format": "activa-m3-density-study-v1",
+    "official_metrics_verified": false,
+    "coverage_rule": "frac>=0.5",
+    "videos": 6,
+    "thinning": "score >=0.2; floor(density*duration/60); ties start,end,verb,noun; all=no cap",
+    "variants": {
+      "U": {
+        "mode": "U",
+        "settings": {
+          "coverage_weight": 0.6,
+          "importance_weight": 0.4,
+          "tau_cov": 0.5,
+          "min_conf": 0.2,
+          "max_candidates": 500,
+          "alphas": [
+            0.0,
+            0.5,
+            1.0
+          ]
+        }
+      },
+      "I": {
+        "mode": "I",
+        "settings": {
+          "coverage_weight": 0.6,
+          "importance_weight": 0.4,
+          "tau_cov": 0.5,
+          "min_conf": 0.2,
+          "max_candidates": 500,
+          "alphas": [
+            0.0,
+            0.5,
+            1.0
+          ]
+        }
+      },
+      "A": {
+        "mode": "A",
+        "settings": {
+          "coverage_weight": 0.6,
+          "importance_weight": 0.4,
+          "tau_cov": 0.5,
+          "min_conf": 0.2,
+          "max_candidates": 500,
+          "alphas": [
+            0.0,
+            0.5,
+            1.0
+          ]
+        }
+      },
+      "J0.6": {
+        "mode": "J",
+        "settings": {
+          "coverage_weight": 0.6,
+          "importance_weight": 0.4,
+          "tau_cov": 0.5,
+          "min_conf": 0.2,
+          "max_candidates": 500,
+          "alphas": [
+            0.0,
+            0.5,
+            1.0
+          ]
+        }
+      },
+      "J0.8": {
+        "mode": "J",
+        "settings": {
+          "coverage_weight": 0.8,
+          "importance_weight": 0.2,
+          "tau_cov": 0.5,
+          "min_conf": 0.2,
+          "max_candidates": 500,
+          "alphas": [
+            0.0,
+            0.5,
+            1.0
+          ]
+        }
+      }
+    },
+    "python": "3.13.9",
+    "platform": "Windows-11-10.0.26300-SP0",
+    "densities": {
+      "2": {
+        "summary": {
+          "J0.6": {
+            "coverage_proxy": 0.3470000868920066,
+            "strict_budget_violations": 0,
+            "interval_violations": 0,
+            "mean_clips": 14.5,
+            "mean_runtime_seconds": 0.04642581665151132
+          }
+        },
+        "records": [
+          {
+            "video_id": "P01_06",
+            "variant": "J0.6",
+            "coverage_proxy": 0.36363636363636365,
+            "strict_budget_ok": true,
+            "valid_intervals": true,
+            "retained_actions": 16,
+            "retained_actions_per_minute": 1.9503273286161185,
+            "highlight_seconds": 70.0,
+            "clips": 13,
+            "runtime_seconds": 0.04867410002043471,
+            "provenance": {
+              "input_sha256": "5d6caf55d8bc3214009928f64dde990f2044c9cdbd01e5b0151d9d45038a3127",
+              "model": "ViT-B-32/sha256:c2ea63325cebca85a9eb509481f37ea991cb20199cab6642e68dbc8f973382f5",
+              "m2_manifest_sha256": "41442cf003e9f859f4a23bfad5f9b71c6e203d6a126e73c3a90a94264a75c482",
+              "predictions_sha256": "e770b2913ed1f5cf26adf09717bed893819448e0292e9487e08d6ee842e194c0",
+              "checkpoint_sha256": "0fc9e83d544544617471835bd345aa71a6b75d979124a492b793b786f0e90cf7",
+              "annotations_sha256": "35f572f448ed12b856fd869a6ad65828fe7947e3c8b16c01cba879d01bdb02da"
+            },
+            "highlights_sha256": "f5cd9e305859ef04223c804d844787ff66946369904bd0a1f0430fce068b7fc4"
+          },
+          {
+            "video_id": "P02_04",
+            "variant": "J0.6",
+            "coverage_proxy": 0.29850746268656714,
+            "strict_budget_ok": true,
+            "valid_intervals": true,
+            "retained_actions": 14,
+            "retained_actions_per_minute": 1.988689880297986,
+            "highlight_seconds": 58.81000000000003,
+            "clips": 7,
+            "runtime_seconds": 0.038996399962343276,
+            "provenance": {
+              "input_sha256": "3a2291c31652942badf510102590e2deec376edbbd9eb3c4ec17a6c6ce64e092",
+              "model": "ViT-B-32/sha256:c2ea63325cebca85a9eb509481f37ea991cb20199cab6642e68dbc8f973382f5",
+              "m2_manifest_sha256": "d36869c7df7d0570ea515a89b539b7790b3438452c224c20c64959b21f7f66cf",
+              "predictions_sha256": "65f429b0107c70bbc88bae1663f3eb5b27f0877115253ddbc22b63b35002f3ed",
+              "checkpoint_sha256": "0fc9e83d544544617471835bd345aa71a6b75d979124a492b793b786f0e90cf7",
+              "annotations_sha256": "8bf4f81b1e71cd3de000a4ed452b61fa9a63d0d431bfa759db568f25a5db45ed"
+            },
+            "highlights_sha256": "1d361e0770491c65cb6006d9d7bc9b60f9b469f67d86f944dc32f1810a9738ef"
+          },
+          {
+            "video_id": "P08_06",
+            "variant": "J0.6",
+            "coverage_proxy": 0.3181818181818182,
+            "strict_budget_ok": true,
+            "valid_intervals": true,
+            "retained_actions": 16,
+            "retained_actions_per_minute": 1.9727264404833058,
+            "highlight_seconds": 70.91000000000003,
+            "clips": 17,
+            "runtime_seconds": 0.04372999997576699,
+            "provenance": {
+              "input_sha256": "72b8b1b3555a8cbab3c6df27507d076cac99fdf0fe3ea2cd8a51776f54d5261f",
+              "model": "ViT-B-32/sha256:c2ea63325cebca85a9eb509481f37ea991cb20199cab6642e68dbc8f973382f5",
+              "m2_manifest_sha256": "2457417c703013a408dadbbd09e9e18b28b817391eb865234ae8459b52eb0c6e",
+              "predictions_sha256": "1780b6ed965b952893d04b568d87ac72514f24439c31094a0baed35f5ac75ed5",
+              "checkpoint_sha256": "0fc9e83d544544617471835bd345aa71a6b75d979124a492b793b786f0e90cf7",
+              "annotations_sha256": "af81489707a620816bcf7e374b6086eccbf2e64ebc8da7559e065ff70094b31f"
+            },
+            "highlights_sha256": "9872da900bafef20eea0c6984c0957a0a9d3d7f4a1676e19e73089fc0d3f7949"
+          },
+          {
+            "video_id": "P21_03",
+            "variant": "J0.6",
+            "coverage_proxy": 0.29310344827586204,
+            "strict_budget_ok": true,
+            "valid_intervals": true,
+            "retained_actions": 19,
+            "retained_actions_per_minute": 1.9454963497650337,
+            "highlight_seconds": 82.93,
+            "clips": 19,
+            "runtime_seconds": 0.05409579997649416,
+            "provenance": {
+              "input_sha256": "e11d8b8115c2bb1e19bba4280db109a1f1acdf805fc3bc1b560fb6f2db598fd1",
+              "model": "ViT-B-32/sha256:c2ea63325cebca85a9eb509481f37ea991cb20199cab6642e68dbc8f973382f5",
+              "m2_manifest_sha256": "2351f5621e6a41f62c125685672ea9316e720da3285e00f41b2fa3dcae52f3e3",
+              "predictions_sha256": "952bc1d62e992a1992a51cf8283281b99239cb3ab3fcb1e31c9986764b50ec34",
+              "checkpoint_sha256": "0fc9e83d544544617471835bd345aa71a6b75d979124a492b793b786f0e90cf7",
+              "annotations_sha256": "f83cd4533cf4b11fde5ab20c02242d6767929b41d66824fa73c516d9d2e91f39"
+            },
+            "highlights_sha256": "93a8749693416f5190a9de67cd039f6bbaeada8bb2cc8df7ac707aff7690ac4c"
+          },
+          {
+            "video_id": "P24_04",
+            "variant": "J0.6",
+            "coverage_proxy": 0.38,
+            "strict_budget_ok": true,
+            "valid_intervals": true,
+            "retained_actions": 16,
+            "retained_actions_per_minute": 1.9440676232744367,
+            "highlight_seconds": 69.67999999999995,
+            "clips": 15,
+            "runtime_seconds": 0.04628999996930361,
+            "provenance": {
+              "input_sha256": "c7bfbabf3ddafd3e66caa67bbedebc2f7c39df5b02f98411609447d2cb8228f4",
+              "model": "ViT-B-32/sha256:c2ea63325cebca85a9eb509481f37ea991cb20199cab6642e68dbc8f973382f5",
+              "m2_manifest_sha256": "4098a8f881fa3e288fb4069823ef4af353ae9a4cbf7d805fb47f9376c3e7527f",
+              "predictions_sha256": "de9f669c8459a03c2534735395c536789a19d7802405d347d2a5753ec9c9d78f",
+              "checkpoint_sha256": "0fc9e83d544544617471835bd345aa71a6b75d979124a492b793b786f0e90cf7",
+              "annotations_sha256": "5bb9974cdf26d087c2ed3f6ddbc37d10b4af4b9d9c016e9661d8fdf4500586de"
+            },
+            "highlights_sha256": "bab6de7720e85bfc3b6f4a87894f67cf89a917ca9db05542365cd6eb477b9ae3"
+          },
+          {
+            "video_id": "P26_21",
+            "variant": "J0.6",
+            "coverage_proxy": 0.42857142857142855,
+            "strict_budget_ok": true,
+            "valid_intervals": true,
+            "retained_actions": 15,
+            "retained_actions_per_minute": 1.933550320647095,
+            "highlight_seconds": 67.16000000000003,
+            "clips": 16,
+            "runtime_seconds": 0.04676860000472516,
+            "provenance": {
+              "input_sha256": "26cc84972d1951c81c63f19e5d10a98b8cf5ded3d9300700b6136bd07f05ca95",
+              "model": "ViT-B-32/sha256:c2ea63325cebca85a9eb509481f37ea991cb20199cab6642e68dbc8f973382f5",
+              "m2_manifest_sha256": "d66ca94c99f9c4b9efd8a6ca4c82f0c55eea80638ffd83b617e5c3ed2d735903",
+              "predictions_sha256": "6268133f08b57f25fd61218ad8c6f659bed848a6d5e3d382d8713cb32d6e4d99",
+              "checkpoint_sha256": "0fc9e83d544544617471835bd345aa71a6b75d979124a492b793b786f0e90cf7",
+              "annotations_sha256": "c3046ccfe97374ad3a00d5dc12d420d638a681290c1aad7a510f3d6854576651"
+            },
+            "highlights_sha256": "465cc6d0a1b08a92b656118980023bd2fa5b3521e2229586501aa4077477ee57"
+          }
+        ]
+      },
+      "3.5": {
+        "summary": {
+          "J0.6": {
+            "coverage_proxy": 0.36649974383302814,
+            "strict_budget_violations": 0,
+            "interval_violations": 0,
+            "mean_clips": 16.166666666666668,
+            "mean_runtime_seconds": 0.04950141666146616
+          }
+        },
+        "records": [
+          {
+            "video_id": "P01_06",
+            "variant": "J0.6",
+            "coverage_proxy": 0.4,
+            "strict_budget_ok": true,
+            "valid_intervals": true,
+            "retained_actions": 28,
+            "retained_actions_per_minute": 3.413072825078207,
+            "highlight_seconds": 72.0,
+            "clips": 14,
+            "runtime_seconds": 0.048949799966067076,
+            "provenance": {
+              "input_sha256": "5d6caf55d8bc3214009928f64dde990f2044c9cdbd01e5b0151d9d45038a3127",
+              "model": "ViT-B-32/sha256:c2ea63325cebca85a9eb509481f37ea991cb20199cab6642e68dbc8f973382f5",
+              "m2_manifest_sha256": "41442cf003e9f859f4a23bfad5f9b71c6e203d6a126e73c3a90a94264a75c482",
+              "predictions_sha256": "e770b2913ed1f5cf26adf09717bed893819448e0292e9487e08d6ee842e194c0",
+              "checkpoint_sha256": "0fc9e83d544544617471835bd345aa71a6b75d979124a492b793b786f0e90cf7",
+              "annotations_sha256": "35f572f448ed12b856fd869a6ad65828fe7947e3c8b16c01cba879d01bdb02da"
+            },
+            "highlights_sha256": "cdd651a47be98c505ea49d608f24c907e3c1e3c35c6c1d2717dcc090bdacede5"
+          },
+          {
+            "video_id": "P02_04",
+            "variant": "J0.6",
+            "coverage_proxy": 0.2835820895522388,
+            "strict_budget_ok": true,
+            "valid_intervals": true,
+            "retained_actions": 24,
+            "retained_actions_per_minute": 3.4091826519394046,
+            "highlight_seconds": 61.349999999999994,
+            "clips": 14,
+            "runtime_seconds": 0.04136520001338795,
+            "provenance": {
+              "input_sha256": "3a2291c31652942badf510102590e2deec376edbbd9eb3c4ec17a6c6ce64e092",
+              "model": "ViT-B-32/sha256:c2ea63325cebca85a9eb509481f37ea991cb20199cab6642e68dbc8f973382f5",
+              "m2_manifest_sha256": "d36869c7df7d0570ea515a89b539b7790b3438452c224c20c64959b21f7f66cf",
+              "predictions_sha256": "65f429b0107c70bbc88bae1663f3eb5b27f0877115253ddbc22b63b35002f3ed",
+              "checkpoint_sha256": "0fc9e83d544544617471835bd345aa71a6b75d979124a492b793b786f0e90cf7",
+              "annotations_sha256": "8bf4f81b1e71cd3de000a4ed452b61fa9a63d0d431bfa759db568f25a5db45ed"
+            },
+            "highlights_sha256": "7352ebd6f3669e16f4bea2b558f747f9fc5145723c7e504b833427e6f472a59f"
+          },
+          {
+            "video_id": "P08_06",
+            "variant": "J0.6",
+            "coverage_proxy": 0.3333333333333333,
+            "strict_budget_ok": true,
+            "valid_intervals": true,
+            "retained_actions": 28,
+            "retained_actions_per_minute": 3.452271270845785,
+            "highlight_seconds": 70.44,
+            "clips": 17,
+            "runtime_seconds": 0.049446200020611286,
+            "provenance": {
+              "input_sha256": "72b8b1b3555a8cbab3c6df27507d076cac99fdf0fe3ea2cd8a51776f54d5261f",
+              "model": "ViT-B-32/sha256:c2ea63325cebca85a9eb509481f37ea991cb20199cab6642e68dbc8f973382f5",
+              "m2_manifest_sha256": "2457417c703013a408dadbbd09e9e18b28b817391eb865234ae8459b52eb0c6e",
+              "predictions_sha256": "1780b6ed965b952893d04b568d87ac72514f24439c31094a0baed35f5ac75ed5",
+              "checkpoint_sha256": "0fc9e83d544544617471835bd345aa71a6b75d979124a492b793b786f0e90cf7",
+              "annotations_sha256": "af81489707a620816bcf7e374b6086eccbf2e64ebc8da7559e065ff70094b31f"
+            },
+            "highlights_sha256": "08117e9da99300989019b6f36fb9396914a4f893850b26be614aef32e9e701f6"
+          },
+          {
+            "video_id": "P21_03",
+            "variant": "J0.6",
+            "coverage_proxy": 0.29310344827586204,
+            "strict_budget_ok": true,
+            "valid_intervals": true,
+            "retained_actions": 34,
+            "retained_actions_per_minute": 3.4814145206321654,
+            "highlight_seconds": 84.0,
+            "clips": 19,
+            "runtime_seconds": 0.05805789999430999,
+            "provenance": {
+              "input_sha256": "e11d8b8115c2bb1e19bba4280db109a1f1acdf805fc3bc1b560fb6f2db598fd1",
+              "model": "ViT-B-32/sha256:c2ea63325cebca85a9eb509481f37ea991cb20199cab6642e68dbc8f973382f5",
+              "m2_manifest_sha256": "2351f5621e6a41f62c125685672ea9316e720da3285e00f41b2fa3dcae52f3e3",
+              "predictions_sha256": "952bc1d62e992a1992a51cf8283281b99239cb3ab3fcb1e31c9986764b50ec34",
+              "checkpoint_sha256": "0fc9e83d544544617471835bd345aa71a6b75d979124a492b793b786f0e90cf7",
+              "annotations_sha256": "f83cd4533cf4b11fde5ab20c02242d6767929b41d66824fa73c516d9d2e91f39"
+            },
+            "highlights_sha256": "5f92049dd17ee6596ff79c6754edcc22624906a94890ca9c80d9ff6013bce377"
+          },
+          {
+            "video_id": "P24_04",
+            "variant": "J0.6",
+            "coverage_proxy": 0.44,
+            "strict_budget_ok": true,
+            "valid_intervals": true,
+            "retained_actions": 28,
+            "retained_actions_per_minute": 3.402118340730264,
+            "highlight_seconds": 71.44999999999999,
+            "clips": 16,
+            "runtime_seconds": 0.05240169999888167,
+            "provenance": {
+              "input_sha256": "c7bfbabf3ddafd3e66caa67bbedebc2f7c39df5b02f98411609447d2cb8228f4",
+              "model": "ViT-B-32/sha256:c2ea63325cebca85a9eb509481f37ea991cb20199cab6642e68dbc8f973382f5",
+              "m2_manifest_sha256": "4098a8f881fa3e288fb4069823ef4af353ae9a4cbf7d805fb47f9376c3e7527f",
+              "predictions_sha256": "de9f669c8459a03c2534735395c536789a19d7802405d347d2a5753ec9c9d78f",
+              "checkpoint_sha256": "0fc9e83d544544617471835bd345aa71a6b75d979124a492b793b786f0e90cf7",
+              "annotations_sha256": "5bb9974cdf26d087c2ed3f6ddbc37d10b4af4b9d9c016e9661d8fdf4500586de"
+            },
+            "highlights_sha256": "ce32a115e11d71ad7417d109380fdf467103050ec5501bc001c0e6a47bb7450a"
+          },
+          {
+            "video_id": "P26_21",
+            "variant": "J0.6",
+            "coverage_proxy": 0.4489795918367347,
+            "strict_budget_ok": true,
+            "valid_intervals": true,
+            "retained_actions": 27,
+            "retained_actions_per_minute": 3.480390577164771,
+            "highlight_seconds": 68.0,
+            "clips": 17,
+            "runtime_seconds": 0.046787699975539,
+            "provenance": {
+              "input_sha256": "26cc84972d1951c81c63f19e5d10a98b8cf5ded3d9300700b6136bd07f05ca95",
+              "model": "ViT-B-32/sha256:c2ea63325cebca85a9eb509481f37ea991cb20199cab6642e68dbc8f973382f5",
+              "m2_manifest_sha256": "d66ca94c99f9c4b9efd8a6ca4c82f0c55eea80638ffd83b617e5c3ed2d735903",
+              "predictions_sha256": "6268133f08b57f25fd61218ad8c6f659bed848a6d5e3d382d8713cb32d6e4d99",
+              "checkpoint_sha256": "0fc9e83d544544617471835bd345aa71a6b75d979124a492b793b786f0e90cf7",
+              "annotations_sha256": "c3046ccfe97374ad3a00d5dc12d420d638a681290c1aad7a510f3d6854576651"
+            },
+            "highlights_sha256": "f395038197d669faf79fe2224fee65bcf862168a5a1043209bb89e463563e290"
+          }
+        ]
+      },
+      "6": {
+        "summary": {
+          "J0.6": {
+            "coverage_proxy": 0.38435705591208863,
+            "strict_budget_violations": 0,
+            "interval_violations": 0,
+            "mean_clips": 16.666666666666668,
+            "mean_runtime_seconds": 0.05275015000370331
+          }
+        },
+        "records": [
+          {
+            "video_id": "P01_06",
+            "variant": "J0.6",
+            "coverage_proxy": 0.41818181818181815,
+            "strict_budget_ok": true,
+            "valid_intervals": true,
+            "retained_actions": 49,
+            "retained_actions_per_minute": 5.972877443886863,
+            "highlight_seconds": 72.0,
+            "clips": 17,
+            "runtime_seconds": 0.05659689998719841,
+            "provenance": {
+              "input_sha256": "5d6caf55d8bc3214009928f64dde990f2044c9cdbd01e5b0151d9d45038a3127",
+              "model": "ViT-B-32/sha256:c2ea63325cebca85a9eb509481f37ea991cb20199cab6642e68dbc8f973382f5",
+              "m2_manifest_sha256": "41442cf003e9f859f4a23bfad5f9b71c6e203d6a126e73c3a90a94264a75c482",
+              "predictions_sha256": "e770b2913ed1f5cf26adf09717bed893819448e0292e9487e08d6ee842e194c0",
+              "checkpoint_sha256": "0fc9e83d544544617471835bd345aa71a6b75d979124a492b793b786f0e90cf7",
+              "annotations_sha256": "35f572f448ed12b856fd869a6ad65828fe7947e3c8b16c01cba879d01bdb02da"
+            },
+            "highlights_sha256": "5484bcb16c47304242ab26104fe2f9d0283b2cf44c40acee50beebe278a38fa1"
+          },
+          {
+            "video_id": "P02_04",
+            "variant": "J0.6",
+            "coverage_proxy": 0.3582089552238806,
+            "strict_budget_ok": true,
+            "valid_intervals": true,
+            "retained_actions": 42,
+            "retained_actions_per_minute": 5.966069640893958,
+            "highlight_seconds": 59.99000000000001,
+            "clips": 14,
+            "runtime_seconds": 0.046206100028939545,
+            "provenance": {
+              "input_sha256": "3a2291c31652942badf510102590e2deec376edbbd9eb3c4ec17a6c6ce64e092",
+              "model": "ViT-B-32/sha256:c2ea63325cebca85a9eb509481f37ea991cb20199cab6642e68dbc8f973382f5",
+              "m2_manifest_sha256": "d36869c7df7d0570ea515a89b539b7790b3438452c224c20c64959b21f7f66cf",
+              "predictions_sha256": "65f429b0107c70bbc88bae1663f3eb5b27f0877115253ddbc22b63b35002f3ed",
+              "checkpoint_sha256": "0fc9e83d544544617471835bd345aa71a6b75d979124a492b793b786f0e90cf7",
+              "annotations_sha256": "8bf4f81b1e71cd3de000a4ed452b61fa9a63d0d431bfa759db568f25a5db45ed"
+            },
+            "highlights_sha256": "5eb6d92e66ea7cda6eec1b60470d7b27fc868f950e0099756e4c54f78e00b843"
+          },
+          {
+            "video_id": "P08_06",
+            "variant": "J0.6",
+            "coverage_proxy": 0.3484848484848485,
+            "strict_budget_ok": true,
+            "valid_intervals": true,
+            "retained_actions": 48,
+            "retained_actions_per_minute": 5.918179321449917,
+            "highlight_seconds": 70.44,
+            "clips": 17,
+            "runtime_seconds": 0.051855600031558424,
+            "provenance": {
+              "input_sha256": "72b8b1b3555a8cbab3c6df27507d076cac99fdf0fe3ea2cd8a51776f54d5261f",
+              "model": "ViT-B-32/sha256:c2ea63325cebca85a9eb509481f37ea991cb20199cab6642e68dbc8f973382f5",
+              "m2_manifest_sha256": "2457417c703013a408dadbbd09e9e18b28b817391eb865234ae8459b52eb0c6e",
+              "predictions_sha256": "1780b6ed965b952893d04b568d87ac72514f24439c31094a0baed35f5ac75ed5",
+              "checkpoint_sha256": "0fc9e83d544544617471835bd345aa71a6b75d979124a492b793b786f0e90cf7",
+              "annotations_sha256": "af81489707a620816bcf7e374b6086eccbf2e64ebc8da7559e065ff70094b31f"
+            },
+            "highlights_sha256": "700f06daa3c11c86fab3de26399926584249e610645551347951c91ffba2e3d0"
+          },
+          {
+            "video_id": "P21_03",
+            "variant": "J0.6",
+            "coverage_proxy": 0.29310344827586204,
+            "strict_budget_ok": true,
+            "valid_intervals": true,
+            "retained_actions": 38,
+            "retained_actions_per_minute": 3.8909926995300674,
+            "highlight_seconds": 84.40000000000003,
+            "clips": 19,
+            "runtime_seconds": 0.06035620003240183,
+            "provenance": {
+              "input_sha256": "e11d8b8115c2bb1e19bba4280db109a1f1acdf805fc3bc1b560fb6f2db598fd1",
+              "model": "ViT-B-32/sha256:c2ea63325cebca85a9eb509481f37ea991cb20199cab6642e68dbc8f973382f5",
+              "m2_manifest_sha256": "2351f5621e6a41f62c125685672ea9316e720da3285e00f41b2fa3dcae52f3e3",
+              "predictions_sha256": "952bc1d62e992a1992a51cf8283281b99239cb3ab3fcb1e31c9986764b50ec34",
+              "checkpoint_sha256": "0fc9e83d544544617471835bd345aa71a6b75d979124a492b793b786f0e90cf7",
+              "annotations_sha256": "f83cd4533cf4b11fde5ab20c02242d6767929b41d66824fa73c516d9d2e91f39"
+            },
+            "highlights_sha256": "1c430a0a8aa5a3818b8df7c364fed9d751bb6fecc95cf6af7daae51762c355b7"
+          },
+          {
+            "video_id": "P24_04",
+            "variant": "J0.6",
+            "coverage_proxy": 0.48,
+            "strict_budget_ok": true,
+            "valid_intervals": true,
+            "retained_actions": 49,
+            "retained_actions_per_minute": 5.953707096277963,
+            "highlight_seconds": 72.44999999999997,
+            "clips": 17,
+            "runtime_seconds": 0.052474799973424524,
+            "provenance": {
+              "input_sha256": "c7bfbabf3ddafd3e66caa67bbedebc2f7c39df5b02f98411609447d2cb8228f4",
+              "model": "ViT-B-32/sha256:c2ea63325cebca85a9eb509481f37ea991cb20199cab6642e68dbc8f973382f5",
+              "m2_manifest_sha256": "4098a8f881fa3e288fb4069823ef4af353ae9a4cbf7d805fb47f9376c3e7527f",
+              "predictions_sha256": "de9f669c8459a03c2534735395c536789a19d7802405d347d2a5753ec9c9d78f",
+              "checkpoint_sha256": "0fc9e83d544544617471835bd345aa71a6b75d979124a492b793b786f0e90cf7",
+              "annotations_sha256": "5bb9974cdf26d087c2ed3f6ddbc37d10b4af4b9d9c016e9661d8fdf4500586de"
+            },
+            "highlights_sha256": "3e439fd55bb132d981ed1dd39910582920a2d957b17ad528af1c273650836128"
+          },
+          {
+            "video_id": "P26_21",
+            "variant": "J0.6",
+            "coverage_proxy": 0.40816326530612246,
+            "strict_budget_ok": true,
+            "valid_intervals": true,
+            "retained_actions": 46,
+            "retained_actions_per_minute": 5.929554316651092,
+            "highlight_seconds": 67.83000000000003,
+            "clips": 16,
+            "runtime_seconds": 0.04901129996869713,
+            "provenance": {
+              "input_sha256": "26cc84972d1951c81c63f19e5d10a98b8cf5ded3d9300700b6136bd07f05ca95",
+              "model": "ViT-B-32/sha256:c2ea63325cebca85a9eb509481f37ea991cb20199cab6642e68dbc8f973382f5",
+              "m2_manifest_sha256": "d66ca94c99f9c4b9efd8a6ca4c82f0c55eea80638ffd83b617e5c3ed2d735903",
+              "predictions_sha256": "6268133f08b57f25fd61218ad8c6f659bed848a6d5e3d382d8713cb32d6e4d99",
+              "checkpoint_sha256": "0fc9e83d544544617471835bd345aa71a6b75d979124a492b793b786f0e90cf7",
+              "annotations_sha256": "c3046ccfe97374ad3a00d5dc12d420d638a681290c1aad7a510f3d6854576651"
+            },
+            "highlights_sha256": "c1ebd764b7c5c233356192af1d9e55e7f7258ad27aa37854952ba93a96edd5f7"
+          }
+        ]
+      },
+      "all": {
+        "summary": {
+          "J0.6": {
+            "coverage_proxy": 0.3874129883710062,
+            "strict_budget_violations": 0,
+            "interval_violations": 0,
+            "mean_clips": 17.166666666666668,
+            "mean_runtime_seconds": 0.06331291665749934
+          }
+        },
+        "records": [
+          {
+            "video_id": "P01_06",
+            "variant": "J0.6",
+            "coverage_proxy": 0.43636363636363634,
+            "strict_budget_ok": true,
+            "valid_intervals": true,
+            "retained_actions": 79,
+            "retained_actions_per_minute": 9.629741185042086,
+            "highlight_seconds": 72.0,
+            "clips": 17,
+            "runtime_seconds": 0.06395599996903911,
+            "provenance": {
+              "input_sha256": "5d6caf55d8bc3214009928f64dde990f2044c9cdbd01e5b0151d9d45038a3127",
+              "model": "ViT-B-32/sha256:c2ea63325cebca85a9eb509481f37ea991cb20199cab6642e68dbc8f973382f5",
+              "m2_manifest_sha256": "41442cf003e9f859f4a23bfad5f9b71c6e203d6a126e73c3a90a94264a75c482",
+              "predictions_sha256": "e770b2913ed1f5cf26adf09717bed893819448e0292e9487e08d6ee842e194c0",
+              "checkpoint_sha256": "0fc9e83d544544617471835bd345aa71a6b75d979124a492b793b786f0e90cf7",
+              "annotations_sha256": "35f572f448ed12b856fd869a6ad65828fe7947e3c8b16c01cba879d01bdb02da"
+            },
+            "highlights_sha256": "553a7bed95281abe791647c3a975fbe32245667d9779e5d235d65da53a80b35e"
+          },
+          {
+            "video_id": "P02_04",
+            "variant": "J0.6",
+            "coverage_proxy": 0.3880597014925373,
+            "strict_budget_ok": true,
+            "valid_intervals": true,
+            "retained_actions": 138,
+            "retained_actions_per_minute": 19.602800248651576,
+            "highlight_seconds": 62.01000000000002,
+            "clips": 15,
+            "runtime_seconds": 0.0728366999537684,
+            "provenance": {
+              "input_sha256": "3a2291c31652942badf510102590e2deec376edbbd9eb3c4ec17a6c6ce64e092",
+              "model": "ViT-B-32/sha256:c2ea63325cebca85a9eb509481f37ea991cb20199cab6642e68dbc8f973382f5",
+              "m2_manifest_sha256": "d36869c7df7d0570ea515a89b539b7790b3438452c224c20c64959b21f7f66cf",
+              "predictions_sha256": "65f429b0107c70bbc88bae1663f3eb5b27f0877115253ddbc22b63b35002f3ed",
+              "checkpoint_sha256": "0fc9e83d544544617471835bd345aa71a6b75d979124a492b793b786f0e90cf7",
+              "annotations_sha256": "8bf4f81b1e71cd3de000a4ed452b61fa9a63d0d431bfa759db568f25a5db45ed"
+            },
+            "highlights_sha256": "d7874cbb1f6cd4f697ee3b1680e89e00723eb3047661f4f1e96277c2b0a2b7fa"
+          },
+          {
+            "video_id": "P08_06",
+            "variant": "J0.6",
+            "coverage_proxy": 0.3787878787878788,
+            "strict_budget_ok": true,
+            "valid_intervals": true,
+            "retained_actions": 85,
+            "retained_actions_per_minute": 10.48010921506756,
+            "highlight_seconds": 70.0,
+            "clips": 17,
+            "runtime_seconds": 0.06699269998352975,
+            "provenance": {
+              "input_sha256": "72b8b1b3555a8cbab3c6df27507d076cac99fdf0fe3ea2cd8a51776f54d5261f",
+              "model": "ViT-B-32/sha256:c2ea63325cebca85a9eb509481f37ea991cb20199cab6642e68dbc8f973382f5",
+              "m2_manifest_sha256": "2457417c703013a408dadbbd09e9e18b28b817391eb865234ae8459b52eb0c6e",
+              "predictions_sha256": "1780b6ed965b952893d04b568d87ac72514f24439c31094a0baed35f5ac75ed5",
+              "checkpoint_sha256": "0fc9e83d544544617471835bd345aa71a6b75d979124a492b793b786f0e90cf7",
+              "annotations_sha256": "af81489707a620816bcf7e374b6086eccbf2e64ebc8da7559e065ff70094b31f"
+            },
+            "highlights_sha256": "adf398210ef6946a301d6bcba003a6f8079770d843c2b78ffb3ebd13f5fa85d6"
+          },
+          {
+            "video_id": "P21_03",
+            "variant": "J0.6",
+            "coverage_proxy": 0.29310344827586204,
+            "strict_budget_ok": true,
+            "valid_intervals": true,
+            "retained_actions": 38,
+            "retained_actions_per_minute": 3.8909926995300674,
+            "highlight_seconds": 84.40000000000003,
+            "clips": 19,
+            "runtime_seconds": 0.06673120002960786,
+            "provenance": {
+              "input_sha256": "e11d8b8115c2bb1e19bba4280db109a1f1acdf805fc3bc1b560fb6f2db598fd1",
+              "model": "ViT-B-32/sha256:c2ea63325cebca85a9eb509481f37ea991cb20199cab6642e68dbc8f973382f5",
+              "m2_manifest_sha256": "2351f5621e6a41f62c125685672ea9316e720da3285e00f41b2fa3dcae52f3e3",
+              "predictions_sha256": "952bc1d62e992a1992a51cf8283281b99239cb3ab3fcb1e31c9986764b50ec34",
+              "checkpoint_sha256": "0fc9e83d544544617471835bd345aa71a6b75d979124a492b793b786f0e90cf7",
+              "annotations_sha256": "f83cd4533cf4b11fde5ab20c02242d6767929b41d66824fa73c516d9d2e91f39"
+            },
+            "highlights_sha256": "1c430a0a8aa5a3818b8df7c364fed9d751bb6fecc95cf6af7daae51762c355b7"
+          },
+          {
+            "video_id": "P24_04",
+            "variant": "J0.6",
+            "coverage_proxy": 0.42,
+            "strict_budget_ok": true,
+            "valid_intervals": true,
+            "retained_actions": 63,
+            "retained_actions_per_minute": 7.654766266643095,
+            "highlight_seconds": 71.99999999999999,
+            "clips": 18,
+            "runtime_seconds": 0.05765510001219809,
+            "provenance": {
+              "input_sha256": "c7bfbabf3ddafd3e66caa67bbedebc2f7c39df5b02f98411609447d2cb8228f4",
+              "model": "ViT-B-32/sha256:c2ea63325cebca85a9eb509481f37ea991cb20199cab6642e68dbc8f973382f5",
+              "m2_manifest_sha256": "4098a8f881fa3e288fb4069823ef4af353ae9a4cbf7d805fb47f9376c3e7527f",
+              "predictions_sha256": "de9f669c8459a03c2534735395c536789a19d7802405d347d2a5753ec9c9d78f",
+              "checkpoint_sha256": "0fc9e83d544544617471835bd345aa71a6b75d979124a492b793b786f0e90cf7",
+              "annotations_sha256": "5bb9974cdf26d087c2ed3f6ddbc37d10b4af4b9d9c016e9661d8fdf4500586de"
+            },
+            "highlights_sha256": "52fbfcc1ec560cb7f1396f694aff644afad1d76f9bd336198865cfb8ab5f5d77"
+          },
+          {
+            "video_id": "P26_21",
+            "variant": "J0.6",
+            "coverage_proxy": 0.40816326530612246,
+            "strict_budget_ok": true,
+            "valid_intervals": true,
+            "retained_actions": 51,
+            "retained_actions_per_minute": 6.574071090200123,
+            "highlight_seconds": 68.67,
+            "clips": 17,
+            "runtime_seconds": 0.051705799996852875,
+            "provenance": {
+              "input_sha256": "26cc84972d1951c81c63f19e5d10a98b8cf5ded3d9300700b6136bd07f05ca95",
+              "model": "ViT-B-32/sha256:c2ea63325cebca85a9eb509481f37ea991cb20199cab6642e68dbc8f973382f5",
+              "m2_manifest_sha256": "d66ca94c99f9c4b9efd8a6ca4c82f0c55eea80638ffd83b617e5c3ed2d735903",
+              "predictions_sha256": "6268133f08b57f25fd61218ad8c6f659bed848a6d5e3d382d8713cb32d6e4d99",
+              "checkpoint_sha256": "0fc9e83d544544617471835bd345aa71a6b75d979124a492b793b786f0e90cf7",
+              "annotations_sha256": "c3046ccfe97374ad3a00d5dc12d420d638a681290c1aad7a510f3d6854576651"
+            },
+            "highlights_sha256": "3d9c77686b2b63801fa2a3b6b470d5f4159a73d830659c36a3cb2e167fd93019"
+          }
+        ]
+      }
+    }
+  },
+  "recomputed_disabled_tune_report": {
+    "format": "activa-m3-density-study-v1",
+    "official_metrics_verified": false,
+    "coverage_rule": "frac>=0.5",
+    "videos": 6,
+    "thinning": "score >=0.2; floor(density*duration/60); ties start,end,verb,noun; all=no cap",
+    "variants": {
+      "U": {
+        "mode": "U",
+        "settings": {
+          "coverage_weight": 0.6,
+          "importance_weight": 0.4,
+          "tau_cov": 0.5,
+          "min_conf": 0.2,
+          "max_candidates": 500,
+          "alphas": [
+            0.0,
+            0.5,
+            1.0
+          ]
+        }
+      },
+      "I": {
+        "mode": "I",
+        "settings": {
+          "coverage_weight": 0.6,
+          "importance_weight": 0.4,
+          "tau_cov": 0.5,
+          "min_conf": 0.2,
+          "max_candidates": 500,
+          "alphas": [
+            0.0,
+            0.5,
+            1.0
+          ]
+        }
+      },
+      "A": {
+        "mode": "A",
+        "settings": {
+          "coverage_weight": 0.6,
+          "importance_weight": 0.4,
+          "tau_cov": 0.5,
+          "min_conf": 0.2,
+          "max_candidates": 500,
+          "alphas": [
+            0.0,
+            0.5,
+            1.0
+          ]
+        }
+      },
+      "J0.6": {
+        "mode": "J",
+        "settings": {
+          "coverage_weight": 0.6,
+          "importance_weight": 0.4,
+          "tau_cov": 0.5,
+          "min_conf": 0.2,
+          "max_candidates": 500,
+          "alphas": [
+            0.0,
+            0.5,
+            1.0
+          ]
+        }
+      },
+      "J0.8": {
+        "mode": "J",
+        "settings": {
+          "coverage_weight": 0.8,
+          "importance_weight": 0.2,
+          "tau_cov": 0.5,
+          "min_conf": 0.2,
+          "max_candidates": 500,
+          "alphas": [
+            0.0,
+            0.5,
+            1.0
+          ]
+        }
+      }
+    },
+    "python": "3.13.9",
+    "platform": "Windows-11-10.0.26300-SP0",
+    "densities": {
+      "2": {
+        "summary": {
+          "J0.6": {
+            "coverage_proxy": 0.3279958289714925,
+            "strict_budget_violations": 0,
+            "interval_violations": 0,
+            "mean_clips": 12.5,
+            "mean_runtime_seconds": 0.04910746668853486
+          }
+        },
+        "records": [
+          {
+            "video_id": "P01_06",
+            "variant": "J0.6",
+            "coverage_proxy": 0.36363636363636365,
+            "strict_budget_ok": true,
+            "valid_intervals": true,
+            "retained_actions": 16,
+            "retained_actions_per_minute": 1.9503273286161185,
+            "highlight_seconds": 69.28000000000003,
+            "clips": 12,
+            "runtime_seconds": 0.044340600026771426,
+            "provenance": {
+              "input_sha256": "5d6caf55d8bc3214009928f64dde990f2044c9cdbd01e5b0151d9d45038a3127",
+              "model": "ViT-B-32/sha256:c2ea63325cebca85a9eb509481f37ea991cb20199cab6642e68dbc8f973382f5",
+              "m2_manifest_sha256": "41442cf003e9f859f4a23bfad5f9b71c6e203d6a126e73c3a90a94264a75c482",
+              "predictions_sha256": "e770b2913ed1f5cf26adf09717bed893819448e0292e9487e08d6ee842e194c0",
+              "checkpoint_sha256": "0fc9e83d544544617471835bd345aa71a6b75d979124a492b793b786f0e90cf7",
+              "annotations_sha256": "35f572f448ed12b856fd869a6ad65828fe7947e3c8b16c01cba879d01bdb02da"
+            },
+            "highlights_sha256": "a570da47f66bf7a23ca260a882729f36d9688c6110e93656d72d61cb6073aeac"
+          },
+          {
+            "video_id": "P02_04",
+            "variant": "J0.6",
+            "coverage_proxy": 0.29850746268656714,
+            "strict_budget_ok": true,
+            "valid_intervals": true,
+            "retained_actions": 14,
+            "retained_actions_per_minute": 1.988689880297986,
+            "highlight_seconds": 58.81000000000003,
+            "clips": 7,
+            "runtime_seconds": 0.04257380001945421,
+            "provenance": {
+              "input_sha256": "3a2291c31652942badf510102590e2deec376edbbd9eb3c4ec17a6c6ce64e092",
+              "model": "ViT-B-32/sha256:c2ea63325cebca85a9eb509481f37ea991cb20199cab6642e68dbc8f973382f5",
+              "m2_manifest_sha256": "d36869c7df7d0570ea515a89b539b7790b3438452c224c20c64959b21f7f66cf",
+              "predictions_sha256": "65f429b0107c70bbc88bae1663f3eb5b27f0877115253ddbc22b63b35002f3ed",
+              "checkpoint_sha256": "0fc9e83d544544617471835bd345aa71a6b75d979124a492b793b786f0e90cf7",
+              "annotations_sha256": "8bf4f81b1e71cd3de000a4ed452b61fa9a63d0d431bfa759db568f25a5db45ed"
+            },
+            "highlights_sha256": "1d361e0770491c65cb6006d9d7bc9b60f9b469f67d86f944dc32f1810a9738ef"
+          },
+          {
+            "video_id": "P08_06",
+            "variant": "J0.6",
+            "coverage_proxy": 0.30303030303030304,
+            "strict_budget_ok": true,
+            "valid_intervals": true,
+            "retained_actions": 16,
+            "retained_actions_per_minute": 1.9727264404833058,
+            "highlight_seconds": 70.91000000000003,
+            "clips": 17,
+            "runtime_seconds": 0.04385570000158623,
+            "provenance": {
+              "input_sha256": "72b8b1b3555a8cbab3c6df27507d076cac99fdf0fe3ea2cd8a51776f54d5261f",
+              "model": "ViT-B-32/sha256:c2ea63325cebca85a9eb509481f37ea991cb20199cab6642e68dbc8f973382f5",
+              "m2_manifest_sha256": "2457417c703013a408dadbbd09e9e18b28b817391eb865234ae8459b52eb0c6e",
+              "predictions_sha256": "1780b6ed965b952893d04b568d87ac72514f24439c31094a0baed35f5ac75ed5",
+              "checkpoint_sha256": "0fc9e83d544544617471835bd345aa71a6b75d979124a492b793b786f0e90cf7",
+              "annotations_sha256": "af81489707a620816bcf7e374b6086eccbf2e64ebc8da7559e065ff70094b31f"
+            },
+            "highlights_sha256": "692d14b4c4abef1c4ac3f5ca739d5fa8958757c85fe07f4467574c690d0fb40d"
+          },
+          {
+            "video_id": "P21_03",
+            "variant": "J0.6",
+            "coverage_proxy": 0.27586206896551724,
+            "strict_budget_ok": true,
+            "valid_intervals": true,
+            "retained_actions": 19,
+            "retained_actions_per_minute": 1.9454963497650337,
+            "highlight_seconds": 82.93,
+            "clips": 19,
+            "runtime_seconds": 0.05841580004198477,
+            "provenance": {
+              "input_sha256": "e11d8b8115c2bb1e19bba4280db109a1f1acdf805fc3bc1b560fb6f2db598fd1",
+              "model": "ViT-B-32/sha256:c2ea63325cebca85a9eb509481f37ea991cb20199cab6642e68dbc8f973382f5",
+              "m2_manifest_sha256": "2351f5621e6a41f62c125685672ea9316e720da3285e00f41b2fa3dcae52f3e3",
+              "predictions_sha256": "952bc1d62e992a1992a51cf8283281b99239cb3ab3fcb1e31c9986764b50ec34",
+              "checkpoint_sha256": "0fc9e83d544544617471835bd345aa71a6b75d979124a492b793b786f0e90cf7",
+              "annotations_sha256": "f83cd4533cf4b11fde5ab20c02242d6767929b41d66824fa73c516d9d2e91f39"
+            },
+            "highlights_sha256": "1fec00f6147ca51ab7a4c7c30723211f5ee9262a65c0d4c9efcc1c61ceb8a385"
+          },
+          {
+            "video_id": "P24_04",
+            "variant": "J0.6",
+            "coverage_proxy": 0.38,
+            "strict_budget_ok": true,
+            "valid_intervals": true,
+            "retained_actions": 16,
+            "retained_actions_per_minute": 1.9440676232744367,
+            "highlight_seconds": 69.67999999999995,
+            "clips": 15,
+            "runtime_seconds": 0.06322170002385974,
+            "provenance": {
+              "input_sha256": "c7bfbabf3ddafd3e66caa67bbedebc2f7c39df5b02f98411609447d2cb8228f4",
+              "model": "ViT-B-32/sha256:c2ea63325cebca85a9eb509481f37ea991cb20199cab6642e68dbc8f973382f5",
+              "m2_manifest_sha256": "4098a8f881fa3e288fb4069823ef4af353ae9a4cbf7d805fb47f9376c3e7527f",
+              "predictions_sha256": "de9f669c8459a03c2534735395c536789a19d7802405d347d2a5753ec9c9d78f",
+              "checkpoint_sha256": "0fc9e83d544544617471835bd345aa71a6b75d979124a492b793b786f0e90cf7",
+              "annotations_sha256": "5bb9974cdf26d087c2ed3f6ddbc37d10b4af4b9d9c016e9661d8fdf4500586de"
+            },
+            "highlights_sha256": "bab6de7720e85bfc3b6f4a87894f67cf89a917ca9db05542365cd6eb477b9ae3"
+          },
+          {
+            "video_id": "P26_21",
+            "variant": "J0.6",
+            "coverage_proxy": 0.3469387755102041,
+            "strict_budget_ok": true,
+            "valid_intervals": true,
+            "retained_actions": 15,
+            "retained_actions_per_minute": 1.933550320647095,
+            "highlight_seconds": 68.0,
+            "clips": 5,
+            "runtime_seconds": 0.04223720001755282,
+            "provenance": {
+              "input_sha256": "26cc84972d1951c81c63f19e5d10a98b8cf5ded3d9300700b6136bd07f05ca95",
+              "model": "ViT-B-32/sha256:c2ea63325cebca85a9eb509481f37ea991cb20199cab6642e68dbc8f973382f5",
+              "m2_manifest_sha256": "d66ca94c99f9c4b9efd8a6ca4c82f0c55eea80638ffd83b617e5c3ed2d735903",
+              "predictions_sha256": "6268133f08b57f25fd61218ad8c6f659bed848a6d5e3d382d8713cb32d6e4d99",
+              "checkpoint_sha256": "0fc9e83d544544617471835bd345aa71a6b75d979124a492b793b786f0e90cf7",
+              "annotations_sha256": "c3046ccfe97374ad3a00d5dc12d420d638a681290c1aad7a510f3d6854576651"
+            },
+            "highlights_sha256": "a1a32c96df05feec489f732ce357415c3431cdd84c6d2eb9a4fee5a49dd05e4e"
+          }
+        ]
+      },
+      "3.5": {
+        "summary": {
+          "J0.6": {
+            "coverage_proxy": 0.36144923878252305,
+            "strict_budget_violations": 0,
+            "interval_violations": 0,
+            "mean_clips": 16.333333333333332,
+            "mean_runtime_seconds": 0.05113568333520865
+          }
+        },
+        "records": [
+          {
+            "video_id": "P01_06",
+            "variant": "J0.6",
+            "coverage_proxy": 0.4,
+            "strict_budget_ok": true,
+            "valid_intervals": true,
+            "retained_actions": 28,
+            "retained_actions_per_minute": 3.413072825078207,
+            "highlight_seconds": 72.0,
+            "clips": 14,
+            "runtime_seconds": 0.051568199996836483,
+            "provenance": {
+              "input_sha256": "5d6caf55d8bc3214009928f64dde990f2044c9cdbd01e5b0151d9d45038a3127",
+              "model": "ViT-B-32/sha256:c2ea63325cebca85a9eb509481f37ea991cb20199cab6642e68dbc8f973382f5",
+              "m2_manifest_sha256": "41442cf003e9f859f4a23bfad5f9b71c6e203d6a126e73c3a90a94264a75c482",
+              "predictions_sha256": "e770b2913ed1f5cf26adf09717bed893819448e0292e9487e08d6ee842e194c0",
+              "checkpoint_sha256": "0fc9e83d544544617471835bd345aa71a6b75d979124a492b793b786f0e90cf7",
+              "annotations_sha256": "35f572f448ed12b856fd869a6ad65828fe7947e3c8b16c01cba879d01bdb02da"
+            },
+            "highlights_sha256": "1acc40f3ac1276f2a4e45bbf365493f5dab7c79314d791e68fd4698672c1a566"
+          },
+          {
+            "video_id": "P02_04",
+            "variant": "J0.6",
+            "coverage_proxy": 0.2835820895522388,
+            "strict_budget_ok": true,
+            "valid_intervals": true,
+            "retained_actions": 24,
+            "retained_actions_per_minute": 3.4091826519394046,
+            "highlight_seconds": 61.349999999999994,
+            "clips": 14,
+            "runtime_seconds": 0.04119339998578653,
+            "provenance": {
+              "input_sha256": "3a2291c31652942badf510102590e2deec376edbbd9eb3c4ec17a6c6ce64e092",
+              "model": "ViT-B-32/sha256:c2ea63325cebca85a9eb509481f37ea991cb20199cab6642e68dbc8f973382f5",
+              "m2_manifest_sha256": "d36869c7df7d0570ea515a89b539b7790b3438452c224c20c64959b21f7f66cf",
+              "predictions_sha256": "65f429b0107c70bbc88bae1663f3eb5b27f0877115253ddbc22b63b35002f3ed",
+              "checkpoint_sha256": "0fc9e83d544544617471835bd345aa71a6b75d979124a492b793b786f0e90cf7",
+              "annotations_sha256": "8bf4f81b1e71cd3de000a4ed452b61fa9a63d0d431bfa759db568f25a5db45ed"
+            },
+            "highlights_sha256": "7352ebd6f3669e16f4bea2b558f747f9fc5145723c7e504b833427e6f472a59f"
+          },
+          {
+            "video_id": "P08_06",
+            "variant": "J0.6",
+            "coverage_proxy": 0.30303030303030304,
+            "strict_budget_ok": true,
+            "valid_intervals": true,
+            "retained_actions": 28,
+            "retained_actions_per_minute": 3.452271270845785,
+            "highlight_seconds": 70.44,
+            "clips": 17,
+            "runtime_seconds": 0.04635770001914352,
+            "provenance": {
+              "input_sha256": "72b8b1b3555a8cbab3c6df27507d076cac99fdf0fe3ea2cd8a51776f54d5261f",
+              "model": "ViT-B-32/sha256:c2ea63325cebca85a9eb509481f37ea991cb20199cab6642e68dbc8f973382f5",
+              "m2_manifest_sha256": "2457417c703013a408dadbbd09e9e18b28b817391eb865234ae8459b52eb0c6e",
+              "predictions_sha256": "1780b6ed965b952893d04b568d87ac72514f24439c31094a0baed35f5ac75ed5",
+              "checkpoint_sha256": "0fc9e83d544544617471835bd345aa71a6b75d979124a492b793b786f0e90cf7",
+              "annotations_sha256": "af81489707a620816bcf7e374b6086eccbf2e64ebc8da7559e065ff70094b31f"
+            },
+            "highlights_sha256": "5a3e0d66106198f52713897428c55b43b1bc81be0a93e92599255282b5cd6cda"
+          },
+          {
+            "video_id": "P21_03",
+            "variant": "J0.6",
+            "coverage_proxy": 0.29310344827586204,
+            "strict_budget_ok": true,
+            "valid_intervals": true,
+            "retained_actions": 34,
+            "retained_actions_per_minute": 3.4814145206321654,
+            "highlight_seconds": 86.47000000000003,
+            "clips": 21,
+            "runtime_seconds": 0.07471899996744469,
+            "provenance": {
+              "input_sha256": "e11d8b8115c2bb1e19bba4280db109a1f1acdf805fc3bc1b560fb6f2db598fd1",
+              "model": "ViT-B-32/sha256:c2ea63325cebca85a9eb509481f37ea991cb20199cab6642e68dbc8f973382f5",
+              "m2_manifest_sha256": "2351f5621e6a41f62c125685672ea9316e720da3285e00f41b2fa3dcae52f3e3",
+              "predictions_sha256": "952bc1d62e992a1992a51cf8283281b99239cb3ab3fcb1e31c9986764b50ec34",
+              "checkpoint_sha256": "0fc9e83d544544617471835bd345aa71a6b75d979124a492b793b786f0e90cf7",
+              "annotations_sha256": "f83cd4533cf4b11fde5ab20c02242d6767929b41d66824fa73c516d9d2e91f39"
+            },
+            "highlights_sha256": "065378b8ca0a6de4ccb2110c6509a8b8654719e5033fb1164fd67c651e4afbba"
+          },
+          {
+            "video_id": "P24_04",
+            "variant": "J0.6",
+            "coverage_proxy": 0.44,
+            "strict_budget_ok": true,
+            "valid_intervals": true,
+            "retained_actions": 28,
+            "retained_actions_per_minute": 3.402118340730264,
+            "highlight_seconds": 71.44999999999999,
+            "clips": 16,
+            "runtime_seconds": 0.04881050001131371,
+            "provenance": {
+              "input_sha256": "c7bfbabf3ddafd3e66caa67bbedebc2f7c39df5b02f98411609447d2cb8228f4",
+              "model": "ViT-B-32/sha256:c2ea63325cebca85a9eb509481f37ea991cb20199cab6642e68dbc8f973382f5",
+              "m2_manifest_sha256": "4098a8f881fa3e288fb4069823ef4af353ae9a4cbf7d805fb47f9376c3e7527f",
+              "predictions_sha256": "de9f669c8459a03c2534735395c536789a19d7802405d347d2a5753ec9c9d78f",
+              "checkpoint_sha256": "0fc9e83d544544617471835bd345aa71a6b75d979124a492b793b786f0e90cf7",
+              "annotations_sha256": "5bb9974cdf26d087c2ed3f6ddbc37d10b4af4b9d9c016e9661d8fdf4500586de"
+            },
+            "highlights_sha256": "ce32a115e11d71ad7417d109380fdf467103050ec5501bc001c0e6a47bb7450a"
+          },
+          {
+            "video_id": "P26_21",
+            "variant": "J0.6",
+            "coverage_proxy": 0.4489795918367347,
+            "strict_budget_ok": true,
+            "valid_intervals": true,
+            "retained_actions": 27,
+            "retained_actions_per_minute": 3.480390577164771,
+            "highlight_seconds": 67.16000000000003,
+            "clips": 16,
+            "runtime_seconds": 0.04416530003072694,
+            "provenance": {
+              "input_sha256": "26cc84972d1951c81c63f19e5d10a98b8cf5ded3d9300700b6136bd07f05ca95",
+              "model": "ViT-B-32/sha256:c2ea63325cebca85a9eb509481f37ea991cb20199cab6642e68dbc8f973382f5",
+              "m2_manifest_sha256": "d66ca94c99f9c4b9efd8a6ca4c82f0c55eea80638ffd83b617e5c3ed2d735903",
+              "predictions_sha256": "6268133f08b57f25fd61218ad8c6f659bed848a6d5e3d382d8713cb32d6e4d99",
+              "checkpoint_sha256": "0fc9e83d544544617471835bd345aa71a6b75d979124a492b793b786f0e90cf7",
+              "annotations_sha256": "c3046ccfe97374ad3a00d5dc12d420d638a681290c1aad7a510f3d6854576651"
+            },
+            "highlights_sha256": "b8c37c423d827867763cf4393b928ba8a1965598a62de89aabe678f0a25c5569"
+          }
+        ]
+      },
+      "6": {
+        "summary": {
+          "J0.6": {
+            "coverage_proxy": 0.3830789689197159,
+            "strict_budget_violations": 0,
+            "interval_violations": 0,
+            "mean_clips": 16.833333333333332,
+            "mean_runtime_seconds": 0.05942078332494324
+          }
+        },
+        "records": [
+          {
+            "video_id": "P01_06",
+            "variant": "J0.6",
+            "coverage_proxy": 0.4,
+            "strict_budget_ok": true,
+            "valid_intervals": true,
+            "retained_actions": 49,
+            "retained_actions_per_minute": 5.972877443886863,
+            "highlight_seconds": 72.0,
+            "clips": 17,
+            "runtime_seconds": 0.07145119999768212,
+            "provenance": {
+              "input_sha256": "5d6caf55d8bc3214009928f64dde990f2044c9cdbd01e5b0151d9d45038a3127",
+              "model": "ViT-B-32/sha256:c2ea63325cebca85a9eb509481f37ea991cb20199cab6642e68dbc8f973382f5",
+              "m2_manifest_sha256": "41442cf003e9f859f4a23bfad5f9b71c6e203d6a126e73c3a90a94264a75c482",
+              "predictions_sha256": "e770b2913ed1f5cf26adf09717bed893819448e0292e9487e08d6ee842e194c0",
+              "checkpoint_sha256": "0fc9e83d544544617471835bd345aa71a6b75d979124a492b793b786f0e90cf7",
+              "annotations_sha256": "35f572f448ed12b856fd869a6ad65828fe7947e3c8b16c01cba879d01bdb02da"
+            },
+            "highlights_sha256": "c637aedc4ad88cdf00a7f0b569e44170bd8cdbbf152ffe511a065379af9724b7"
+          },
+          {
+            "video_id": "P02_04",
+            "variant": "J0.6",
+            "coverage_proxy": 0.3582089552238806,
+            "strict_budget_ok": true,
+            "valid_intervals": true,
+            "retained_actions": 42,
+            "retained_actions_per_minute": 5.966069640893958,
+            "highlight_seconds": 59.99000000000001,
+            "clips": 14,
+            "runtime_seconds": 0.04675479995785281,
+            "provenance": {
+              "input_sha256": "3a2291c31652942badf510102590e2deec376edbbd9eb3c4ec17a6c6ce64e092",
+              "model": "ViT-B-32/sha256:c2ea63325cebca85a9eb509481f37ea991cb20199cab6642e68dbc8f973382f5",
+              "m2_manifest_sha256": "d36869c7df7d0570ea515a89b539b7790b3438452c224c20c64959b21f7f66cf",
+              "predictions_sha256": "65f429b0107c70bbc88bae1663f3eb5b27f0877115253ddbc22b63b35002f3ed",
+              "checkpoint_sha256": "0fc9e83d544544617471835bd345aa71a6b75d979124a492b793b786f0e90cf7",
+              "annotations_sha256": "8bf4f81b1e71cd3de000a4ed452b61fa9a63d0d431bfa759db568f25a5db45ed"
+            },
+            "highlights_sha256": "5eb6d92e66ea7cda6eec1b60470d7b27fc868f950e0099756e4c54f78e00b843"
+          },
+          {
+            "video_id": "P08_06",
+            "variant": "J0.6",
+            "coverage_proxy": 0.3181818181818182,
+            "strict_budget_ok": true,
+            "valid_intervals": true,
+            "retained_actions": 48,
+            "retained_actions_per_minute": 5.918179321449917,
+            "highlight_seconds": 68.44,
+            "clips": 16,
+            "runtime_seconds": 0.05498179997084662,
+            "provenance": {
+              "input_sha256": "72b8b1b3555a8cbab3c6df27507d076cac99fdf0fe3ea2cd8a51776f54d5261f",
+              "model": "ViT-B-32/sha256:c2ea63325cebca85a9eb509481f37ea991cb20199cab6642e68dbc8f973382f5",
+              "m2_manifest_sha256": "2457417c703013a408dadbbd09e9e18b28b817391eb865234ae8459b52eb0c6e",
+              "predictions_sha256": "1780b6ed965b952893d04b568d87ac72514f24439c31094a0baed35f5ac75ed5",
+              "checkpoint_sha256": "0fc9e83d544544617471835bd345aa71a6b75d979124a492b793b786f0e90cf7",
+              "annotations_sha256": "af81489707a620816bcf7e374b6086eccbf2e64ebc8da7559e065ff70094b31f"
+            },
+            "highlights_sha256": "454e890515262457970c7883099d87567dd837193e705c1258431a9d17d8afd3"
+          },
+          {
+            "video_id": "P21_03",
+            "variant": "J0.6",
+            "coverage_proxy": 0.29310344827586204,
+            "strict_budget_ok": true,
+            "valid_intervals": true,
+            "retained_actions": 38,
+            "retained_actions_per_minute": 3.8909926995300674,
+            "highlight_seconds": 84.47000000000003,
+            "clips": 20,
+            "runtime_seconds": 0.06102630001259968,
+            "provenance": {
+              "input_sha256": "e11d8b8115c2bb1e19bba4280db109a1f1acdf805fc3bc1b560fb6f2db598fd1",
+              "model": "ViT-B-32/sha256:c2ea63325cebca85a9eb509481f37ea991cb20199cab6642e68dbc8f973382f5",
+              "m2_manifest_sha256": "2351f5621e6a41f62c125685672ea9316e720da3285e00f41b2fa3dcae52f3e3",
+              "predictions_sha256": "952bc1d62e992a1992a51cf8283281b99239cb3ab3fcb1e31c9986764b50ec34",
+              "checkpoint_sha256": "0fc9e83d544544617471835bd345aa71a6b75d979124a492b793b786f0e90cf7",
+              "annotations_sha256": "f83cd4533cf4b11fde5ab20c02242d6767929b41d66824fa73c516d9d2e91f39"
+            },
+            "highlights_sha256": "20a2b338a86d87089e3c3b21b006b7c5d9a00865032646b5d34b5ea96f33fdea"
+          },
+          {
+            "video_id": "P24_04",
+            "variant": "J0.6",
+            "coverage_proxy": 0.48,
+            "strict_budget_ok": true,
+            "valid_intervals": true,
+            "retained_actions": 49,
+            "retained_actions_per_minute": 5.953707096277963,
+            "highlight_seconds": 72.44999999999997,
+            "clips": 17,
+            "runtime_seconds": 0.0529946000315249,
+            "provenance": {
+              "input_sha256": "c7bfbabf3ddafd3e66caa67bbedebc2f7c39df5b02f98411609447d2cb8228f4",
+              "model": "ViT-B-32/sha256:c2ea63325cebca85a9eb509481f37ea991cb20199cab6642e68dbc8f973382f5",
+              "m2_manifest_sha256": "4098a8f881fa3e288fb4069823ef4af353ae9a4cbf7d805fb47f9376c3e7527f",
+              "predictions_sha256": "de9f669c8459a03c2534735395c536789a19d7802405d347d2a5753ec9c9d78f",
+              "checkpoint_sha256": "0fc9e83d544544617471835bd345aa71a6b75d979124a492b793b786f0e90cf7",
+              "annotations_sha256": "5bb9974cdf26d087c2ed3f6ddbc37d10b4af4b9d9c016e9661d8fdf4500586de"
+            },
+            "highlights_sha256": "3e439fd55bb132d981ed1dd39910582920a2d957b17ad528af1c273650836128"
+          },
+          {
+            "video_id": "P26_21",
+            "variant": "J0.6",
+            "coverage_proxy": 0.4489795918367347,
+            "strict_budget_ok": true,
+            "valid_intervals": true,
+            "retained_actions": 46,
+            "retained_actions_per_minute": 5.929554316651092,
+            "highlight_seconds": 68.67,
+            "clips": 17,
+            "runtime_seconds": 0.06931599997915328,
+            "provenance": {
+              "input_sha256": "26cc84972d1951c81c63f19e5d10a98b8cf5ded3d9300700b6136bd07f05ca95",
+              "model": "ViT-B-32/sha256:c2ea63325cebca85a9eb509481f37ea991cb20199cab6642e68dbc8f973382f5",
+              "m2_manifest_sha256": "d66ca94c99f9c4b9efd8a6ca4c82f0c55eea80638ffd83b617e5c3ed2d735903",
+              "predictions_sha256": "6268133f08b57f25fd61218ad8c6f659bed848a6d5e3d382d8713cb32d6e4d99",
+              "checkpoint_sha256": "0fc9e83d544544617471835bd345aa71a6b75d979124a492b793b786f0e90cf7",
+              "annotations_sha256": "c3046ccfe97374ad3a00d5dc12d420d638a681290c1aad7a510f3d6854576651"
+            },
+            "highlights_sha256": "014beff636801038581b93c8d19f48cc47f7dc8c8a1cec9175fa0c7ffb88f555"
+          }
+        ]
+      },
+      "all": {
+        "summary": {
+          "J0.6": {
+            "coverage_proxy": 0.3765389417826739,
+            "strict_budget_violations": 0,
+            "interval_violations": 0,
+            "mean_clips": 15.0,
+            "mean_runtime_seconds": 0.08120270000654273
+          }
+        },
+        "records": [
+          {
+            "video_id": "P01_06",
+            "variant": "J0.6",
+            "coverage_proxy": 0.34545454545454546,
+            "strict_budget_ok": true,
+            "valid_intervals": true,
+            "retained_actions": 79,
+            "retained_actions_per_minute": 9.629741185042086,
+            "highlight_seconds": 72.0,
+            "clips": 3,
+            "runtime_seconds": 0.0679837999632582,
+            "provenance": {
+              "input_sha256": "5d6caf55d8bc3214009928f64dde990f2044c9cdbd01e5b0151d9d45038a3127",
+              "model": "ViT-B-32/sha256:c2ea63325cebca85a9eb509481f37ea991cb20199cab6642e68dbc8f973382f5",
+              "m2_manifest_sha256": "41442cf003e9f859f4a23bfad5f9b71c6e203d6a126e73c3a90a94264a75c482",
+              "predictions_sha256": "e770b2913ed1f5cf26adf09717bed893819448e0292e9487e08d6ee842e194c0",
+              "checkpoint_sha256": "0fc9e83d544544617471835bd345aa71a6b75d979124a492b793b786f0e90cf7",
+              "annotations_sha256": "35f572f448ed12b856fd869a6ad65828fe7947e3c8b16c01cba879d01bdb02da"
+            },
+            "highlights_sha256": "392bbfed580f870dddcf0dc6ad142f8f434cc731fdb3fdd6038ec542bdc2610e"
+          },
+          {
+            "video_id": "P02_04",
+            "variant": "J0.6",
+            "coverage_proxy": 0.3880597014925373,
+            "strict_budget_ok": true,
+            "valid_intervals": true,
+            "retained_actions": 138,
+            "retained_actions_per_minute": 19.602800248651576,
+            "highlight_seconds": 62.01000000000002,
+            "clips": 15,
+            "runtime_seconds": 0.09604570001829416,
+            "provenance": {
+              "input_sha256": "3a2291c31652942badf510102590e2deec376edbbd9eb3c4ec17a6c6ce64e092",
+              "model": "ViT-B-32/sha256:c2ea63325cebca85a9eb509481f37ea991cb20199cab6642e68dbc8f973382f5",
+              "m2_manifest_sha256": "d36869c7df7d0570ea515a89b539b7790b3438452c224c20c64959b21f7f66cf",
+              "predictions_sha256": "65f429b0107c70bbc88bae1663f3eb5b27f0877115253ddbc22b63b35002f3ed",
+              "checkpoint_sha256": "0fc9e83d544544617471835bd345aa71a6b75d979124a492b793b786f0e90cf7",
+              "annotations_sha256": "8bf4f81b1e71cd3de000a4ed452b61fa9a63d0d431bfa759db568f25a5db45ed"
+            },
+            "highlights_sha256": "d7874cbb1f6cd4f697ee3b1680e89e00723eb3047661f4f1e96277c2b0a2b7fa"
+          },
+          {
+            "video_id": "P08_06",
+            "variant": "J0.6",
+            "coverage_proxy": 0.36363636363636365,
+            "strict_budget_ok": true,
+            "valid_intervals": true,
+            "retained_actions": 85,
+            "retained_actions_per_minute": 10.48010921506756,
+            "highlight_seconds": 70.0,
+            "clips": 17,
+            "runtime_seconds": 0.08771940000588074,
+            "provenance": {
+              "input_sha256": "72b8b1b3555a8cbab3c6df27507d076cac99fdf0fe3ea2cd8a51776f54d5261f",
+              "model": "ViT-B-32/sha256:c2ea63325cebca85a9eb509481f37ea991cb20199cab6642e68dbc8f973382f5",
+              "m2_manifest_sha256": "2457417c703013a408dadbbd09e9e18b28b817391eb865234ae8459b52eb0c6e",
+              "predictions_sha256": "1780b6ed965b952893d04b568d87ac72514f24439c31094a0baed35f5ac75ed5",
+              "checkpoint_sha256": "0fc9e83d544544617471835bd345aa71a6b75d979124a492b793b786f0e90cf7",
+              "annotations_sha256": "af81489707a620816bcf7e374b6086eccbf2e64ebc8da7559e065ff70094b31f"
+            },
+            "highlights_sha256": "271583727ccfe54b6a68850e85c85a4884c1155385202bd23182e33aa5b16d57"
+          },
+          {
+            "video_id": "P21_03",
+            "variant": "J0.6",
+            "coverage_proxy": 0.29310344827586204,
+            "strict_budget_ok": true,
+            "valid_intervals": true,
+            "retained_actions": 38,
+            "retained_actions_per_minute": 3.8909926995300674,
+            "highlight_seconds": 84.47000000000003,
+            "clips": 20,
+            "runtime_seconds": 0.08532220002962276,
+            "provenance": {
+              "input_sha256": "e11d8b8115c2bb1e19bba4280db109a1f1acdf805fc3bc1b560fb6f2db598fd1",
+              "model": "ViT-B-32/sha256:c2ea63325cebca85a9eb509481f37ea991cb20199cab6642e68dbc8f973382f5",
+              "m2_manifest_sha256": "2351f5621e6a41f62c125685672ea9316e720da3285e00f41b2fa3dcae52f3e3",
+              "predictions_sha256": "952bc1d62e992a1992a51cf8283281b99239cb3ab3fcb1e31c9986764b50ec34",
+              "checkpoint_sha256": "0fc9e83d544544617471835bd345aa71a6b75d979124a492b793b786f0e90cf7",
+              "annotations_sha256": "f83cd4533cf4b11fde5ab20c02242d6767929b41d66824fa73c516d9d2e91f39"
+            },
+            "highlights_sha256": "20a2b338a86d87089e3c3b21b006b7c5d9a00865032646b5d34b5ea96f33fdea"
+          },
+          {
+            "video_id": "P24_04",
+            "variant": "J0.6",
+            "coverage_proxy": 0.42,
+            "strict_budget_ok": true,
+            "valid_intervals": true,
+            "retained_actions": 63,
+            "retained_actions_per_minute": 7.654766266643095,
+            "highlight_seconds": 71.99999999999999,
+            "clips": 18,
+            "runtime_seconds": 0.07629429997177795,
+            "provenance": {
+              "input_sha256": "c7bfbabf3ddafd3e66caa67bbedebc2f7c39df5b02f98411609447d2cb8228f4",
+              "model": "ViT-B-32/sha256:c2ea63325cebca85a9eb509481f37ea991cb20199cab6642e68dbc8f973382f5",
+              "m2_manifest_sha256": "4098a8f881fa3e288fb4069823ef4af353ae9a4cbf7d805fb47f9376c3e7527f",
+              "predictions_sha256": "de9f669c8459a03c2534735395c536789a19d7802405d347d2a5753ec9c9d78f",
+              "checkpoint_sha256": "0fc9e83d544544617471835bd345aa71a6b75d979124a492b793b786f0e90cf7",
+              "annotations_sha256": "5bb9974cdf26d087c2ed3f6ddbc37d10b4af4b9d9c016e9661d8fdf4500586de"
+            },
+            "highlights_sha256": "52fbfcc1ec560cb7f1396f694aff644afad1d76f9bd336198865cfb8ab5f5d77"
+          },
+          {
+            "video_id": "P26_21",
+            "variant": "J0.6",
+            "coverage_proxy": 0.4489795918367347,
+            "strict_budget_ok": true,
+            "valid_intervals": true,
+            "retained_actions": 51,
+            "retained_actions_per_minute": 6.574071090200123,
+            "highlight_seconds": 68.67,
+            "clips": 17,
+            "runtime_seconds": 0.07385080005042255,
+            "provenance": {
+              "input_sha256": "26cc84972d1951c81c63f19e5d10a98b8cf5ded3d9300700b6136bd07f05ca95",
+              "model": "ViT-B-32/sha256:c2ea63325cebca85a9eb509481f37ea991cb20199cab6642e68dbc8f973382f5",
+              "m2_manifest_sha256": "d66ca94c99f9c4b9efd8a6ca4c82f0c55eea80638ffd83b617e5c3ed2d735903",
+              "predictions_sha256": "6268133f08b57f25fd61218ad8c6f659bed848a6d5e3d382d8713cb32d6e4d99",
+              "checkpoint_sha256": "0fc9e83d544544617471835bd345aa71a6b75d979124a492b793b786f0e90cf7",
+              "annotations_sha256": "c3046ccfe97374ad3a00d5dc12d420d638a681290c1aad7a510f3d6854576651"
+            },
+            "highlights_sha256": "014beff636801038581b93c8d19f48cc47f7dc8c8a1cec9175fa0c7ffb88f555"
+          }
+        ]
+      }
+    }
+  },
+  "date": "2026-11-17",
+  "raw_report_sha256": "d36de928ca7f9ecf137550cfcf741404f466dbafc074669f87d705de123e2f1e",
+  "coverage_change_interpretation": "All observed tune coverage deltas are positive, not losses. The predeclared #28 gate limits absolute change to <=0.5 percentage points; it fails even though coverage increases. The separate EPIC mask-rate failure independently rules out GO.",
+  "frame_quality_limit": "Algorithmic mask rates only. No visual footage/card ground truth or FPVSum human review; masked frames are not declared false positives.",
+  "other_split_policy": "Four other sources used only for label-free mask rates and importance fidelity; their GT coverage was not scored.",
+  "manifest_annotations_scored": false,
+  "source_sha256": {
+    "scripts/m3_card_mask_check.py": "fd02c4d87f97fd0d6a726886cb427d770a53601a3711cee0f718752493493679",
+    "scripts/run_ablation.py": "4787604a4751bd22b04472fda45ead26315fdef47417540a524d634facb9de25",
+    "code/optimizer.py": "df5b0841e41e32897f89c822a2578e761e3577184ca9ff5d61cdfdbdc0a21bf5",
+    "code/candidates.py": "66f5cff1e4490875bf2003a0f0c7c227b676189aaa792baa783e7a1303a34b5c",
+    "eval/metrics.py": "c377d026b6eed28002062274810edeb30f0e1c0457293a49e02d064805127276",
+    "code/clip_backend.py": "665e24759b75f16b1aec262defe5534c0ef98a5483be7c6d8631d02d83e4b7df"
+  },
+  "runtime": {
+    "python": "3.13.9",
+    "numpy": "2.3.5",
+    "torch": "2.15.0+cpu",
+    "open_clip": "4.2.1",
+    "device": "cpu",
+    "OMP_NUM_THREADS": 2,
+    "MKL_NUM_THREADS": 2
+  },
+  "checkpoint_manifest_sha256": "998828ecfa4026983ac7e6ffa96092edd6241233ce107f6086a80d45ff4efe79",
+  "candidate_mechanics_tests": {
+    "passed": 8,
+    "quality_evidence": false
+  },
+  "valid_selection_count": 240,
+  "verification": {
+    "command": ".\\.venv\\Scripts\\python.exe -m pytest -q",
+    "passed": 417,
+    "skipped": 4,
+    "failed": 0,
+    "seconds": 246.82,
+    "warnings": 3,
+    "real_mask_check_executed_separately": true
+  }
+}

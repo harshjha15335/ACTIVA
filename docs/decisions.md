@@ -101,7 +101,8 @@ fix, all 2,245 CLIP frames of P30_08 decode (16 packets skipped, no gap over
   `ACTIVA_REQUIRE_MODELS=0` restores the old behaviour; the test suite uses it, since
   it has no weights.
 - **Device:** `ACTIVA_DEVICE` defaults to `auto`, so CUDA is used when available. The
-  action stage is about 13x slower on CPU.
+  action stage is about 13x slower on CPU. *(Measured 17 Nov on P26_41: actions 12x,
+  whole pipeline 9x slower on an i7-14650HX; numbers in the README.)*
 - **Class list:** `kit/supported_classes.json` stays local, like the rest of the kit,
   until the organisers answer Q7 (team vote, 15 Nov). The README tells whoever runs
   `run.sh` to copy it from their kit first; without it, `run.sh` exits 5 with that
@@ -139,6 +140,25 @@ actions each ("eat light" on a ski run); the kit allows `actions: []` for FPVSum
   to `main`. FPVSum `Ski_-Z5a4UQmZLs` (a validity and timing check only): same label and
   highlights as the 14 Nov run, 0 actions instead of 2,000, 17.4 s instead of a full
   action pass. FPVSum highlights change only where an action scored >= 0.2 (2/49 videos).
+
+**D22 (2026-11-17) 4.00 s clips pass a literal float check.** On the 0.01 s grid a
+4.00 s clip is often 3.9999999999999964 s as floats (`32.19 - 28.19`). Our validator
+allowed 1e-6 slack, so it never flagged this; a validator testing `end - start >= 4.0`
+would. In the 14 Nov outputs, 35 clips in 33 files were float-short, and in 3 files
+(P02_14, P26_37, P28_23) every clip was, which would fail "at least one segment
+>= 4 s" and score 0. `schema.to_output` now widens such a clip by 0.01 s at its end,
+or else its start, staying inside the video and clear of its neighbours, and
+`validate_output` checks 4 s literally. Applied to the 187 outputs: all 35 fixed, no
+file over 15%. Found by the edge-case review; the 21 Nov run picks it up.
+
+**D23 (2026-11-17) CUDA out-of-memory retries on the CPU.** On a small or shared GPU
+the action stage ran out of memory, the category stage then failed too, and the run
+wrote 0 actions and label `other` with exit 0, which a re-run can't tell from a real
+result. `main._stage` now retries a stage once on the CPU after a CUDA out-of-memory
+error (`ACTIVA_DEVICE=cpu` for the rest of the run, the action engine reloaded). Other
+errors, a second failure and strict mode behave as before. Measured 17 Nov on a 40 s
+test clip with the GPU capped at 1.2 GB: before, 0 actions and `other`; after, exit 0
+and a JSON identical to a pure-CPU run (1,849 actions, same label and highlights).
 
 ## M2 decisions proposed for review
 

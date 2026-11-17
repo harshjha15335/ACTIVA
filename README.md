@@ -91,7 +91,17 @@ Measured on one laptop: RTX 4060 Laptop (8 GB), i7-14650HX, 16 GB RAM, strict mo
 | Peak GPU memory | 3.2 GB |
 
 - The run is limited by video decoding on the CPU, so the GPU is mostly idle.
-- **Without a GPU, ACTIVA still runs**, but the action stage is about 13× slower.
+- **Without a GPU, ACTIVA still runs**, about 9× slower. Measured 17 Nov on the same laptop with `ACTIVA_DEVICE=cpu` (i7-14650HX, 16 cores), on P26_41 (116.75 s of video):
+
+  | Stage | CPU | RTX 4060 |
+  |---|---:|---:|
+  | CLIP (label + importance) | 84.8 s | 16.7 s |
+  | Actions (SlowFast + ActionFormer) | 343.0 s | 29.3 s |
+  | Total | 428.9 s (3.7 s per video-second) | 46.2 s (0.40 s per video-second) |
+
+  - So a 33-minute video takes about 2 h on this CPU, and the whole manifest about 57 h.
+  - Same label and highlights as the GPU run. 1,696 of the 1,927 actions are identical; the rest differ by floating-point rounding.
+  - The CLIP part alone (label and importance) runs at about 0.7 s per video-second on this CPU.
 
 ## Outputs and checks
 

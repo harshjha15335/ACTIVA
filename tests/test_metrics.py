@@ -217,3 +217,61 @@ def test_real_study_loader_rejects_evaluation_and_unreviewed_inputs(tmp_path):
     review.write_text(json.dumps(decision))
     with pytest.raises(ValueError, match="evaluation-overlap"):
         list(load_study(study, review, official))
+
+
+def test_density_thinning_is_confident_score_only_and_deterministic():
+    from scripts import run_ablation as study
+    thin = getattr(study, "thin_actions", None)
+    assert callable(thin), "density thinning is not implemented"
+    from contracts import Action
+    a = Action("cut", "tomato", 20, 24, .9)
+    b = Action("wash", "dish", 1, 5, .9)
+    low = Action("cut", "onion", 40, 44, .1)
+    assert thin([a, low, b], 120, .5) == [b]
+    assert thin([b, a, low], 120, .5) == [b]
+    assert thin([a, low, b], 120, "all") == [b, a]
+    assert len(thin([a, b], 59, 1)) == 0  # floor cap, not round-up
+    for bad in (0, -1, float("nan")):
+        with pytest.raises(ValueError):
+            thin([a], 120, bad)
+
+
+def test_density_study_has_fixed_variants_and_no_budget_failures():
+    from scripts import run_ablation as study
+    run = getattr(study, "run_density_cases", None)
+    assert callable(run), "density study is not implemented"
+    cases = [next(study.synthetic_cases())]
+    result = run(cases, densities=(.5, "all"), coverage_rule="frac>=0.5")
+    assert set(result["densities"]) == {"0.5", "all"}
+    for row in result["densities"].values():
+        assert set(row["summary"]) == {"U", "I", "A", "J0.6", "J0.8"}
+        assert all(x["strict_budget_violations"] == 0 and x["interval_violations"] == 0
+                   for x in row["summary"].values())
+    assert result["densities"]["0.5"]["summary"]["U"]["coverage_proxy"] == result["densities"]["all"]["summary"]["U"]["coverage_proxy"]
+    assert result["densities"]["0.5"]["summary"]["I"]["coverage_proxy"] == result["densities"]["all"]["summary"]["I"]["coverage_proxy"]
+
+
+def test_card_mask_check_rejects_incomplete_aliases_and_changed_selector():
+    from scripts.m3_card_mask_check import validate_sources, validate_selector_identity
+    from types import SimpleNamespace
+    cases = [{"dataset": "epic_kitchens_100", "info": SimpleNamespace(video_id=str(i)),
+              "provenance": {"input_sha256": str(i)}} for i in range(10)]
+    validate_sources(cases[:6], cases[6:])
+    with pytest.raises(ValueError, match="six tune"):
+        validate_sources(cases[:1], cases[6:7])
+    cases[9]["provenance"]["input_sha256"] = "0"
+    with pytest.raises(ValueError, match="source hashes"):
+        validate_sources(cases[:6], cases[6:])
+    with pytest.raises(ValueError, match="source changed"):
+        validate_selector_identity({"source_sha256": {}})
+
+
+def test_card_mask_study_settings_survive_report_json_roundtrip():
+    import json
+    from scripts.m3_card_mask_check import validate_study_settings
+    original = {"variants": {"J0.6": {"alphas": (0, .5, 1)}}, "thinning": "fixed"}
+    baseline = json.loads(json.dumps(original))
+    validate_study_settings(original, baseline)
+    baseline["variants"]["J0.6"]["alphas"] = [0, 1]
+    with pytest.raises(ValueError, match="settings/thinning"):
+        validate_study_settings(original, baseline)

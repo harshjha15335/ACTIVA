@@ -36,6 +36,13 @@ handoff checker and canonical rounding/minimum checks. This is now local genuine
 cache-consumer evidence; see docs/results.md. Real-action quality comparison is
 still pending the ten agreed EPIC train sources and matched M1/M2 artifacts.
 
+17 November update: the real matched-input U/I/A/J study is complete on the
+fixed six-tuning/four-held-out selector split. J reaches 37.41% held-out local
+coverage versus U's 24.89%; A reaches 40.78%. Retain J because the EPIC-only
+coverage winner does not establish the full coverage/F1 trade-off and A's
+no-action behavior is uniform. See the dated results/evidence for limitations,
+separate oracle results and exact provenance. No production defaults changed.
+
 The objective uses M2 importance directly, including novelty if M2 selects that
 baseline. It does not directly score CLIP embeddings. Distinct action pairs
 provide diversity. Facility-location embedding diversity is deferred until
@@ -141,7 +148,27 @@ python scripts/run_ablation.py --study <study.json> --review <review.json> --off
 Coverage is averaged on EPIC; F1/label on FPVSum. Detector AP pools scored
 predictions across EPIC. Missing metrics or strict budget violations make the
 combined proxy total unavailable. No reviewed study was supplied, so real
-quality evaluation has not been run and no winner is frozen.
+quality evaluation was initially blocked. The verified 17 November real study
+and fixed density sensitivity report now appear in docs/results.md; current
+J0.6/0.4 is retained under #28's fixed decision rule.
+
+For EPIC density sensitivity, add `--densities 2,3.5,6,all`. This evaluates only
+U/I/A/J0.6/J0.8. Filtering is score >=0.2, then floor(density*duration/60) top
+rows with start/end/verb/noun tie breaks. It changes evaluation inputs only.
+Synthetic density controls use the EPIC fixture and remain non-benchmark tests.
+
+To review an explicit M2 card-mask candidate without replacing inference code:
+
+```powershell
+python scripts/m3_card_mask_check.py --candidate-source <extracted-importance.py> --candidate-commit <full-sha> --tune-study <six-tune.json> --other-study <four-other.json> --review <review.json> --official-manifest kit/manifest.csv --baseline-report <density-tune.json> --output tmp/m3/card-mask-check.json
+```
+
+Use the exact checkpoint matching the cached image embeddings. All ten source
+hashes must be distinct. The other four sources get mask-rate checks only;
+their coverage is not scored. The no-harm gate requires J0.6 to change by <=0.5
+percentage points at every density relative to both the original cache baseline
+and recomputed candidate OFF. This isolates mask effects from numerical or
+implementation differences. FPVSum human frame review is still mandatory for GO.
 
 ## Metric fidelity
 
@@ -153,3 +180,35 @@ it is sample-weighted, not original-frame F1. Scorers now accept kit segment
 fields. score_all remains a single-video diagnostic; dataset aggregation lives
 in run_ablation.py. M1 predictions, genuine M2 artifacts, reviewed labeled data
 and organizer parity remain explicit dependencies.
+
+## Whiteboard walkthrough of select_variant (#28)
+
+1. Validate the time grid and action intervals, filter confidence <0.2 and
+   deduplicate identical instances by maximum confidence. Round feasible budget
+   down to centisecond ticks, aiming for 14.8% of duration. The provisional
+   short-video exception remains separately documented.
+2. Generate at most 500 candidates from action boundaries, importance peaks and
+   sliding windows. A removes importance from candidate generation; I removes
+   actions. Candidate generation is part of the ablation, not a shared oracle.
+3. For selected intervals S, each action instance receives its confidence times
+   covered fraction, but only once the union fraction reaches tau=0.5. For each
+   distinct (verb,noun), take the best instance credit, then average across
+   distinct predicted pairs. Repeated detections do not add class credit.
+4. Importance is the integral of the interpolated curve on S, divided by an
+   optimistic budget-mass estimate: split time into at most 20,000 bins, rank
+   bin-average importance and fill the duration budget, allowing a fractional
+   final bin. This comparison scale ignores interval packing and minimum clip
+   length. It is an approximation, not an exact feasible optimum.
+5. J uses 0.6*C + 0.4*I. At each step, gain is the increase in that objective
+   after adding one feasible candidate. Rank gain/length^alpha for each of
+   alpha=0,0.5,1 in three independent greedy runs. Alpha changes the preference
+   for short clips; it is not a fourth objective weight. Reject overlaps and
+   clips exceeding the remaining tick budget after each choice.
+6. Choose the run with the largest actual objective, not its length-adjusted
+   ranking value. Ties are deterministic. Merge touching clips and return their
+   mean importance internally; exported highlights contain only segment.
+
+This is a bounded heuristic: the thresholded coverage term has jumps, and no
+global-optimum or submodularity guarantee is claimed. J with no confident
+actions becomes importance-only; A with none becomes uniform. The density study
+changes the available predicted actions, not these definitions or the GT metric.
