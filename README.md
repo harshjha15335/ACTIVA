@@ -123,6 +123,40 @@ Provisional choices, pending the organisers' answers (`docs/kit_compliance.md`):
 - **Team ID:** `team_id` is `LensLog`.
 - **Short videos:** for videos where 15% is under 4 s (3 in the manifest), we output one 4.0 s highlight.
 
+## Reproducibility
+
+What a re-run depends on, so another machine can check our `outputs/`.
+
+**Inputs.** [`docs/evidence/input_sha256_2026-11-17.csv`](docs/evidence/input_sha256_2026-11-17.csv) lists the SHA-256 and size of all 187 manifest videos as we ran them. Compare with `sha256sum <video>` (Linux) or `certutil -hashfile <video> SHA256` (Windows).
+
+**Weights.** `scripts/setup_weights.py` refuses any file whose SHA-256 differs from these:
+
+```text
+c2ea63325cebca85a9eb509481f37ea991cb20199cab6642e68dbc8f973382f5  ViT-B-32-laion400m_e32.safetensors
+0fc9e83d544544617471835bd345aa71a6b75d979124a492b793b786f0e90cf7  SlowFast.pyth
+88486434a71e1b17ac38dd4a93d9612612026be62d7a93a032a0953a30ac687b  epic_slowfast_verb_reproduce/epoch_020.pth.tar
+8d313a2dd69562bfb063cb1e3372ad056ee646283d1e32af95ff49318bf6bbf9  epic_slowfast_noun_reproduce/epoch_020.pth.tar
+```
+
+The SlowFast and ActionFormer code is in the repo at the pinned commits (see Credits).
+
+**Software used for `outputs/`.** Pinned in `requirements.txt`:
+
+| | |
+|---|---|
+| OS, GPU | Windows 11, RTX 4060 Laptop, NVIDIA driver 592.82 |
+| Python | 3.13.5 |
+| torch | 2.15.0+cu132 (CUDA 13.2, cuDNN 9.26) |
+| torchvision, open_clip_torch | 0.29.2, 4.2.1 |
+| av (PyAV), numpy, Pillow | 19.0.2, 2.3.5, 13.0.0 |
+| FFmpeg | 9.0.2 (gyan.dev full build) |
+
+**What stays the same, and what may not.**
+- **Same machine, same inputs:** byte-identical JSON. Seeds are fixed (`config.SEED`), and repeated runs and a fresh clone gave identical files.
+- **The label and the CLIP importance** use frames decoded by PyAV, which ships its own FFmpeg libraries, so the system FFmpeg doesn't affect them.
+- **Actions** decode through the system `ffmpeg`, and the highlight selector uses them too. FFmpeg 4.4.2 (Ubuntu 22.04's package) and 9.0.2 gave byte-identical frames on our test videos (#42), so actions and highlights match. Decoders conceal *damaged* packets differently, so a damaged file may differ slightly between versions.
+- **CPU instead of GPU:** same label and highlights. Some action scores differ by floating-point rounding (1,696 of 1,927 actions identical on P26_41); see Hardware and runtime.
+
 ## Tests
 
 ```sh
