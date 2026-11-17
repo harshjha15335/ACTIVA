@@ -13,7 +13,7 @@ CLIP_FPS = 2.0  # shared time grid for CLIP features and importance (frames/seco
 
 @dataclass
 class VideoInfo:
-    video_id: str        # file name without extension, e.g. "P01_11"
+    video_id: str        # input file name without extension
     path: str            # absolute path to the MP4
     duration: float      # seconds (from ffprobe)
     fps: float           # average source frame rate

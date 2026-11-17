@@ -20,7 +20,7 @@ SEED = 0
 def device():
     """ACTIVA_DEVICE: "cpu", "cuda" (or "cuda:N"), or "auto" (the default): CUDA when available.
 
-    The action stage needs a GPU in practice (measured 17 Nov on P26_41: 0.25 s per
+    The action stage needs a GPU in practice (measured 17 Nov on one EPIC video: 0.25 s per
     video-second on an RTX 4060, 2.9 s on an i7-14650HX, about 12x slower), so organisers
     re-running run.sh get CUDA automatically when their machine has it, and CPU otherwise.
     """
