@@ -50,6 +50,9 @@ class Preprocess:
     width: Optional[int] = None  # None: keep aspect ratio (1920x1080 -> 456x256)
     crop: Optional[int] = None  # None: whole frame (ActionFormer issue #91)
     window_rule: str = "floor"  # T = n // 16, as the published features (see num_windows)
+    pillarbox: bool = True      # portrait frames (narrower than tall) get black bars to a square: at
+                                # 256 px high they would be ~144 px wide, too narrow for SlowFast's 7x7
+                                # head pooling. Landscape frames are never padded.
 
     def out_size(self, src_w: int, src_h: int) -> tuple[int, int]:
         """(width, height) after resizing, before any crop."""
@@ -60,7 +63,8 @@ class Preprocess:
 
 
 def resize_frame(rgb: np.ndarray, p: Preprocess) -> np.ndarray:
-    """RGB uint8 HxWx3 -> resized (and optionally centre-cropped) uint8 in p.color order."""
+    """RGB uint8 HxWx3 -> resized (and optionally centre-cropped, or pillarboxed to a square if
+    portrait) uint8 in p.color order."""
     from PIL import Image
 
     h, w = rgb.shape[:2]
@@ -73,6 +77,9 @@ def resize_frame(rgb: np.ndarray, p: Preprocess) -> np.ndarray:
         c = int(p.crop)
         y0, x0 = max((arr.shape[0] - c) // 2, 0), max((arr.shape[1] - c) // 2, 0)
         arr = arr[y0:y0 + c, x0:x0 + c]
+    if p.pillarbox and arr.shape[1] < arr.shape[0]:
+        extra = arr.shape[0] - arr.shape[1]
+        arr = np.pad(arr, ((0, 0), (extra // 2, extra - extra // 2), (0, 0)))
     if p.color == "bgr":
         arr = arr[:, :, ::-1]
     elif p.color != "rgb":
@@ -99,6 +106,20 @@ def _ffmpeg_select(src: FrameSource) -> str:
     return f"select='gte(n\\,{src.offset})*not(mod(n-{src.offset}\\,{src.step}))'"
 
 
+def _ffmpeg_rate_args(src: FrameSource, out_w: int, out_h: int) -> list[str]:
+    """-vf chain + output rate that emit exactly the selected frames, once each, in order.
+
+    `select` leaves gaps in the timestamps that constant-rate muxing would fill with
+    duplicates. `setpts=N/(rate*TB)` renumbers the kept frames back to back at the output
+    rate and `-r rate` muxes at that same rate, so nothing is duplicated or dropped. Works on
+    any FFmpeg version (`-fps_mode passthrough` needs >= 5.1; `-vsync` is gone in 7+).
+    """
+    rate = f"{src.fps / src.step:g}"
+    vf = (f"fps={src.fps},scale={out_w}:{out_h}:flags=bicubic,{_ffmpeg_select(src)},"
+          f"setpts=N/({rate}*TB)")
+    return ["-vf", vf, "-r", rate]
+
+
 def ffmpeg_frames(path, p: "Preprocess" = None, src: FrameSource = FrameSource(),
                   size: Optional[tuple[int, int]] = None) -> Iterator[np.ndarray]:
     """Decode with ffmpeg -> RGB uint8 frames at 1/step of src.fps, already resized.
@@ -122,8 +143,7 @@ def ffmpeg_frames(path, p: "Preprocess" = None, src: FrameSource = FrameSource()
         w, h = (info.height, info.width) if info.rotation in (90, 270) else (info.width, info.height)
         size = p.out_size(w, h)
     out_w, out_h = size
-    vf = f"fps={src.fps},scale={out_w}:{out_h}:flags=bicubic,{_ffmpeg_select(src)}"
-    base = ["ffmpeg", "-nostdin", "-v", "error", "-i", str(path), "-vf", vf, "-fps_mode", "passthrough"]  # -vsync was removed in ffmpeg 7+
+    base = ["ffmpeg", "-nostdin", "-v", "error", "-i", str(path), *_ffmpeg_rate_args(src, out_w, out_h)]
 
     if src.jpeg_q is None:
         cmd = base + ["-pix_fmt", "rgb24", "-f", "rawvideo", "-"]
