@@ -42,6 +42,7 @@ from contracts import Action, CategoryResult, ClipFeats, Highlight, Importance, 
 log = logging.getLogger("activa")
 
 EXIT_OK, EXIT_INTERNAL, EXIT_USAGE, EXIT_VIDEO, EXIT_CONFIG, EXIT_STRICT = 0, 1, 2, 4, 5, 6
+MIN_PYTHON = (3, 11)  # README asks for 3.12+, the one we test; 3.11 is the hard floor
 
 
 class StageError(RuntimeError):
@@ -369,6 +370,11 @@ def main(argv=None):
     logging.basicConfig(stream=sys.stderr, level=config.LOG_LEVEL,
                         format="[activa] %(levelname)s %(message)s")
     source, target = args
+    if sys.version_info < MIN_PYTHON:
+        # hashlib.file_digest (3.11) and friends: an older Python would make stages fall back quietly
+        log.error("configuration error: Python %d.%d+ is required, this is %s; set ACTIVA_PYTHON",
+                  *MIN_PYTHON, sys.version.split()[0])
+        return EXIT_CONFIG
     missing = missing_model_files()
     if missing:
         log.error("configuration error: model files missing (%s); run: python scripts/setup_weights.py",
