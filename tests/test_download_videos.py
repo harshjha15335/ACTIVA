@@ -172,3 +172,31 @@ def test_resume_state_from_another_chunk_size_starts_over(tmp_path, small_chunks
         assert path.read_bytes() == b"y" * 3000
     finally:
         server.close()
+
+
+def test_fpv_dev_candidates_are_source_disjoint(tmp_path):
+    cache = tmp_path / "list.csv"
+    write_csv(cache, ["video_name", "youtube_id", "category", "split"],
+              [["Ski_a_1", "SRC_A", "Ski", "labeled"],        # in the manifest
+               ["Ski_a_2", "SRC_A", "Ski", "unlabeled"],      # same source as a manifest video
+               ["Surf_b_2", "SRC_B", "Surfing", "unlabeled"],  # two names, one source -> one pick
+               ["Surf_b_1", "SRC_B", "Surfing", "unlabeled"],
+               ["Plane_c", "SRC_C", "Plane", "labeled"],
+               ["Polo_d_1", "SRC_D", "Bikepolo", "labeled"],   # in the manifest
+               ["Polo_d_2", "SRC_E", "Bikepolo", "unlabeled"]])  # part 2 of that recording
+    manifest = {"Ski_a_1": (60.0, "fpvsum"), "Polo_d_1": (60.0, "fpvsum"), "P01_01": (100.0, "epic_kitchens_100")}
+    got = dv.fpv_dev_candidates(manifest, cache)
+    assert [c["video_id"] for c in got] == ["Plane_c", "Surf_b_1"]
+    assert got[0] == {"video_id": "Plane_c", "youtube_id": "SRC_C", "category": "Plane", "split": "labeled"}
+    with pytest.raises(SystemExit, match="Ski_zz"):
+        dv.fpv_dev_candidates({"Ski_zz": (1.0, "fpvsum")}, cache)
+
+
+def test_fpv_dev_on_the_real_lists():
+    root = dv.ROOT
+    cache, manifest = root / "data/videos/fpvsum/FPVSum_videolist.csv", root / "kit/manifest.csv"
+    if not (cache.exists() and manifest.exists()):
+        pytest.skip("local kit manifest and FPVSum list not present")
+    got = dv.fpv_dev_candidates(dv.read_manifest(manifest), cache)
+    # #33 dry run: 49 source-disjoint; 3 more are part 2 of a manifest recording
+    assert len(got) == 46 and sum(c["split"] == "labeled" for c in got) == 7

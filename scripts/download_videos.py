@@ -11,6 +11,7 @@ via yt-dlp using the upstream FPVSum video list (name -> YouTube ID; the "_1",
     python scripts/download_videos.py fpvsum            # 49 videos, small
     python scripts/download_videos.py epic              # 138 videos, ~184 GB, resumable
     python scripts/download_videos.py check             # what is there, durations vs manifest
+    python scripts/download_videos.py fpv-dev           # NON-manifest FPVSum videos -> data/fpv_dev/ (#33)
 
 Re-running skips videos that are already there. Every command ends with the
 check, which writes data/videos/download_report.json. Then:
@@ -19,6 +20,7 @@ check, which writes data/videos/download_report.json. Then:
 """
 import argparse
 import json
+import re
 from pathlib import Path
 import shutil
 import subprocess
@@ -133,6 +135,79 @@ def download_fpvsum(manifest, out, limit=None, dry_run=False):
                 failed.append(name)
     if failed:
         log(f"FPVSum: {len(failed)} failed (re-run to retry): {failed}")
+
+
+# ---------------------------------------------------------------- FPVSum, outside the manifest
+
+def fpv_dev_candidates(manifest, cache):
+    """Upstream FPVSum videos that are NOT in the manifest and share no source or recording with it.
+
+    Same rule as M2's source-ID dry run (#33): drop manifest names, drop any name whose
+    YouTube ID a manifest video also uses, keep one name per remaining YouTube ID. This
+    screens source IDs only; it can't catch re-uploads of the same footage.
+    """
+    import csv
+    fpvsum_youtube_ids([], cache)  # fetches the pinned list if it isn't cached yet
+    with open(cache, newline="", encoding="utf-8-sig") as f:
+        rows = {r["video_name"].strip(): r for r in csv.DictReader(f)}
+    names = set(manifest_ids(manifest, "fpvsum"))
+    unknown = sorted(names - rows.keys())
+    if unknown:
+        raise SystemExit(f"{len(unknown)} manifest FPVSum IDs are not in the upstream list: {unknown}")
+    protected = {rows[n]["youtube_id"].strip() for n in names}
+    # "BikePolo_<id>_2" is part 2 of the recording whose part 1 is in the manifest, under a
+    # different YouTube ID: same footage session, so it is excluded too (stricter than #33's tool).
+    recording = lambda n: re.sub(r"_\d+$", "", n)  # noqa: E731
+    protected_recordings = {recording(n) for n in names}
+    by_source = {}
+    for name, r in rows.items():
+        source = r["youtube_id"].strip()
+        if name not in names and source not in protected and recording(name) not in protected_recordings:
+            by_source.setdefault(source, []).append(name)
+    picked = sorted(sorted(group)[0] for group in by_source.values())
+    return [{"video_id": n, "youtube_id": rows[n]["youtube_id"].strip(),
+             "category": rows[n].get("category", "").strip(), "split": rows[n].get("split", "").strip()}
+            for n in picked]
+
+
+def download_fpv_dev(manifest, out, dest, dry_run):
+    """Development videos for #33/#34, kept apart from data/videos so no manifest tool sees them."""
+    import hashlib
+    cands = fpv_dev_candidates(manifest, out / "fpvsum" / "FPVSum_videolist.csv")
+    log(f"FPVSum outside the manifest: {len(cands)} source-disjoint candidates -> {dest}")
+    if dry_run:
+        for c in cands:
+            log(f"  {c['video_id']} ({c['category']}, {c['split']}) <- https://www.youtube.com/watch?v={c['youtube_id']}")
+        return
+    dest.mkdir(parents=True, exist_ok=True)
+    rows, blocked = [], False
+    for i, c in enumerate(cands, 1):
+        path = dest / f"{c['video_id']}.mp4"
+        status = "ok" if path.exists() else None
+        if status is None and not blocked:
+            log(f"[{i}/{len(cands)}] {c['video_id']}")
+            cmd = [sys.executable, "-m", "yt_dlp", "--no-playlist", "--no-progress", "--retries", "10",
+                   "-f", YTDLP_FORMAT, "--merge-output-format", "mp4",
+                   "-o", str(dest / f"{c['video_id']}.%(ext)s"), f"https://www.youtube.com/watch?v={c['youtube_id']}"]
+            for attempt in (cmd, cmd[:-1] + ["--extractor-args", "youtube:player_client=android", cmd[-1]]):
+                res = subprocess.run(attempt, capture_output=True, text=True, encoding="utf-8", errors="replace")
+                if res.returncode == 0 and path.exists():
+                    status = "ok"
+                    break
+                if "not a bot" in res.stderr:
+                    # YouTube wants a signed-in session from this network; we don't work around that.
+                    blocked, status = True, "blocked-bot-check"
+                    log("  YouTube asks to 'confirm you're not a bot' from this network; stopping. "
+                        "Run this from another network.")
+                    break
+                status = "unavailable"
+        rows.append({**c, "status": status or "blocked-bot-check",
+                     "sha256": hashlib.sha256(path.read_bytes()).hexdigest() if status == "ok" else None})
+    receipt = {"format": "activa-fpv-dev-download-v1", "date": time.strftime("%Y-%m-%d %H:%M"),
+               "fpvsum_list_commit": FPVSUM_COMMIT, "candidates": len(cands),
+               "downloaded": sum(r["status"] == "ok" for r in rows), "videos": rows}
+    (dest / "fpv_dev_receipt.json").write_text(json.dumps(receipt, indent=2) + "\n", encoding="utf-8")
+    log(f"fpv-dev: {receipt['downloaded']} of {len(cands)} here; receipt {dest / 'fpv_dev_receipt.json'}")
 
 
 # ---------------------------------------------------------------- EPIC
@@ -346,7 +421,9 @@ def check(manifest, out, datasets):
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    parser.add_argument("what", choices=["fpvsum", "epic", "check"])
+    parser.add_argument("what", choices=["fpvsum", "epic", "check", "fpv-dev"])
+    parser.add_argument("--fpv-dev-out", default=str(ROOT / "data" / "fpv_dev"),
+                        help="where fpv-dev puts the non-manifest FPVSum videos")
     parser.add_argument("--out", default=str(ROOT / "data" / "videos"))
     parser.add_argument("--manifest", default=str(config.DEFAULT_MANIFEST_PATH))
     parser.add_argument("--connections", type=int, default=32,
@@ -360,6 +437,11 @@ def main(argv=None):
     if args.part:
         manifest = share(manifest, args.part)
     out = Path(args.out)
+    if args.what == "fpv-dev":
+        if args.part or args.limit:
+            raise SystemExit("--part/--limit apply to manifest videos, not fpv-dev")
+        download_fpv_dev(manifest, out, Path(args.fpv_dev_out), args.dry_run)
+        return 0
     if args.what == "fpvsum":
         download_fpvsum(manifest, out, args.limit, args.dry_run)
     elif args.what == "epic":
