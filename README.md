@@ -17,7 +17,7 @@ The highlight selector picks moments that cover many different actions and that 
 
 Requirements:
 - Python 3.12+
-- FFmpeg 5.1+ (`ffmpeg` and `ffprobe` on PATH)
+- FFmpeg 4.4+ (`ffmpeg` and `ffprobe` on PATH). Tested with 4.4.2 (Ubuntu 22.04 package) and 9.0.2: the action stage gets byte-identical decoded frames on both (#42). Our final run's exact version is recorded in `outputs/README.md`.
 - about 2 GB of disk for the model files
 - recommended: an NVIDIA GPU with 4 GB+ VRAM (see [Hardware and runtime](#hardware-and-runtime))
 
