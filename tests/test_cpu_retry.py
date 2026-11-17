@@ -1,4 +1,4 @@
-"""D23: a CUDA out-of-memory error in a stage retries that stage once on the CPU."""
+"""D23: CUDA out-of-memory retries a stage on the CPU; plus the CLI's Python version guard."""
 import sys
 import types
 
@@ -96,3 +96,10 @@ def test_strict_mode_still_fails_when_the_cpu_retry_fails(on_cuda, monkeypatch):
 
     with pytest.raises(main.StageError):
         run_stage(compute)
+
+
+def test_old_python_is_a_configuration_error(monkeypatch, tmp_path):
+    monkeypatch.setattr(main, "MIN_PYTHON", (99, 0))
+    out = tmp_path / "o.json"
+    assert main.main([str(tmp_path / "in.mp4"), str(out)]) == main.EXIT_CONFIG
+    assert not out.exists()
