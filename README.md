@@ -68,7 +68,7 @@ MP4 ─┬─ PyAV, 2 fps ─ CLIP ViT-B-32 ─┬─ importance (novelty) ─�
 |---|---|---|
 | Entry point, stage orchestration with fallbacks, output schema | `run.sh`, `code/main.py`, `code/schema.py`, `code/fallbacks.py` | M4 |
 | Video decoding (real timestamps, rotation, damaged packets skipped) | `code/video_io.py` | M4 |
-| Actions: EPIC-100 SlowFast features → ActionFormer verb and noun detection → pairs → NMS, up to 2000 scored actions | `code/actions.py`, `code/slowfast_features.py`, `code/action_config.py` | M1 |
+| Actions: EPIC-100 SlowFast features → ActionFormer verb and noun detection → pairs → NMS, up to 2000 scored actions. Skipped (`actions: []`) when the label is one of the 14 FPVSum sports, since the model only knows kitchen verbs and nouns (D21) | `code/actions.py`, `code/slowfast_features.py`, `code/action_config.py` | M1 |
 | Perception: CLIP features at 2 fps, frame importance, zero-shot label | `code/clip_features.py`, `code/importance.py`, `code/category.py` | M2 |
 | Highlights: bounded greedy packing that rewards distinct action coverage and importance, within the 15% budget | `code/optimizer.py`, `code/candidates.py` | M3 |
 | Shared types and settings | `code/contracts.py`, `code/config.py`, `code/vocab.py` | M4 |

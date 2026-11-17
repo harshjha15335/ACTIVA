@@ -71,6 +71,12 @@ FPVSUM_CATEGORIES = ("bike", "bikepolo", "boxing", "horse", "jumping", "longboar
                      "parkour", "plane", "rockclimbing", "scuba", "skate", "ski", "surfing")
 
 
+def action_gate():
+    """D21: skip the (kitchen-only) action model when the video is labelled as one of the
+    FPVSum sports. ACTIVA_ACTION_GATE=0 runs it on every video, as before."""
+    return os.environ.get("ACTIVA_ACTION_GATE", "1") != "0"
+
+
 def vocab_path():
     """ACTIVA_VOCAB overrides the default kit location."""
     return Path(os.environ.get("ACTIVA_VOCAB", DEFAULT_VOCAB_PATH))
