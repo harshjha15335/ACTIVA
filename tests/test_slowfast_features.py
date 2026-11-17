@@ -154,3 +154,29 @@ def test_prefetch_preserves_order_and_raises():
     assert next(it) == 1
     with pytest.raises(RuntimeError, match="decoder died"):
         next(it)
+
+
+def test_portrait_frames_are_pillarboxed_to_square():
+    rgb = np.full((1920, 1080, 3), 200, np.uint8)            # portrait 1080x1920
+    out = resize_frame(rgb, Preprocess(color="rgb"))
+    assert out.shape == (256, 256, 3)                          # 144 px wide image + black bars
+    assert (out[:, :50] == 0).all() and (out[:, -50:] == 0).all()
+    assert (out[:, 100:156] == 200).all()
+    assert resize_frame(rgb, Preprocess(color="rgb", pillarbox=False)).shape == (256, 144, 3)
+
+
+def test_landscape_frames_are_never_padded():
+    rgb = np.full((1080, 1920, 3), 7, np.uint8)
+    assert resize_frame(rgb, Preprocess()).shape == (256, 456, 3)
+    square = np.zeros((300, 300, 3), np.uint8)
+    assert resize_frame(square, Preprocess()).shape == (256, 256, 3)
+
+
+def test_ffmpeg_args_work_without_fps_mode():
+    """FFmpeg < 5.1 has no -fps_mode: the kept frames are renumbered at 30 fps instead."""
+    args = sf._ffmpeg_rate_args(sf.FrameSource(), 456, 256)
+    assert "-fps_mode" not in args and "-vsync" not in args
+    vf = args[args.index("-vf") + 1]
+    assert vf == ("fps=60.0,scale=456:256:flags=bicubic," + sf._ffmpeg_select(sf.FrameSource())
+                  + ",setpts=N/(30*TB)")
+    assert args[args.index("-r") + 1] == "30"
