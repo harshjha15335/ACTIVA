@@ -19,3 +19,18 @@ def test_verify_reports_mismatch_and_missing():
     bad = setup.verify(files)
     assert any(b.startswith("SlowFast.pyth: got") for b in bad)
     assert "epic_slowfast_noun_reproduce/epoch_020.pth.tar: missing" in bad
+
+
+def test_vendored_source_is_not_checked_out_again(tmp_path, monkeypatch):
+    """D-d: the source is committed without .git; `git -C` there would hit the ACTIVA repo."""
+    (tmp_path / "actionformer_release").mkdir()
+    calls = []
+    monkeypatch.setattr(setup.subprocess, "run", lambda *a, **k: calls.append(a))
+    assert setup.git_checkout(tmp_path / "actionformer_release", "url", "61ea7eb") == "61ea7eb"
+    assert calls == []
+
+
+def test_vendored_copies_keep_their_licences():
+    root = Path(__file__).resolve().parents[1] / "weights" / "m1"
+    for name in ("actionformer_release", "epic-kitchens-slowfast"):
+        assert (root / name / "LICENSE").is_file(), name

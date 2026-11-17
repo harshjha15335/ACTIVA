@@ -56,6 +56,10 @@ def sha256(path):
 
 
 def git_checkout(dest, url, commit):
+    if dest.exists() and not (dest / ".git").exists():
+        # Vendored in the ACTIVA repo at this commit, without .git (D-d): nothing to fetch.
+        # Without this, `git -C dest` would act on the ACTIVA repo itself.
+        return commit
     if not dest.exists():
         subprocess.run(["git", "clone", "-q", url, str(dest)], check=True)
     subprocess.run(["git", "-C", str(dest), "checkout", "-q", commit], check=True)

@@ -17,6 +17,12 @@ outputs/*
 weights/*
 !weights/README.md
 !weights/README_weights.md
+# Third-party model source, unmodified at the pinned commits (D-d, #25/#26); not the checkpoints.
+!weights/m1/
+weights/m1/*
+!weights/m1/actionformer_release/
+!weights/m1/epic-kitchens-slowfast/
+weights/m1/*/.git/
 *.mp4
 *.npy
 *.npz
