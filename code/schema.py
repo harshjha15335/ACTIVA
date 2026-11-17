@@ -1,6 +1,6 @@
 """Official output JSON: build and validate. Owned by M4.
 
-Layout from the student kit (TEAM_README.md s3, examples P02_109.json, skiing_03.json):
+Layout from the student kit (TEAM_README.md s3 and its two example outputs):
 
     {"team_id": str, "video_id": str, "duration_sec": number,
      "label": {"name": str, "score": number},
