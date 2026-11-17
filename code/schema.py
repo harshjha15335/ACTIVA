@@ -56,6 +56,32 @@ def round_highlight(start, end, duration, decimals=None):
     return max(0.0, _ceil(start, d)), min(_floor(duration, d), _floor(end, d))
 
 
+def widen_float_short(segments, limit, decimals=None):
+    """Make every clip that is MIN_CLIP_SECONDS on the grid pass a literal float check.
+
+    On the 0.01 s grid a 4.00 s clip is often 3.9999999999999964 s as floats
+    (32.19 - 28.19), so a validator testing `end - start >= 4.0` would reject it.
+    Such a clip gains one grid step at its end, or else at its start, when that
+    keeps it inside [0, limit] and clear of its neighbours. Returns an edited copy.
+    """
+    d = config.OUTPUT_DECIMALS if decimals is None else decimals
+    step = 1 / _scale(d)
+    out = [list(seg) for seg in segments]
+    for i, seg in enumerate(out):
+        start, end = seg
+        if not (config.MIN_CLIP_SECONDS - _EPS <= end - start < config.MIN_CLIP_SECONDS):
+            continue
+        next_start = out[i + 1][0] if i + 1 < len(out) else None
+        prev_end = out[i - 1][1] if i > 0 else None
+        wider_end = round(end + step, d)
+        wider_start = round(start - step, d)
+        if wider_end <= limit + _EPS and (next_start is None or wider_end < next_start):
+            seg[1] = wider_end
+        elif wider_start >= 0 and (prev_end is None or wider_start > prev_end):
+            seg[0] = wider_start
+    return out
+
+
 def _clip01(x):
     x = float(x)
     return min(1.0, max(0.0, x)) if math.isfinite(x) else 0.0
@@ -86,12 +112,13 @@ def to_output(info, cat, actions, highlights, team_id=None, decimals=None):
         out_actions.append({"segment": [start, end], "verb": a.verb, "noun": a.noun,
                             "score": _round(_clip01(a.score), config.SCORE_DECIMALS)})
 
-    out_highlights = []
+    segments = []
     for h in sorted(highlights, key=lambda h: (h.start, h.end)):
         start, end = round_highlight(h.start, h.end, info.duration, d)
         if start >= end:
             continue
-        out_highlights.append({"segment": [start, end]})
+        segments.append([start, end])
+    out_highlights = [{"segment": seg} for seg in widen_float_short(segments, limit, d)]
 
     return {"team_id": team, "video_id": info.video_id,
             "duration_sec": _round(info.duration, d),
@@ -216,11 +243,11 @@ def validate_output(d, duration=None, vocab=None, team_id=None):
             length = end - start
             total += length
             longest = max(longest, length)
-            if length < config.MIN_CLIP_SECONDS - _EPS:
+            if length < config.MIN_CLIP_SECONDS:  # literal: an official check may have no slack
                 warnings.append(f"{where}: {length:.2f}s is under {config.MIN_CLIP_SECONDS:g}s (ignored when scoring)")
             if _decimals_over(start, dec) or _decimals_over(end, dec):
                 warnings.append(f"{where}.segment: more than {dec} decimals")
-        if total and longest < config.MIN_CLIP_SECONDS - _EPS:
+        if total and longest < config.MIN_CLIP_SECONDS:
             errors.append(f"highlights: need at least one segment >= {config.MIN_CLIP_SECONDS:g}s")
         budget = config.BUDGET_RATIO * dur
         if total > budget + _EPS:

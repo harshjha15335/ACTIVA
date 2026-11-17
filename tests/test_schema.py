@@ -186,3 +186,41 @@ def test_random_selections_stay_valid_after_rounding(v):
             assert round(s, 2) == s and round(e, 2) == e
         warnings = schema.validate_output(copy.deepcopy(out), duration, v)
         assert not [w for w in warnings if "decimals" in w]
+
+
+# A 4.00 s clip on the 0.01 s grid is often 3.9999999999999964 s as floats
+# (edge-case review F1); an official validator may test `end - start >= 4.0`.
+
+def test_four_second_clips_pass_a_literal_float_check(dev_vocab):
+    hls = [Highlight(0.68, 4.68, 0.5), Highlight(28.19, 32.19, 0.5), Highlight(100.0, 104.0, 0.5)]
+    assert 32.19 - 28.19 < 4.0 and 4.68 - 0.68 < 4.0
+    out = schema.to_output(info(120.0), CategoryResult("dev-category-a"), [], hls, team_id="T")
+    segs = [h["segment"] for h in out["highlights"]]
+    assert segs == [[0.68, 4.69], [28.19, 32.2], [100.0, 104.0]]
+    assert all(e - s >= 4.0 for s, e in segs)
+
+
+def test_widening_respects_neighbours_and_the_duration():
+    # end blocked by the next clip -> start moves back
+    assert schema.widen_float_short([[28.19, 32.19], [32.2, 40.0]], 120.0) == [[28.18, 32.19], [32.2, 40.0]]
+    # end blocked by the duration -> start moves back
+    assert schema.widen_float_short([[0.68, 4.68]], 4.68) == [[0.67, 4.68]]
+    # both blocked -> left as is (still exactly 4.00 on the grid)
+    assert schema.widen_float_short([[0.0, 0.1], [0.11, 4.11], [4.12, 9.0]], 120.0)[1] == [0.11, 4.11]
+    # already-long clips and 4.0-exact floats are untouched
+    assert schema.widen_float_short([[100.0, 104.0], [5.0, 9.5]], 120.0) == [[100.0, 104.0], [5.0, 9.5]]
+
+
+def test_validator_is_literal_about_four_seconds(v):
+    d = good()
+    d["highlights"] = [{"segment": [28.19, 32.19]}]
+    assert "at least one segment" in errors_of(d, v)
+
+
+def test_every_grid_four_second_clip_is_widened(dev_vocab):
+    for k in range(0, 11600):
+        s = k / 100
+        out = schema.to_output(info(120.0), CategoryResult("dev-category-a"), [],
+                               [Highlight(s, round(s + 4.0, 2), 0.5)], team_id="T")
+        (seg,) = [h["segment"] for h in out["highlights"]]
+        assert seg[1] - seg[0] >= 4.0, seg
