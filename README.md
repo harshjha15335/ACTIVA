@@ -162,3 +162,9 @@ ACTIVA's own code is by the team above. It builds on these projects, whose licen
 | [ActionFormer](https://github.com/happyharrycn/actionformer_release) code and EPIC-100 checkpoints | Verb and noun detection | MIT |
 | [EPIC-KITCHENS-100](https://epic-kitchens.github.io/) class lists | Class ID → name mapping | per the EPIC-KITCHENS terms |
 | EPIC-KITCHENS-100, FPVSum | The manifest's videos (not redistributed here) | per their owners |
+
+**Third-party source in this repo.** `weights/m1/actionformer_release/` and `weights/m1/epic-kitchens-slowfast/` are unmodified copies of the upstream code at the commits pinned in `scripts/setup_m1_assets.py` and recorded in `weights/m1/ASSETS.json`, without their `.git` folders:
+- ActionFormer @ `61ea7eb`, MIT.
+- epic-kitchens-slowfast @ `bf50519`, CC BY-NC-SA 4.0 (non-commercial).
+
+Each copy keeps its upstream LICENSE file. They are loaded only from disk at inference time; nothing is downloaded.

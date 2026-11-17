@@ -3,13 +3,14 @@
 Public entry point (fixed signature, guide A5):
     detect_actions(info: VideoInfo) -> list[Action]
 
-Current state (G0): `detect_actions` is a STUB that returns no actions, so the rest of
-the pipeline can run end-to-end. The helpers below are the real, tested building
-blocks that the full engine will use once the raw-MP4 feature gate (guide Step 4)
-is decided:
+`detect_actions` runs the real engine on the raw MP4 (local weights only, see
+action_config.EngineAssets and scripts/setup_m1_assets.py):
 
     raw MP4 -> SlowFast features [T, 2304] -> ActionFormer verb model + noun model
             -> pair_detections -> nms_pairs -> finalize -> list[Action]
+
+If the local models are not installed it raises ActionEngineUnavailable, so the
+pipeline logs a fallback (or fails in strict mode) instead of silently returning [].
 
 Detections arrays used here (all numpy, seconds):
     segs   [N, 2] float  (start, end)
@@ -59,9 +60,9 @@ def window_centres(num_windows: int, grid: FeatureGrid = GRID) -> np.ndarray:
 def expected_num_windows(duration: float, grid: FeatureGrid = GRID) -> int:
     """Approximate window count for a video after resampling to grid.fps.
 
-    Planning/sanity helper only. Observed on P01_11 (561.6 s): published T = 1053 while
-    this formula gives 1052, so the published extractor likely pads the last window
-    (ceil(n_frames / 16)). Confirm on more videos in the Step 4 comparison.
+    Planning/sanity helper only. On a 561.6 s video the published features have T = 1053
+    while this formula gives 1052: the published extractor uses T = n_frames // 16 with
+    padded trailing windows (see slowfast_features.num_windows).
     """
     n_frames = int(np.floor(float(duration) * grid.fps + 1e-9))
     if n_frames < grid.num_frames:

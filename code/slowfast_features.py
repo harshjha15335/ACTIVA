@@ -165,8 +165,8 @@ def num_windows(n_frames: int, grid: FeatureGrid = GRID, rule: str = "floor") ->
     """How many feature windows a video of n sampled (30 fps) frames gets.
 
     floor   : n // 16. Matches every published ActionFormer EPIC feature file we checked
-              (P02_13 885 -> 55, P03_21 957 -> 59, P26_30 458 -> 28, P28_23 755 -> 47,
-              P01_11 16848 -> 1053); trailing windows are padded with the last frame.
+              (5 videos, e.g. 885 -> 55, 957 -> 59, 458 -> 28, 755 -> 47, 16848 -> 1053);
+              trailing windows are padded with the last frame.
     ceil    : ceil(n / 16), padded.
     complete: only windows with all 32 frames, (n - 32) // 16 + 1.
     """
