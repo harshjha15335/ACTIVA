@@ -53,20 +53,20 @@ Contents: `TEAM_README.md`, `manifest.csv`, `supported_classes.json`, `P02_109.j
 | Valid pairs | optional list | none given | every verb x noun accepted | DONE |
 | Top-level JSON | 4 keys | 6 keys | `schema.to_output` writes all 6 | DONE |
 | `team_id` | none | required, identical | `config.TEAM_ID = "LensLog"` (registered team name); `ACTIVA_TEAM_ID` overrides; missing means exit 5 | PROVISIONAL: no official ID issued yet (Q9) |
-| `duration_sec` | none | ±0.5 s of manifest | probed duration, rounded to 2 decimals; checked by the batch runner and validator | DONE (checked on real videos once downloaded) |
+| `duration_sec` | none | ±0.5 s of manifest | probed duration, rounded to 2 decimals; checked by the batch runner and validator | DONE (checked on all 187 manifest videos) |
 | `label` | string | `{name, score}` | score = `CategoryResult.scores[label]` clipped to [0, 1] | DONE; M2 asked to make scores calibrated |
 | Action fields | `start`/`end`, no score | `segment` + `score` | `segment` + `score` always | DONE |
 | Action count | unlimited | <= 2000 | top 2000 by score kept | DONE |
 | Highlight fields | `start`/`end`/`importance` | `segment` only | `segment` only; importance stays internal | DONE |
-| Minimum clip | 1 s | >= 4 s counts | clips < 4 s dropped before checks; fallback uses 6 s clips | DONE; M3 still emits 3 s clips |
+| Minimum clip | 1 s | >= 4 s counts | clips < 4 s dropped before checks; fallback uses 6 s clips | DONE; the selector emits clips of 4 s or more, and D22 stops 4.00 s clips becoming 3.9999 s |
 | Short videos (15% < 4 s) | n/a | rules conflict | one 4.0 s clip (`config.SHORT_VIDEO_SINGLE_CLIP`) | PROVISIONAL: ask organisers |
 | Touching clips | allowed | "strictly non-overlapping" | merged into one clip; the validator warns on touching | DONE |
 | Fallback label | first category | n/a | `other` | DONE |
 | Validator | 4-key spec | `validate.py` (missing from ZIP) | `scripts/validate_outputs.py`, the "ACTIVA local spec validator" | PARTIAL: official script needed |
 | Release gate | fallbacks always on | n/a | `ACTIVA_STRICT=1`: a failing stage means exit 6, no JSON | DONE |
-| Batch run | none | 187 outputs | `scripts/run_manifest.py`: resumable, per-video report | DONE (not yet run on real videos) |
+| Batch run | none | 187 outputs | `scripts/run_manifest.py`: resumable, per-video report | DONE: 187/187 valid (full run on 17 Nov) |
 | Durations | warned outside 2-10 min | 11-1969 s | warn outside 10-2000 s | DONE |
-| Kit in Git | n/a | unknown | `kit/` ignored | OPEN (#9) |
+| Kit in Git | n/a | unknown | `kit/` ignored | DECIDED: kept local (D19); `run.sh` works without it (D20); asked the organisers (#46) |
 
 ## Questions for the organisers (Aarush to send)
 
@@ -80,12 +80,11 @@ Contents: `TEAM_README.md`, `manifest.csv`, `supported_classes.json`, `P02_109.j
 8. **Reproduction:** what hardware and time limits apply when you re-run `./run.sh`? Is network access available?
 9. **Team ID:** we haven't received one. Should `team_id` and the submission folder use our team name, `LensLog`?
 
-## Not done here (other owners or later M4 work)
+## Status (19 Nov)
 
-- M1: real detections (`detect_actions` still returns `[]`).
-- M2: CLIP weights installed offline; calibrated label scores.
-- M3: clips of 4 s or more, and selection that uses actions and importance.
-- M4:
-  - run the batch on the downloaded videos;
-  - an opt-in real-model end-to-end test;
-  - `TEAM_ID/` packaging, Docker, the demo.
+The earlier to-do list here is done: real action detections (M1), offline CLIP weights
+(M2), an action-aware selector with clips of 4 s or more (M3), and the full 187-video
+batch run, real-model test and packaging (M4). The public repo follows the kit's folder
+layout, as the organisers asked on 17 Nov. Still open with the organisers (#46): the
+official `validate.py`, the `team_id` string and the short-video rule. `outputs/` is
+committed after the final run on 21-22 Nov.
