@@ -191,7 +191,7 @@ M2 failures no longer occur. This supersedes them as current blockers; their
 historical results above remain intact.
 
 M2 reports genuine-cache acceptance against this selector on its 79.5-second
-fixture in docs/M2_FINAL_REPORT.md and board comment 6802382981. The supplied
+fixture in docs/archive/M2_FINAL_REPORT.md and board comment 6802382981. The supplied
 path identifies ignored files on M2's machine, not a downloadable artifact in
 this checkout. M3 has not independently rerun that genuine cache here. Request
 the manifest and both NPZ files with source/model/payload hashes. Keep cache

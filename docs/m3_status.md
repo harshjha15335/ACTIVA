@@ -97,7 +97,7 @@ https://github.com/harshjha15335/ACTIVA/issues/4#issuecomment-6801054556
 The older draft text below is historical, not the current coordination state.
 
 M2 reports successful genuine-cache acceptance on the 79.5-second vtest_full
-fixture in docs/M2_FINAL_REPORT.md and board comment 6802382981. That is M2's
+fixture in docs/archive/M2_FINAL_REPORT.md and board comment 6802382981. That is M2's
 reported evidence, not a local rerun by M3. The manifest and its two NPZ payloads
 are still absent from this checkout. Request their transfer with original hashes
 and model identity; never create substitute features or pad cached timestamps.
