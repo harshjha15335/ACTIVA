@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # ACTIVA official entry point: ./run.sh <input.mp4> <output.json>
 # Exit codes: 0 ok, 2 usage, 3 input not found, 4 invalid video,
-#             5 configuration (e.g. vocabulary missing), 1 internal error.
+#             5 configuration (e.g. vocabulary missing), 6 a stage failed with
+#             ACTIVA_STRICT=1 (no JSON written), 1 internal error.
 set -euo pipefail
 
 if [ "$#" -ne 2 ]; then

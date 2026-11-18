@@ -17,7 +17,7 @@ Published filename SHA256 prefix: `46683a32` (verified).
 Full raw-file SHA256 computed after that verification:
 `46683a32721d5c68911153698992361285d20ca690bb4f317c11e45c03d798fa`.
 Converted safetensors SHA256 for the installed local artifact:
-`9bd6bea2e0b7f343b17347af1854d7fd2667a227b0997801e5d297d46808854b`.
+`c2ea63325cebca85a9eb509481f37ea991cb20199cab6642e68dbc8f973382f5`.
 
 The release/installed OpenCLIP metadata provides an8hexprefix, not an independently
 published full SHA256. Verification status is therefore published-prefix verified

@@ -1,6 +1,7 @@
 # Shared runtime requirements for ./run.sh. FFmpeg/ffprobe must also be on PATH.
 #
-# GPU: the action stage (M1) needs CUDA. pip's default torch is CPU-only; on a
+# GPU: recommended for the action stage (M1); it also runs on CPU, about 9x slower
+# (README, Hardware and runtime). pip's default torch is CPU-only; on a
 # CUDA 13.x driver install the GPU build of the same version first, then set
 # ACTIVA_DEVICE=cuda (measured on an RTX 4060 8 GB: peak 3.2 GB):
 #   pip install --no-deps torch==2.15.0+cu132 --index-url https://download.pytorch.org/whl/cu132
