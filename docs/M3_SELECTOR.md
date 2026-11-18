@@ -25,7 +25,7 @@ expected_model argument. This does not approve the checkpoint for submission.
 No genuine M2 cache is installed here. Production never reads caches.
 
 13 November update: M2 reports a genuine 79.5-second vtest_full cache passing
-this selector's handoff check (docs/M2_FINAL_REPORT.md). Its manifest/NPZ files
+this selector's handoff check (docs/archive/M2_FINAL_REPORT.md). Its manifest/NPZ files
 are not present in M3's checkout yet, so that result remains attributed to M2.
 The reader uses each artifact's actual model_name and payload hashes; it does
 not require one machine's older converted-checkpoint file hash.
