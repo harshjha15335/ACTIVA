@@ -160,58 +160,48 @@ errors, a second failure and strict mode behave as before. Measured 17 Nov on a 
 test clip with the GPU capped at 1.2 GB: before, 0 actions and `other`; after, exit 0
 and a JSON identical to a pure-CPU run (1,849 actions, same label and highlights).
 
-## M2 decisions proposed for review
+## M2 perception decisions — current as of 18 November 2026
 
-# M2 implementation decisions — pending shared-owner acceptance
+This section supersedes the pre-integration process notes archived with the
+`docs/M2_*.md` handoff reports. M2 changes do not modify M1/M3/M4-owned
+contracts or override decisions D17–D23 above.
 
-These document M2-owned remediation; they do not amend shared contracts or claim
-M4 approval. Shared config.py,contracts.py,video_io.py and requirements.txt are unchanged.
+- **CLIP and category baseline.** Production uses the release
+  `ViT-B-32-laion400m_e32.safetensors` model, 512-dimensional normalized
+  features on the actual 2-fps PTS grid, novelty importance, and mean-pooled
+  zero-shot category scores. Development cache v1 is for offline analysis only;
+  the inference path must never load these caches.
+- **Kit separation.** A local kit vocabulary takes precedence when supplied.
+  D20 defines the public no-kit fallback. Training and evaluation material,
+  official manifest rows, video media and private caches must not be published.
+- **Leakage protection (D-a/D-c).** The official manifest is now available on
+  the team's private machines. Its video/source identities must be excluded from
+  development evaluation; a different YouTube ID alone does not prove content
+  separation. Human-reviewed alias/content checks and source grouping are
+  required before declaring the remaining FPVSum candidates safe. Manifest
+  annotations may be used for report-only analysis after frozen outputs are
+  hashed (D-a), never for prompt/model tuning.
+- **Rejected title-card mask (D-b).** Draft PR #29 failed its predeclared
+  10-video EPIC false-positive and M3 stability gates (#27/#28, PR #32).
+  Decision: **NO-GO**; keep `ACTIVA_CARD_MASK=0` and do not merge/activate
+  that candidate. A sport-only candidate proposed in #33 is separately blocked
+  by unavailable independent labelled FPVSum videos and missing highlight-F1
+  evidence. No post-result threshold tuning.
+- **Category-prompt study (#33).** 34 non-manifest source-ID/stem-screened,
+  unlabelled FPVSum recordings have genuine CLIP caches and a preliminary
+  baseline of 28/34 correct (82.4%). Human source/content-disjointness
+  clearance has NOT been completed. No prompt variant has yet been evaluated.
+  Once cleared, define at most three prompt variants before one-pass
+  scoring; acceptance requires at least three net additional correct
+  classifications on the fixed eligible set and 10/10 EPIC dev examples still
+  labelled `cooking`.
+- **Remaining verification.** Offline clean-room checks on a fresh clone,
+  without `kit/`, network access during `run.sh`, or private artifacts in the
+  repo, are scheduled for 19 and 21/22 November (#27). No unrun local test or
+  human review is treated as completed.
 
-1. Configuration precedence is explicitCLI > environment > shareddefaults.
-   Validate through the M2 perception_options adapter; keep M4's config API intact.
-2. Keep original OpenAI as its existing default. Validate the explicitly selected
-   OpenCLIP LAION400M_e32 QuickGELU B32 alternative through the already permitted
-   official GitHub release. Both have512 dimensions, but weights differ. Team
-   approval/evidence-based final selection remains pending.
-3. Record published checksum-prefix verification honestly, plus full local source
-   and converted hashes. Never relabel the observed full hash as an independently
-   published full digest. No verification or TLS was disabled.
-4. Use actual checkpoint content identity in ClipFeats.model_name. Shared dataclass
-   shapes/signatures remain unchanged; the cache manifest is M2 development data.
-5. Canonical M4 vocab.load() is preferred and dev-label conflict fails. Missing
-   canonical vocabulary can be made fatal through strict mode. Fixture labels do
-   not certify official compatibility.
-6. Development caches use atomic NPZ/JSON, input/config/checkpoint identity and
-   strict read validation. M3 must accept the v1 format; no acceptance is assumed.
-7. FPVSum processed Score is preserved; raw Label can be fractional. Do not infer
-   raw-to-processed averaging, an underscore repair or case normalization. Explicit
-   evidence-backed aliases are required. Original frame PTS must be supplied.
-8. ID/hash/content fingerprints can identify review candidates, never establish
-   safety by lack of a match. Training/validation require a reviewed manifest-bound
-   decision and disjoint source groups/hashes. No FPVSum run is cleared here.
-9. M2 evaluation uses a labeled sample-grid ranking-F1 development proxy. It is
-   not original-frame or final-highlight F1 and does not enforce interval budgets.
-   M3/M4 scorer parity remains necessary before official comparisons.
-10. TCN remains untrained and outside production predict_importance. Do not launch
-    training before genuine features, annotation alignment, safe splits, baseline
-    evaluation and approved scorer conventions are established.
-11. Preserve M1/M3/M4 files and unrelated Git histories. Shared foundation migration,
-    merges and submission require their owners/humans. Messages are drafts only.
-
-## M2 canonical integration decisions — 9 November 2026
-
-- Canonical source is main@cc3d61d; M1@fccad75 and M3@cc6f36a are available.
-  Tests use immutable source copies, not edits to those owner branches.
-- User explicitly forbids unrelated-history merging. Despite M4's proposed merge
-  command, prepare a source-only patch checked against canonical main instead.
-- Missing installed vocabulary modules and missing kit data are distinct states.
-  Only a declared M4 VocabError plus a demonstrably absent configured file may
-  use explicit development labels; strict mode and malformed files still fail.
-- Real M2 passes through the actual M4 runner/schema with fixture labels, not
-  official vocabulary. This is canonical API evidence, not official compliance.
-- Existing issues #1/#2/#3 stay OPEN; no owner ACK was observed. API egress is
-  blocked and its domain addition was saved; no comment is considered sent until
-  a successful GitHub response is recorded.
+Historical M2 development notes are preserved in `docs/archive/`. See
+`docs/leakage.md`, #27, #33 and D20–D23 for current release gates.
 
 ## M3 selector decisions - 11 November 2026
 

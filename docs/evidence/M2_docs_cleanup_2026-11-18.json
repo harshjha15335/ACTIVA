@@ -1,0 +1,32 @@
+{
+  "format": "activa-m2-docs-cleanup-v1",
+  "date": "2026-11-18",
+  "scope": [
+    "docs/leakage.md",
+    "docs/decisions.md",
+    "docs/archive/M2_*.md"
+  ],
+  "archived_source_documents": [
+    "docs/M2_FINAL_REPORT.md",
+    "docs/M2_HANDOFF.md",
+    "docs/M2_INTEGRATION_STATUS.md",
+    "docs/M2_ISSUE14_HANDOFF.md",
+    "docs/M2_PATCH_TRANSFER.md",
+    "docs/M2_README.md",
+    "docs/M2_TEAM_MESSAGES.md"
+  ],
+  "public_private_media_added": false,
+  "manifest_files_added": false,
+  "source_disjoint_human_review": "NOT DONE",
+  "prompt_variant_evaluations": "NOT RUN",
+  "original_title_card_mask": "NO-GO, DISABLED, PR #29 UNMERGED",
+  "sport_only_mask": "NO-GO: labelled F1 unavailable",
+  "real_no_kit_clean_room": "NOT RUN: local videos/weights required",
+  "local_pytest": "NOT RUN: complete checkout/dependencies unavailable in this execution environment",
+  "ci_status": "PENDING",
+  "source_issues": [
+    "#27",
+    "#33"
+  ],
+  "notes": "Documentation-only proposal; no production code, model weights, video media, caches or evaluation labels changed."
+}
