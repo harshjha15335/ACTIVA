@@ -1,0 +1,21 @@
+# Build context for the Dockerfile: code and docs only. Weights are downloaded and
+# SHA-256 checked during the build, so local copies are left out on purpose.
+.git
+.github
+.venv
+**/__pycache__
+.pytest_cache
+data
+dev_cache
+tmp
+outputs
+kit
+eval
+kaggle
+weights/*
+!weights/README_weights.md
+!weights/m1
+weights/m1/*
+!weights/m1/actionformer_release
+!weights/m1/epic-kitchens-slowfast
+weights/m1/**/.git
