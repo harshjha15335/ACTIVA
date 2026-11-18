@@ -128,8 +128,16 @@ def install_code(base):
             target = (dest_dir / member).resolve()
             if not str(target).startswith(str(dest_dir.resolve())):
                 sys.exit(f"unsafe path in {name}: {member}")
-        z.extractall(dest_dir)
-    log(f"unpack  {name} -> {dest_dir.relative_to(ROOT)}/")
+        # The third-party source is committed (D-d); never overwrite it, or a fresh clone
+        # shows every vendored file as modified (the zip has CRLF endings). Only the
+        # missing members (the EPIC class CSVs) are written.
+        added = 0
+        for member in z.infolist():
+            if member.is_dir() or (dest_dir / member.filename).exists():
+                continue
+            z.extract(member, dest_dir)
+            added += 1
+    log(f"unpack  {name} -> {dest_dir.relative_to(ROOT)}/ ({added} new files)")
 
 
 def check():

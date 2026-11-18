@@ -141,14 +141,14 @@ c2ea63325cebca85a9eb509481f37ea991cb20199cab6642e68dbc8f973382f5  ViT-B-32-laion
 
 The SlowFast and ActionFormer code is in the repo at the pinned commits (see Credits).
 
-**Software used for `outputs/`.** Pinned in `requirements.txt`:
+**Software used for `outputs/`.** Direct dependencies are pinned in `requirements.txt`; every installed package, including transitive ones, is in `requirements-lock.txt` (`pip freeze` of the run's venv):
 
 | | |
 |---|---|
 | OS, GPU | Windows 11, RTX 4060 Laptop, NVIDIA driver 592.82 |
 | Python | 3.13.5 |
 | torch | 2.15.0+cu132 (CUDA 13.2, cuDNN 9.26) |
-| torchvision, open_clip_torch | 0.29.2, 4.2.1 |
+| torchvision, open_clip_torch | 0.29.2+cpu, 4.2.1 |
 | av (PyAV), numpy, Pillow | 19.0.2, 2.3.5, 13.0.0 |
 | FFmpeg | 9.0.2 (gyan.dev full build) |
 

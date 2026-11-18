@@ -86,6 +86,16 @@ def test_corrupt_download_is_deleted_and_fails(release):
     assert not (repo / "weights/slowfast.pyth").exists()
 
 
+def test_code_zip_never_overwrites_committed_files(release):
+    sw, url, repo, _, _ = release
+    committed = repo / "weights/m1/a/config.yaml"
+    committed.parent.mkdir(parents=True)
+    committed.write_bytes(b"committed, LF\n")
+    assert sw.main(["--base-url", url]) == 0
+    assert committed.read_bytes() == b"committed, LF\n"
+    assert (repo / "weights/m1/classes.csv").read_bytes() == b"x"
+
+
 def test_zip_with_escaping_path_is_refused(release, monkeypatch):
     sw, url, _, served, _ = release
     evil = _zip({"../../outside.txt": b"x"})
