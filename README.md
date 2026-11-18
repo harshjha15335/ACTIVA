@@ -56,6 +56,21 @@ Output (`code/schema.py`). The team ID is the same in every file (`code/config.p
   - 6 a stage failed in strict mode
 - **Fallbacks:** if a stage fails, the default is to log it and write a valid file using a safe fallback for that stage, because a missing file scores 0. `ACTIVA_STRICT=1` turns any fallback into exit 6 instead; we use it to verify releases.
 
+### Docker
+
+The `Dockerfile` builds the same pipeline on Debian 12 (Python 3.13, FFmpeg 5.1), CPU by default. The build downloads and SHA-256-checks the weights once, so the container runs with no network:
+
+```sh
+docker build -t activa .
+docker run --rm --network none -v "$PWD/videos:/in:ro" -v "$PWD/out:/out"     activa /in/<video_id>.mp4 /out/<video_id>.json
+```
+
+- **GPU (optional):** needs the NVIDIA Container Toolkit. Build with `--build-arg TORCH_INDEX=https://download.pytorch.org/whl/cu132`, then add `--gpus all` to `docker run`.
+- **Strict mode:** add `-e ACTIVA_STRICT=1` to `docker run` to get exit 6 instead of a fallback.
+- **Tested 19 Nov** (CPU image, `--network none`, strict mode):
+  - On a 25 s EPIC video: exit 0, valid JSON, and the same label and highlights as `outputs/`. 1,721 of 2,000 actions are identical; the rest differ by floating-point rounding (see [Reproducibility](#reproducibility)).
+  - On a sports video: byte-identical to `outputs/`.
+
 ## How it works
 
 ```
@@ -184,7 +199,7 @@ python -m pytest -q
 How we work:
 - Each member works on their own branch and merges into `main` through PRs that pass CI.
 - Coordination happens on the [message board](https://github.com/harshjha15335/ACTIVA/issues/4); rules are in [`docs/agent_board_protocol.md`](docs/agent_board_protocol.md).
-- Coding agents start from [`AGENTS.md`](AGENTS.md).
+- Coding agents start from [`AGENTS.md`](AGENTS.md). Which AI tools we used, and how we checked their work, is in [`AI_DISCLOSURE.md`](AI_DISCLOSURE.md).
 
 ## Credits and licences
 
