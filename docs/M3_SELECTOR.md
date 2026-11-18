@@ -212,3 +212,17 @@ This is a bounded heuristic: the thresholded coverage term has jumps, and no
 global-optimum or submodularity guarantee is claimed. J with no confident
 actions becomes importance-only; A with none becomes uniform. The density study
 changes the available predicted actions, not these definitions or the GT metric.
+
+## Budget-fill sensitivity tool (#34/#37)
+
+`scripts/m3_budget_fill_study.py` evaluates baseline J, a diagnostic fill to the
+current safety budget, and one near-limit fill candidate. It serializes through
+current main/schema before and after extending existing clips, then checks
+literal >=4-second lengths and budgets against both actual/output durations.
+The deterministic extension rule and ship gate are documented with the measured
+18 November results in docs/results.md. It writes tune and a decision lock
+exclusively before conditionally loading held-out; existing stages cannot be
+overwritten. No inference module imports this development tool.
+
+The candidate failed held-out confirmation, so production settings are unchanged.
+This EPIC study supplies no human highlight-F1 evidence for FPVSum sports.

@@ -578,3 +578,98 @@ After the real checkpoint check, the fresh full suite is **417 passed, 4 skipped
 0 failed** (246.82 s, 3 warnings). All 240 ON/OFF comparison selections pass
 interval and budget checks. No skip is used as a substitute for this separately
 executed real-cache/text-encoder measurement.
+
+## Budget-fill test - 18 November 2026 (#34/#37)
+
+**Keep the current J selector and 0.148 safety budget.** The predeclared
+near-limit fill improves all four tune conditions but is flat at two held-out
+densities, failing the confirmation rule. No production file or shared setting
+was changed. The safety-fill condition is a diagnostic, never a second ship
+candidate selected after seeing results.
+
+Protocol was posted on [#34 before execution](https://github.com/harshjha15335/ACTIVA/issues/34#issuecomment-6981259887).
+Use the same verified six tune/four participant-disjoint EPIC sources, original
+predictions/caches, confidence >=0.2 and floor/top-score thinning at 2/3.5/6/all.
+The baseline is `main` d107539 with J0.6/0.4. Serialize every baseline through
+current `normalize_highlights` and `schema.to_output` first, including M4's D22
+float-short widening. Extend existing clips last-to-first, right then left,
+retaining a one-tick gap to neighbours and respecting the video boundary. No
+new clips are added; every filled set contains the entire serialized baseline.
+
+Fixed targets on the current centisecond grid:
+
+- **Safety fill (diagnostic):** floor(0.148 * duration * 100), or the baseline
+  serialized tick length if D22 already added a tick beyond that target.
+- **Near-limit fill (sole candidate):** floor(0.15 * min(actual duration, rounded
+  output duration) * 100) - 1 ticks. This reserves one tick after baseline D22
+  widening; final export is rechecked against both duration budgets.
+
+Ship rule: near-limit mean coverage must strictly improve at **every** density
+on tune with zero invalid exports, then satisfy the same rule on the four
+held-out sources in one frozen stage. Otherwise retain current production.
+The exclusive tune/decision-lock file was written before the held-out loader
+was called; source/report SHA links are preserved in the public evidence.
+
+Local distinct GT-pair macro coverage after export, union >=50% of a GT
+instance, in percent:
+
+| Partition | Density cap | Current J | Safety fill | Near-limit fill | Candidate change (pp) |
+|---|---:|---:|---:|---:|---:|
+| Tune | 2 | 32.7996 | 33.9789 | 34.3122 | +1.5126 |
+| Tune | 3.5 | 36.1449 | 36.4851 | 36.4851 | +0.3401 |
+| Tune | 6 | 38.3079 | 38.5567 | 38.8440 | +0.5361 |
+| Tune | all | 37.6539 | 37.6539 | 37.9413 | +0.2874 |
+| Held-out | 2 | 29.7063 | 29.7063 | 29.7063 | 0 |
+| Held-out | 3.5 | 34.0680 | 34.0680 | 34.0680 | 0 |
+| Held-out | 6 | 33.8301 | 34.1208 | 34.4048 | +0.5748 |
+| Held-out | all | 37.7031 | 37.7031 | 38.0007 | +0.2976 |
+
+The tune gate passed, permitting the new held-out fill conditions once. The
+held-out gate failed at 2 and 3.5, so no fill variant ships. No method/rule
+adjustment or retuning followed. Near-limit fill uses about **99.98% of the
+allowed 15% budget**, yet the extra duration does not add half-overlap coverage
+at those two densities. Current J uses 94.94-97.16% of the allowed budget on
+tune and 95.79-96.62% on held-out; these development-cohort numbers are not the
+manifest budget-fill measurements quoted in #37.
+
+All **120 selections** (72 tune, 48 held-out) pass literal float >=4-second clips,
+sorted/disjoint/in-range/grid geometry, and strict budgets against both actual
+and rounded output duration. An independent containment audit verifies that
+each filled result preserves every baseline frame. D22 changes one baseline:
+P03_19 at all-density moves from raw coverage 47.6744% to serialized 48.8372%,
+raising the held-out macro baseline from the previous raw 37.4124% to 37.7031%.
+This is M4's existing serialization fix, not a selector retune. Raw and exported
+baseline scores are recorded separately.
+
+[Evidence JSON](evidence/M3_budget_fill_2026-11-18.json) includes the lock, raw
+report hashes, exact source hashes, per-video outcomes, validity checks and
+highlight digests. [Chart](evidence/M3_budget_fill_2026-11-18.png) shows both
+partitions. Private reports retain the coordinates; raw GT/arrays/kit remain
+local. Reproduction (use a new output directory; existing stages are never
+overwritten):
+
+```powershell
+python scripts/m3_budget_fill_study.py --study <six-tune.json> --held-out-study <four-held-out.json> --review <review.json> --official-manifest kit/manifest.csv --output-dir tmp/m3/budget-fill-study
+```
+
+Limits: this tests one fixed extension rule. ActionFormer trained on these
+non-manifest train sources; the small nonrandom cohort evaluates selector
+decisions. Existing held-out baseline/density outcomes were already known, so
+this remains partition reuse, not a fresh independent holdout. No manifest
+annotations were scored.
+
+**FPVSum F1 remains blocked.** Per #33/#37, all seven labelled non-manifest
+recordings are unavailable from the documented sources. The acquired unlabelled
+candidates have no human highlight labels and still require content-disjointness
+clearance. No baseline/mask/edge/U human F1, sport-only mask GO, sports-edge
+rule or uniform sports switch is claimed or activated. EPIC action coverage
+does not substitute for highlight F1. Legitimate copies of the exact labelled
+sources plus identity, disjointness and annotation-time alignment evidence are
+needed to reopen those comparisons.
+
+Verification on source base d107539: `.\.venv\Scripts\python.exe -m pytest -q`
+-> **454 passed, 5 skipped, 0 failed**, 3 warnings, 282.83 s. Skips are configured
+team ID, missing local upstream FPVSum inventory, missing local M1 class CSVs
+and two opt-in media inference cases. The three new budget-fill tests and all
+38 metric/evaluation tests pass. Read-only review found no critical/important
+issues and independently verified lock/source digests and recorded aggregates.
