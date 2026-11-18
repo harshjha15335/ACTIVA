@@ -42,7 +42,8 @@ vocabulary or non-finite values dropped, times clamped into the video) rather
 than discarding the whole list.
 
 **D8 Exit codes.** 0 ok, 1 internal error, 2 usage, 3 input not found,
-4 invalid video, 5 configuration. Output JSON is written atomically.
+4 invalid video, 5 configuration, 6 a stage failed with `ACTIVA_STRICT=1` (no JSON
+written). Output JSON is written atomically.
 
 **D9 No action `score` in the JSON** until the kit allows it
 (`config.INCLUDE_ACTION_SCORE`).

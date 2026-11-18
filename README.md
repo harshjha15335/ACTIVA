@@ -7,7 +7,7 @@ ACTIVA turns a first-person (egocentric) MP4 into one JSON in the student kit's 
 - every **action** it finds, as verb + noun + time segment + confidence;
 - **highlight** segments of at least 4 s, together at most 15% of the video.
 
-The highlight selector picks moments that cover many different actions and that people are likely to find important.
+The highlight selector picks moments that cover many different actions and that look unusual compared with the rest of the video. That novelty score is training-free: no human importance labels were used, so how well it matches what people find important is unmeasured.
 
 ```sh
 ./run.sh input.mp4 output.json
@@ -81,16 +81,17 @@ MP4 ─┬─ PyAV, 2 fps ─ CLIP ViT-B-32 ─┬─ importance (novelty) ─�
 
 ## Hardware and runtime
 
-Measured on one laptop: RTX 4060 Laptop (8 GB), i7-14650HX, 16 GB RAM, strict mode, all 187 manifest videos.
+Measured on one laptop: RTX 4060 Laptop (8 GB), i7-14650HX, 16 GB RAM, strict mode, all 187 manifest videos, current code (17 Nov run).
 
 | | |
 |---|---|
-| Whole manifest (56,094 s of video) | ~6 h, about **0.39 s per second of video** |
-| A 9.4 min EPIC video | 217 s |
-| A 2 min FPVSum video | 32 s |
+| Whole manifest (56,094 s of video) | 7.2 h, **0.46 s per second of video** (about 2 h of it lost to thermal throttling, see below) |
+| A 9 to 10 min EPIC video | 194 to 247 s |
+| A 2 min FPVSum video | 4 to 14 s (the kitchen action model is skipped on sports labels, D21) |
 | Peak GPU memory | 3.2 GB |
 
 - The run is limited by video decoding on the CPU, so the GPU is mostly idle.
+- **Keep the machine cool.** During the 17 Nov run the laptop's CPU reached 95 °C and throughput halved for about 2.5 h, until the fans were set to maximum. Outside that window the EPIC videos ran at 0.42 s per second of video. The outputs are unaffected; only the time changes.
 - **Without a GPU, ACTIVA still runs**, about 9× slower. Measured 17 Nov on the same laptop with `ACTIVA_DEVICE=cpu` (i7-14650HX, 16 cores), on P26_41 (116.75 s of video):
 
   | Stage | CPU | RTX 4060 |
@@ -100,7 +101,7 @@ Measured on one laptop: RTX 4060 Laptop (8 GB), i7-14650HX, 16 GB RAM, strict mo
   | Total | 428.9 s (3.7 s per video-second) | 46.2 s (0.40 s per video-second) |
 
   - So a 33-minute video takes about 2 h on this CPU, and the whole manifest about 57 h.
-  - Same label and highlights as the GPU run. 1,696 of the 1,927 actions are identical; the rest differ by floating-point rounding.
+  - Same label and highlights as the GPU run. Of the GPU run's 1,927 actions (1,928 on CPU), 1,562 are identical and 1,696 have the same segment, verb and noun; the rest differ slightly in score or boundaries from floating-point rounding.
   - The CLIP part alone (label and importance) runs at about 0.7 s per video-second on this CPU.
 
 ## Outputs and checks
@@ -116,7 +117,7 @@ python scripts/validate_outputs.py --dir outputs
 
 - `run_manifest.py` writes a per-video report to `tmp/run_report.json`.
 - `validate_outputs.py` is our local implementation of the kit README's rules. The official `validate.py` is listed in the kit but was missing from our copy, and we've asked the organisers for it.
-- Latest full run, 14 Nov: **187/187 valid**, no fallbacks.
+- Latest full run, 17 Nov on the current code: **187/187 valid**, no fallbacks.
 - **Two published EPIC files contain damaged H.264 packets: P29_05 and P30_08.** Their MD5s match EPIC's official list, so everyone's copies are the same. ACTIVA skips those packets, as ffmpeg does (D18).
 
 Provisional choices, pending the organisers' answers (`docs/kit_compliance.md`):
@@ -155,7 +156,7 @@ The SlowFast and ActionFormer code is in the repo at the pinned commits (see Cre
 - **Same machine, same inputs:** byte-identical JSON. Seeds are fixed (`config.SEED`), and repeated runs and a fresh clone gave identical files.
 - **The label and the CLIP importance** use frames decoded by PyAV, which ships its own FFmpeg libraries, so the system FFmpeg doesn't affect them.
 - **Actions** decode through the system `ffmpeg`, and the highlight selector uses them too. FFmpeg 4.4.2 (Ubuntu 22.04's package) and 9.0.2 gave byte-identical frames on our test videos (#42), so actions and highlights match. Decoders conceal *damaged* packets differently, so a damaged file may differ slightly between versions.
-- **CPU instead of GPU:** same label and highlights. Some action scores differ by floating-point rounding (1,696 of 1,927 actions identical on P26_41); see Hardware and runtime.
+- **CPU instead of GPU:** same label and highlights. Some action scores and boundaries differ by floating-point rounding (1,562 of 1,927 actions identical on P26_41); see Hardware and runtime.
 
 ## Tests
 
@@ -197,7 +198,7 @@ ACTIVA's own code is by the team above. It builds on these projects, whose licen
 | [EPIC-KITCHENS-100](https://epic-kitchens.github.io/) class lists | Class ID → name mapping | per the EPIC-KITCHENS terms |
 | EPIC-KITCHENS-100, FPVSum | The manifest's videos (not redistributed here) | per their owners |
 
-**Third-party source in this repo.** `weights/m1/actionformer_release/` and `weights/m1/epic-kitchens-slowfast/` are unmodified copies of the upstream code at the commits pinned in `scripts/setup_m1_assets.py` and recorded in `weights/m1/ASSETS.json`, without their `.git` folders:
+**Third-party source in this repo.** `weights/m1/actionformer_release/` and `weights/m1/epic-kitchens-slowfast/` are unmodified copies of the upstream code at the commits pinned in `scripts/setup_m1_assets.py`, without their `.git` folders:
 - ActionFormer @ `61ea7eb`, MIT.
 - epic-kitchens-slowfast @ `bf50519`, CC BY-NC-SA 4.0 (non-commercial).
 
