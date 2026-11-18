@@ -275,3 +275,55 @@ def test_card_mask_study_settings_survive_report_json_roundtrip():
     baseline["variants"]["J0.6"]["alphas"] = [0, 1]
     with pytest.raises(ValueError, match="settings/thinning"):
         validate_study_settings(original, baseline)
+
+
+def test_budget_fill_extends_existing_clips_in_fixed_order_without_overlap():
+    from scripts import m3_budget_fill_study as study
+    from contracts import Highlight
+    baseline = [Highlight(10, 14, .5), Highlight(20, 24, .5)]
+    filled = study.extend_intervals(baseline, duration=30, target_ticks=1000)
+    assert [(h.start, h.end) for h in filled] == [(10, 14), (20, 26)]
+    filled = study.extend_intervals(baseline, duration=26, target_ticks=1800)
+    assert [(h.start, h.end) for h in filled] == [(7.99, 14), (14.01, 26)]
+    assert baseline == [Highlight(10, 14, .5), Highlight(20, 24, .5)]
+    with pytest.raises(ValueError):
+        study.extend_intervals([], duration=30, target_ticks=1000)
+    with pytest.raises(ValueError):
+        study.extend_intervals(baseline, duration=30, target_ticks=700)
+
+
+def test_budget_fill_serializes_float_short_clips_before_near_limit_extension():
+    from scripts import m3_budget_fill_study as study
+    from contracts import VideoInfo, Highlight
+    info = VideoInfo("synthetic", "", 120.004, 30, 64, 64)
+    # Both are exactly 4s in integer ticks, but the first is float-short.
+    raw = [Highlight(28.19, 32.19, .5), Highlight(50, 54, .5)]
+    baseline = study.export_highlights(info, raw)
+    assert all(h.end-h.start >= 4 for h in baseline)
+    target = study.near_limit_ticks(info.duration)
+    assert target == 1799
+    filled = study.export_highlights(info, study.extend_intervals(baseline, info.duration, target))
+    checks = study.geometry_checks(info, filled)
+    assert all(checks.values())
+    assert sum(h.end-h.start for h in filled) <= .15*round(info.duration, 2)
+    assert all(h.end-h.start >= 4 for h in filled)
+
+
+def test_budget_fill_gate_requires_every_density_and_valid_exports():
+    from scripts.m3_budget_fill_study import passes_gate
+    import copy
+    report = {"densities": {d: {"summary": {
+        "baseline": {"coverage_proxy": .3, "invalid_selections": 0},
+        "safety_fill": {"coverage_proxy": .3, "invalid_selections": 0},
+        "near_limit": {"coverage_proxy": .31, "invalid_selections": 0}}}
+        for d in ("2", "3.5", "6", "all")}}
+    assert passes_gate(report)
+    missing = copy.deepcopy(report)
+    missing["densities"].pop("all")
+    assert not passes_gate(missing)
+    flat = copy.deepcopy(report)
+    flat["densities"]["2"]["summary"]["near_limit"]["coverage_proxy"] = .3
+    assert not passes_gate(flat)
+    invalid = copy.deepcopy(report)
+    invalid["densities"]["all"]["summary"]["near_limit"]["invalid_selections"] = 1
+    assert not passes_gate(invalid)

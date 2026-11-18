@@ -1,5 +1,24 @@
 # M3 status
 
+## Budget-fill study complete; F1 blocked - 2026-11-18 (#34/#37)
+
+PR #32 is accepted and merged. The new fixed budget-fill study uses current
+main d107539 including D22 export, same matched 6/4 EPIC inputs and four action
+densities. Near-limit fill improves every tune density; its locked held-out
+confirmation is flat at 2 and 3.5, so retain production J and the 0.148 safety
+budget. All 120 selections satisfy literal minimum length, interval geometry,
+both duration budgets and baseline containment. No production/shared code
+changed, no retuning after held-out, no manifest scoring. Results/lock/hashes:
+docs/evidence/M3_budget_fill_2026-11-18.json and docs/results.md.
+
+All seven labelled non-manifest FPVSum sources are unavailable per #33/#37.
+Human F1 comparisons for baseline/mask/edge/U remain blocked; unlabelled caches
+and EPIC coverage cannot replace them. Sport-only mask and sports-edge/uniform
+changes stay unshipped. M4's requested old planning note is archived at
+docs/archive/M3_density_study_plan_2026-11-17.md. D-a remains report-only after
+the frozen final outputs are committed and hashed; the whiteboard walkthrough
+is already in docs/M3_SELECTOR.md for human preparation.
+
 ## Density study complete - 2026-11-17 (#28)
 
 Fixed five-variant/four-density study completed on tune first, then the reused
