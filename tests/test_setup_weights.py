@@ -113,3 +113,60 @@ def test_real_asset_table_matches_the_m1_pins():
     ours = {dest.removeprefix("weights/m1/"): want for dest, _, want in sw.ASSETS.values()}
     for name, want in module.EXPECTED_SHA256.items():
         assert ours[name] == want
+
+
+def test_committed_pieces_are_joined_without_network(release, monkeypatch):
+    sw, url, repo, _, requests = release
+    assert sw.main(["--base-url", url]) == 0
+    monkeypatch.setattr(sw, "PART_BYTES", 3000)
+    assert sw.main(["--make-parts"]) == 0
+    assert len(sw.parts_of("slowfast.pyth")) == 4          # 10,000 bytes in 3,000-byte pieces
+    for dest, _, _ in sw.ASSETS.values():
+        (repo / dest).unlink()
+    sw.code_archive().unlink()
+    (repo / "weights/m1/classes.csv").unlink()
+    before = len(requests)
+    assert sw.main(["--offline"]) == 0
+    assert len(requests) == before, "--offline must never touch the network"
+    assert (repo / "weights/slowfast.pyth").read_bytes() == b"sf" * 5000
+    assert (repo / "weights/m1/classes.csv").read_bytes() == b"x"
+
+
+def test_bad_pieces_fall_back_to_the_release(release):
+    sw, url, repo, _, requests = release
+    parts = repo / sw.PARTS_DIR
+    parts.mkdir(parents=True)
+    (parts / "slowfast.pyth.000").write_bytes(b"not the weights")
+    with pytest.raises(SystemExit, match="--offline"):
+        sw.main(["--offline"])
+    assert not (repo / "weights/slowfast.pyth").exists()
+    assert sw.main(["--base-url", url]) == 0
+    assert "/slowfast.pyth" in requests
+    assert (repo / "weights/slowfast.pyth").read_bytes() == b"sf" * 5000
+
+
+def test_pieces_with_a_gap_are_not_used(release):
+    sw, _, repo, _, _ = release
+    parts = repo / sw.PARTS_DIR
+    parts.mkdir(parents=True)
+    data = b"sf" * 5000
+    (parts / "slowfast.pyth.000").write_bytes(data[:5000])
+    (parts / "slowfast.pyth.002").write_bytes(data[5000:])
+    assert not sw.join_parts("slowfast.pyth", repo / "weights/slowfast.pyth", hashlib.sha256(data).hexdigest())
+
+
+def test_committed_pieces_match_the_asset_table():
+    """Every weight file is in the repo as pieces under GitHub's 100 MiB limit, nothing extra."""
+    sw = _load()
+    names = list(sw.ASSETS) + [sw.CODE_ZIP[0]]
+    seen = set()
+    for name in names:
+        parts = sw.parts_of(name)
+        assert parts, f"{name}: no pieces in {sw.PARTS_DIR}/"
+        assert [p.name for p in parts] == [f"{name}.{i:03d}" for i in range(len(parts))]
+        assert all(p.stat().st_size <= sw.PART_BYTES < 100 * 2**20 for p in parts)
+        size = sw.ASSETS.get(name, (None, None))[1]
+        if size is not None:
+            assert sum(p.stat().st_size for p in parts) == size, name
+        seen.update(p.name for p in parts)
+    assert {p.name for p in (ROOT / sw.PARTS_DIR).iterdir()} == seen

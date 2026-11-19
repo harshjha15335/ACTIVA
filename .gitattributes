@@ -2,3 +2,7 @@
 * text=auto
 *.sh text eol=lf
 *.py text eol=lf
+# Byte-exact files: never convert line endings, or the SHA-256 checks fail.
+weights/parts/* binary
+kit/manifest.csv -text
+kit/supported_classes.json -text

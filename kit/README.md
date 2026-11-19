@@ -1,4 +1,4 @@
-# Official student kit (local only)
+# Official student kit
 
 Unzip `Student package_track04 (1).zip` (SHA256
 `ddf7ee8d2b8b9fb1363c1e72ae95da9144f64573cbca5a1b7a2378f41bbd0c09`; ask M4 or M2
@@ -8,8 +8,10 @@ for it) and copy its files here:
 - `manifest.csv`: read by `scripts/run_manifest.py` and `scripts/validate_outputs.py`
 - `TEAM_README.md`, `P02_109.json`, `skiing_03.json`
 
-Everything here except this README is git-ignored until the organisers confirm
-the kit may be published (`docs/kit_compliance.md` Q7). **`run.sh` doesn't need the
+`manifest.csv` and `supported_classes.json` are committed: the organisers said they
+must be in the public repo (#46, 19 Nov). They are byte-identical to the kit's copies
+(`.gitattributes` turns off line-ending conversion for them). The other kit files stay
+git-ignored. **`run.sh` doesn't need the
 kit** (D20): without `supported_classes.json`, `code/vocab.py` rebuilds the same list
 from the EPIC-100 class files that `scripts/setup_weights.py` installs plus the FPVSum
 categories, and logs a warning. If the file is here, it is used. Tests that need kit
