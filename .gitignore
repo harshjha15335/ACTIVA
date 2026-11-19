@@ -17,6 +17,9 @@ outputs/*
 weights/*
 !weights/README.md
 !weights/README_weights.md
+# The model files themselves, cut into <100 MiB pieces (organisers' advice, #46);
+# scripts/setup_weights.py joins them and checks each SHA-256.
+!weights/parts/
 # Third-party model source, unmodified at the pinned commits (D-d, #25/#26); not the checkpoints.
 !weights/m1/
 weights/m1/*
@@ -32,7 +35,9 @@ weights/m1/*/.git/
 *.pkl
 *.tar.gz
 
-# Official student kit: keep local until we confirm it may go in a public repo
-# (team decision 15 Nov, D19: copy supported_classes.json from your own kit).
+# Official student kit: the organisers said manifest.csv and supported_classes.json
+# must be in the public repo (#46, replaces D19). The rest of the kit stays local.
 kit/*
 !kit/README.md
+!kit/manifest.csv
+!kit/supported_classes.json
