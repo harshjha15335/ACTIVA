@@ -3,7 +3,8 @@
 Source: `Student package_track04 (1).zip`, SHA256
 `ddf7ee8d2b8b9fb1363c1e72ae95da9144f64573cbca5a1b7a2378f41bbd0c09` (same file M2 has).
 Contents: `TEAM_README.md`, `manifest.csv`, `supported_classes.json`, `P02_109.json`,
-`skiing_03.json`. Kept local in `kit/` (git-ignored); not committed.
+`skiing_03.json`. `manifest.csv` and `supported_classes.json` are committed in `kit/`
+(the organisers asked for them, #46); the rest stays local (git-ignored).
 
 ## What the kit says
 
@@ -62,11 +63,12 @@ Contents: `TEAM_README.md`, `manifest.csv`, `supported_classes.json`, `P02_109.j
 | Short videos (15% < 4 s) | n/a | rules conflict | one 4.0 s clip (`config.SHORT_VIDEO_SINGLE_CLIP`) | PROVISIONAL: ask organisers |
 | Touching clips | allowed | "strictly non-overlapping" | merged into one clip; the validator warns on touching | DONE |
 | Fallback label | first category | n/a | `other` | DONE |
-| Validator | 4-key spec | `validate.py` (missing from ZIP) | `scripts/validate_outputs.py`, the "ACTIVA local spec validator" | PARTIAL: official script needed |
+| Validator | 4-key spec | `validate.py` (missing from ZIP) | `scripts/validate_outputs.py`, the "ACTIVA local spec validator" | DONE: the organisers won't share `validate.py` and asked teams to write their own (#46) |
 | Release gate | fallbacks always on | n/a | `ACTIVA_STRICT=1`: a failing stage means exit 6, no JSON | DONE |
 | Batch run | none | 187 outputs | `scripts/run_manifest.py`: resumable, per-video report | DONE: 187/187 valid (full run on 17 Nov) |
 | Durations | warned outside 2-10 min | 11-1969 s | warn outside 10-2000 s | DONE |
-| Kit in Git | n/a | unknown | `kit/` ignored | DECIDED: kept local (D19); `run.sh` works without it (D20); asked the organisers (#46) |
+| Kit in Git | n/a | include `manifest.csv` and `supported_classes.json` (#46) | both committed in `kit/` | DONE (D24); `run.sh` still works without them (D20) |
+| Weights in Git | release assets | "advisable" in the repo (#46) | committed as <100 MiB pieces in `weights/parts/` | DONE (D24) |
 
 ## Questions for the organisers (Aarush to send)
 
@@ -80,11 +82,22 @@ Contents: `TEAM_README.md`, `manifest.csv`, `supported_classes.json`, `P02_109.j
 8. **Reproduction:** what hardware and time limits apply when you re-run `./run.sh`? Is network access available?
 9. **Team ID:** we haven't received one. Should `team_id` and the submission folder use our team name, `LensLog`?
 
+## Organisers' answers (email, 19 Nov; summary on #46)
+
+- **Team ID:** if none was assigned, use the team name. We use `LensLog`.
+- **`validate.py`:** not provided; teams write their own and check edge cases. Ours is `scripts/validate_outputs.py`.
+- **Kit files:** `manifest.csv` and `supported_classes.json` must be in the public repo, with the model files.
+- **Re-run:** on a GPU, no time limit for now; they install the Python packages from the internet. The repo should be self-contained.
+- **Weights:** "advisable" to upload them to the repository.
+- **Submission:** the GitHub link contains the `TEAM_ID/` folder, which they parse for verification and ranking. Our repo root has that layout; we asked whether a top-level `LensLog/` folder is needed.
+- **Not answered:** the short-video rule (Q2). We keep one 4.0 s clip (D13).
+
 ## Status (19 Nov)
 
 The earlier to-do list here is done: real action detections (M1), offline CLIP weights
 (M2), an action-aware selector with clips of 4 s or more (M3), and the full 187-video
 batch run, real-model test and packaging (M4). The public repo follows the kit's folder
-layout, as the organisers asked on 17 Nov. Still open with the organisers (#46): the
-official `validate.py`, the `team_id` string and the short-video rule. `outputs/` is
+layout, as the organisers asked on 17 Nov. Answered by the organisers (#46): `validate.py`
+(write our own), `team_id` (the team name) and kit files and weights in the repo (D24).
+Still open: the short-video rule and whether they need a top-level `LensLog/` folder. `outputs/` is
 committed after the final run on 21-22 Nov.

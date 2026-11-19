@@ -28,3 +28,5 @@ jobs:
         run: test -x run.sh && ! grep -q $'\r' run.sh
       - name: Tests (CPU, stubs, synthetic videos)
         run: python -m pytest -q
+      - name: Committed weight pieces join offline and match every SHA-256
+        run: python scripts/setup_weights.py --offline && python scripts/setup_weights.py --check

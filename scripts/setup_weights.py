@@ -1,14 +1,20 @@
-"""One-time setup: download every model file run.sh needs, and verify each SHA-256. Owned by M4.
+"""One-time setup: install every model file run.sh needs, and verify each SHA-256. Owned by M4.
 
-    python scripts/setup_weights.py            # from this repo's GitHub release (default)
+    python scripts/setup_weights.py            # join the pieces in weights/parts/ (no network)
+    python scripts/setup_weights.py --offline  # the same, but never fall back to a download
     python scripts/setup_weights.py --check    # only verify what is already in weights/
     python scripts/setup_weights.py --upstream # from the original sources instead
 
-Needs internet once; ./run.sh itself never downloads anything. Files already present with
-the right hash are kept, and an interrupted download resumes. The release mirrors the
-upstream files unchanged (licences: see the release notes and README); `--upstream`
+The weights are committed to this repo, as the organisers advised (#46). GitHub refuses
+files over 100 MiB, so each file is stored as numbered pieces, weights/parts/<asset>.000,
+.001, ... (95 MiB each), and joined here; the joined file must match its SHA-256. If the
+pieces are missing or don't match, the file is downloaded from the repo's `weights-v1`
+release instead (same bytes), unless --offline is given. Files already present with the
+right hash are kept, and an interrupted download resumes. ./run.sh itself never downloads
+anything. The files are the upstream ones, unchanged (licences: README); `--upstream`
 rebuilds the same layout from the original authors with scripts/setup_m1_assets.py and
-M2's scripts/prepare_weights.py.
+M2's scripts/prepare_weights.py. Maintainers: `--make-parts` re-cuts weights/parts/ from
+the installed, verified files.
 
 Layout written (what code/config.py and code/action_config.py expect):
   weights/ViT-B-32-laion400m_e32.safetensors (+ .manifest.json)   CLIP (M2)
@@ -16,6 +22,7 @@ Layout written (what code/config.py and code/action_config.py expect):
   weights/m1/epic-kitchens-slowfast/, actionformer_release/, EPIC_100_{verb,noun}_classes.csv  (M1)
 """
 import argparse
+import glob
 import hashlib
 import os
 from pathlib import Path
@@ -27,6 +34,8 @@ import zipfile
 
 ROOT = Path(__file__).resolve().parents[1]
 RELEASE = "https://github.com/harshjha15335/ACTIVA/releases/download/weights-v1"
+PARTS_DIR = "weights/parts"     # committed pieces, relative to ROOT
+PART_BYTES = 95 * 2**20         # under GitHub's 100 MiB per-file limit
 
 # asset name -> (destination under the repo, bytes, sha256)
 ASSETS = {
@@ -93,14 +102,62 @@ def ok(path, want):
     return path.is_file() and sha256(path) == want
 
 
-def fetch(asset, dest, size, want, base):
+def parts_of(asset):
+    """The committed pieces of asset, in order: weights/parts/<asset>.000, .001, ..."""
+    return sorted((ROOT / PARTS_DIR).glob(glob.escape(asset) + ".[0-9][0-9][0-9]"))
+
+
+def join_parts(asset, dest, want):
+    """Rebuild dest from its committed pieces. True if the result matches want."""
+    parts = parts_of(asset)
+    if not parts:
+        return False
+    if [p.name for p in parts] != [f"{asset}.{i:03d}" for i in range(len(parts))]:
+        log(f"  {asset}: pieces in {PARTS_DIR}/ are not numbered .000 to .{len(parts) - 1:03d}; not used")
+        return False
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    joining = dest.with_name(dest.name + ".joining")
+    with open(joining, "wb") as out:
+        for part in parts:
+            with open(part, "rb") as f:
+                shutil.copyfileobj(f, out, 1 << 20)
+    if sha256(joining) != want:
+        joining.unlink()
+        log(f"  {asset}: the {len(parts)} pieces in {PARTS_DIR}/ don't match the SHA-256; not used")
+        return False
+    joining.replace(dest)
+    log(f"join    {dest.relative_to(ROOT)} from {len(parts)} pieces in {PARTS_DIR}/")
+    return True
+
+
+def make_parts(asset, source, want):
+    """Cut a verified file into PART_BYTES pieces in weights/parts/ (maintainers only)."""
+    if not ok(source, want):
+        sys.exit(f"{source.relative_to(ROOT)} is missing or has the wrong hash; install it first")
+    out_dir = ROOT / PARTS_DIR
+    out_dir.mkdir(parents=True, exist_ok=True)
+    for old in parts_of(asset):
+        old.unlink()
+    n = 0
+    with open(source, "rb") as f:
+        while block := f.read(PART_BYTES):
+            (out_dir / f"{asset}.{n:03d}").write_bytes(block)
+            n += 1
+    log(f"cut     {asset} into {n} pieces")
+
+
+def fetch(asset, dest, size, want, base, offline=False):
     if ok(dest, want):
         log(f"ok      {dest.relative_to(ROOT)}")
         return
     if dest.exists():
         log(f"replace {dest.relative_to(ROOT)} (wrong hash)")
         dest.unlink()
-    log(f"get     {asset}")
+    if join_parts(asset, dest, want):
+        return
+    if offline:
+        sys.exit(f"{asset}: no usable pieces in {PARTS_DIR}/ and --offline was given")
+    log(f"get     {asset} (from the release)")
     for attempt in range(1, 6):
         try:
             download(f"{base}/{asset}", dest, size)
@@ -115,14 +172,19 @@ def fetch(asset, dest, size, want, base):
         sys.exit(f"SHA-256 mismatch for {asset}: got {got}, expected {want}. Deleted; re-run to retry.")
 
 
-def install_code(base):
+def code_archive():
+    name, dest_dir, _ = CODE_ZIP
+    return ROOT / dest_dir / "_downloads" / name
+
+
+def install_code(base, offline=False):
     name, dest_dir, want = CODE_ZIP
     dest_dir = ROOT / dest_dir
     if all((dest_dir / marker).is_file() for marker in CODE_MARKERS):
         log(f"ok      {dest_dir.relative_to(ROOT)}/ model code")
         return
-    archive = dest_dir / "_downloads" / name
-    fetch(name, archive, None, want, base)
+    archive = code_archive()
+    fetch(name, archive, None, want, base, offline)
     with zipfile.ZipFile(archive) as z:
         for member in z.namelist():   # refuse paths that escape weights/m1
             target = (dest_dir / member).resolve()
@@ -162,6 +224,10 @@ def main(argv=None):
     mode = ap.add_mutually_exclusive_group()
     mode.add_argument("--check", action="store_true", help="only verify the installed files")
     mode.add_argument("--upstream", action="store_true", help="download from the original sources")
+    mode.add_argument("--offline", action="store_true",
+                      help=f"only join the committed pieces in {PARTS_DIR}/; never download")
+    mode.add_argument("--make-parts", action="store_true",
+                      help=f"maintainers: re-cut {PARTS_DIR}/ from the installed, verified files")
     ap.add_argument("--base-url", default=os.environ.get("ACTIVA_WEIGHTS_URL", RELEASE),
                     help="where the release assets live (default: this repo's weights-v1 release)")
     args = ap.parse_args(argv)
@@ -169,14 +235,19 @@ def main(argv=None):
         bad = upstream()
     elif args.check:
         bad = check()
+    elif args.make_parts:
+        for asset, (dest, _, want) in ASSETS.items():
+            make_parts(asset, ROOT / dest, want)
+        make_parts(CODE_ZIP[0], code_archive(), CODE_ZIP[2])
+        return 0
     else:
         ROOT.mkdir(parents=True, exist_ok=True)
         free = shutil.disk_usage(ROOT).free
         if free < 2.5e9:
             log(f"warning: {free / 1e9:.1f} GB free; about 1.9 GB is needed")
         for asset, (dest, size, want) in ASSETS.items():
-            fetch(asset, ROOT / dest, size, want, args.base_url)
-        install_code(args.base_url)
+            fetch(asset, ROOT / dest, size, want, args.base_url, args.offline)
+        install_code(args.base_url, args.offline)
         bad = check()
     if bad:
         log("NOT READY:\n  " + "\n  ".join(bad))

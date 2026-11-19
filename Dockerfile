@@ -4,9 +4,9 @@
 #   docker run --rm --network none -v "$PWD/videos:/in:ro" -v "$PWD/out:/out" \
 #       activa /in/<video_id>.mp4 /out/<video_id>.json
 #
-# The build downloads the model weights once from the repo's `weights-v1` release
-# (scripts/setup_weights.py checks every SHA-256). After that the container needs no
-# network: the run above uses --network none.
+# The model weights are committed as pieces in weights/parts/; the build joins them
+# with no network access (setup_weights.py --offline checks every SHA-256), and the
+# container needs no network either: the run above uses --network none.
 #
 # GPU (optional, needs the NVIDIA Container Toolkit): build with the CUDA torch wheel,
 #   docker build -t activa-gpu --build-arg TORCH_INDEX=https://download.pytorch.org/whl/cu132 .
@@ -32,8 +32,8 @@ RUN pip install --no-cache-dir --index-url "$TORCH_INDEX" torch==2.15.0 torchvis
 
 COPY . .
 
-# One-time weight download (~1.8 GB, SHA-256 checked); the image then runs offline.
-RUN python scripts/setup_weights.py \
+# Join the committed weight pieces (~1.8 GB, SHA-256 checked); no download.
+RUN python scripts/setup_weights.py --offline \
  && python scripts/setup_weights.py --check
 
 # Default mode: a failing stage falls back and a valid JSON is still written. Add

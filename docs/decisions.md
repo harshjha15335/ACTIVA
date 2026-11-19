@@ -161,6 +161,23 @@ errors, a second failure and strict mode behave as before. Measured 17 Nov on a 
 test clip with the GPU capped at 1.2 GB: before, 0 actions and `other`; after, exit 0
 and a JSON identical to a pure-CPU run (1,849 actions, same label and highlights).
 
+**D24 (2026-11-19) Weights and kit files in the repo.** The organisers answered #46 by
+email: weights are "advisable" in the repository, and `manifest.csv` and
+`supported_classes.json` must be included. This replaces D19's release-only weights and
+local-only kit files.
+- **Weights:** GitHub refuses files over 100 MiB, so each file is cut into 95 MiB pieces in
+  `weights/parts/` (22 pieces, 1.84 GB). `setup_weights.py` joins them with no network and
+  checks each SHA-256 (`--offline` forbids downloads); the `weights-v1` release stays as
+  a fallback with the same bytes. `--make-parts` re-cuts the pieces.
+- **Why not Git LFS:** the free plan includes 10 GiB of LFS bandwidth a month on the
+  owner's account, about five full clones. Past that, LFS downloads are blocked and a
+  clone gets pointer files or fails. Plain Git has no such quota. The cost is a ~1.8 GB
+  clone for good.
+- **Kit files:** both committed byte-identical (`-text` in `.gitattributes`). D20's
+  no-kit fallback stays.
+- **CI** joins the committed pieces with `--offline` and checks every hash, so a
+  missing or damaged piece fails the build.
+
 ## M2 perception decisions — current as of 18 November 2026
 
 This section supersedes the pre-integration process notes archived with the

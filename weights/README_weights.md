@@ -1,8 +1,10 @@
 # M2 local CLIP weights
 
-> **M4 note (15 Nov): to install every model file, run `python scripts/setup_weights.py`.**
-> It downloads them from the repo's `weights-v1` release, which holds this CLIP file plus M1's
-> SlowFast/ActionFormer files, unchanged, and checks every SHA-256. The section below
+> **M4 note (19 Nov): to install every model file, run `python scripts/setup_weights.py`.**
+> The files are committed in `weights/parts/` as 95 MiB pieces (GitHub's limit is 100 MiB;
+> the organisers advised weights in the repo, #46): this CLIP file plus M1's SlowFast and
+> ActionFormer files, unchanged. The script joins them offline and checks every SHA-256; the
+> repo's `weights-v1` release holds the same files as a fallback. The section below
 > documents how M2 produced the CLIP file; `setup_weights.py --upstream` repeats that route.
 
 ## Explicit validated development candidate

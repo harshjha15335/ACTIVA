@@ -18,7 +18,7 @@ The highlight selector picks moments that cover many different actions and that 
 Requirements:
 - Python 3.12+
 - FFmpeg 4.4+ (`ffmpeg` and `ffprobe` on PATH). Tested with 4.4.2 (Ubuntu 22.04 package) and 9.0.2: the action stage gets byte-identical decoded frames on both (#42). Our final run's exact version is recorded in `outputs/README.md`.
-- about 2 GB of disk for the model files
+- about 4 GB of disk: the clone is ~1.8 GB (the model weights are committed), plus ~1.8 GB once they are joined
 - recommended: an NVIDIA GPU with 4 GB+ VRAM (see [Hardware and runtime](#hardware-and-runtime))
 
 ```sh
@@ -27,14 +27,16 @@ python -m venv .venv && . .venv/bin/activate          # Windows: .venv\Scripts\a
 pip install -r requirements.txt
 # NVIDIA GPU (CUDA 13.x driver): swap in the CUDA build of the same torch version
 pip install --no-deps --force-reinstall torch==2.15.0+cu132 --index-url https://download.pytorch.org/whl/cu132
-python scripts/setup_weights.py                      # one-time, ~1.8 GB, every file SHA-256 checked
+python scripts/setup_weights.py                      # one-time, no network: joins weights/parts/, checks every SHA-256
 ./run.sh input.mp4 outputs/input.json
 ```
 
-- **The student kit is optional.** If `kit/supported_classes.json` is there, its label/verb/noun list is used. If not, `run.sh` rebuilds the identical list (EPIC-100 class keys from the installed model files, FPVSum categories + `cooking` + `other`) and logs a warning. A test checks the two match exactly (D20).
+- **The kit's `manifest.csv` and `supported_classes.json` are in `kit/`**, as the organisers asked (#46); the label/verb/noun list comes from `supported_classes.json`. If that file is removed, `run.sh` rebuilds the identical list (EPIC-100 class keys from the installed model files, FPVSum categories + `cooking` + `other`) and logs a warning. A test checks the two match exactly (D20).
 
-- `setup_weights.py` downloads the model files from this repo's [`weights-v1` release](https://github.com/harshjha15335/ACTIVA/releases/tag/weights-v1).
-  - Those are unchanged mirrors of the upstream files (see [Credits](#credits-and-licences)).
+- **The model weights are in the repo**, as the organisers advised (#46). GitHub refuses files over 100 MiB, so each file is cut into 95 MiB pieces in `weights/parts/` (`<file>.000`, `.001`, ...).
+  - `setup_weights.py` joins them, with no network access, and checks every SHA-256. `--offline` forbids any download.
+  - If a piece is missing or damaged, it downloads that file from this repo's [`weights-v1` release](https://github.com/harshjha15335/ACTIVA/releases/tag/weights-v1) instead (same bytes).
+  - The files are unchanged copies of the upstream ones (see [Credits](#credits-and-licences)).
   - `--check` verifies an existing install. `--upstream` rebuilds it from the original authors instead.
 - **`run.sh` itself never touches the network.**
 - It picks the GPU automatically when CUDA is available. To force a device, set `ACTIVA_DEVICE=cpu` or `ACTIVA_DEVICE=cuda`.
@@ -58,7 +60,7 @@ Output (`code/schema.py`). The team ID is the same in every file (`code/config.p
 
 ### Docker
 
-The `Dockerfile` builds the same pipeline on Debian 12 (Python 3.13, FFmpeg 5.1), CPU by default. The build downloads and SHA-256-checks the weights once, so the container runs with no network:
+The `Dockerfile` builds the same pipeline on Debian 12 (Python 3.13, FFmpeg 5.1), CPU by default. The build joins the committed weight pieces and SHA-256-checks them (`setup_weights.py --offline`), so the container runs with no network:
 
 ```sh
 docker build -t activa .
@@ -121,7 +123,7 @@ Measured on one laptop: RTX 4060 Laptop (8 GB), i7-14650HX, 16 GB RAM, strict mo
 
 ## Outputs and checks
 
-`outputs/` holds our 187 output files for the kit manifest (`kit/manifest.csv`, which stays local; the videos aren't included). To regenerate them:
+`outputs/` holds our 187 output files for the kit manifest (`kit/manifest.csv`; the videos aren't included). To regenerate them:
 
 ```sh
 pip install -r requirements-download.txt

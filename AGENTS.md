@@ -19,7 +19,8 @@ Hard rules:
 - Never hardcode video IDs or ground-truth times, and never read `dev_cache/`
   from the inference path.
 - Inference is offline: local weights only, no downloads at runtime.
-- Never invent official rules, scores or dataset facts. The student kit is
-  local-only (`kit/`, git-ignored; ask M4 for the ZIP). Its rules are summarised
+- Never invent official rules, scores or dataset facts. Only the kit's
+  `manifest.csv` and `supported_classes.json` are committed (organisers, #46); the
+  rest of the student kit is local-only (`kit/`, git-ignored; ask M4 for the ZIP). Its rules are summarised
   in `docs/kit_compliance.md`; open questions are in `docs/kit_checklist.md`.
 - Logs go to stderr. Run `python -m pytest -q` before every push.
