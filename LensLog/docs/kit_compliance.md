@@ -89,7 +89,7 @@ Contents: `TEAM_README.md`, `manifest.csv`, `supported_classes.json`, `P02_109.j
 - **Kit files:** `manifest.csv` and `supported_classes.json` must be in the public repo, with the model files.
 - **Re-run:** on a GPU, no time limit for now; they install the Python packages from the internet. The repo should be self-contained.
 - **Weights:** "advisable" to upload them to the repository.
-- **Submission:** the GitHub link contains the `TEAM_ID/` folder, which they parse for verification and ranking. Our repo root has that layout; we asked whether a top-level `LensLog/` folder is needed.
+- **Submission:** the GitHub link contains the `TEAM_ID/` folder, which they parse for verification and ranking. Follow-up answer (21 Nov): TEAM_ID is `LensLog`, in the kit's `LensLog/` layout. Done: the repo's tracked files moved into `LensLog/` (D25).
 - **Not answered:** the short-video rule (Q2). We keep one 4.0 s clip (D13).
 
 ## Status (19 Nov)
@@ -99,5 +99,5 @@ The earlier to-do list here is done: real action detections (M1), offline CLIP w
 batch run, real-model test and packaging (M4). The public repo follows the kit's folder
 layout, as the organisers asked on 17 Nov. Answered by the organisers (#46): `validate.py`
 (write our own), `team_id` (the team name) and kit files and weights in the repo (D24).
-Still open: the short-video rule and whether they need a top-level `LensLog/` folder. `outputs/` is
+The repo is now in the `LensLog/` layout (D25). Still open: the short-video rule. `outputs/` is
 committed after the final run on 21-22 Nov.

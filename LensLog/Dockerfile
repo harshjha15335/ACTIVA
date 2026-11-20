@@ -1,6 +1,6 @@
 # ACTIVA in a container: ./run.sh <input.mp4> <output.json>, CPU by default.
 #
-#   docker build -t activa .
+#   cd LensLog && docker build -t activa .      # the build context is this folder
 #   docker run --rm --network none -v "$PWD/videos:/in:ro" -v "$PWD/out:/out" \
 #       activa /in/<video_id>.mp4 /out/<video_id>.json
 #
