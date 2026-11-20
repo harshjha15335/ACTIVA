@@ -1,43 +1,11 @@
-# Union of the m1/m2/m3 branch rules, so their files land on main unchanged.
-__pycache__/
-*.py[cod]
-.pytest_cache/
-.venv/
-.env
-.env.*
-!.env.example
-.ipynb_checkpoints/
-
-# Large or private assets: never commit (guide A6).
-dev_cache/
-data/
-tmp/
-outputs/*
-!outputs/README.md
-weights/*
-!weights/README.md
-!weights/README_weights.md
-# The model files themselves, cut into <100 MiB pieces (organisers' advice, #46);
-# scripts/setup_weights.py joins them and checks each SHA-256.
-!weights/parts/
-# Third-party model source, unmodified at the pinned commits (D-d, #25/#26); not the checkpoints.
-!weights/m1/
-weights/m1/*
-!weights/m1/actionformer_release/
-!weights/m1/epic-kitchens-slowfast/
-weights/m1/*/.git/
-*.mp4
-*.npy
-*.npz
-*.pt
-*.pth
-*.ckpt
-*.pkl
-*.tar.gz
-
-# Official student kit: the organisers said manifest.csv and supported_classes.json
-# must be in the public repo (#46, replaces D19). The rest of the kit stays local.
-kit/*
-!kit/README.md
-!kit/manifest.csv
-!kit/supported_classes.json
+# Everything ACTIVA tracks is in LensLog/ (rules: LensLog/.gitignore) or .github/.
+# Anything else at the root is a local leftover from before the 21 Nov move
+# (venv, videos, caches, installed weights) and stays untracked.
+/*
+!/.github/
+!/LensLog/
+!/README.md
+!/AGENTS.md
+!/CLAUDE.md
+!/.gitignore
+!/.gitattributes

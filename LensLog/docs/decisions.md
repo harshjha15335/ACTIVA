@@ -178,6 +178,14 @@ local-only kit files.
 - **CI** joins the committed pieces with `--offline` and checks every hash, so a
   missing or damaged piece fails the build.
 
+**D25 (2026-11-21) The repo is in the `LensLog/` layout.** The organisers answered the
+follow-up: "modify TEAM_ID as LensLog", in the kit's `LensLog/` layout. Every tracked file
+moved into `LensLog/` with `git mv`, so the history follows each file. Only `.github/`
+(GitHub needs it at the root), a pointer README, AGENTS.md, CLAUDE.md, `.gitignore` and
+`.gitattributes` stay at the root. Paths inside `LensLog/` are unchanged, and the code
+resolves them from its own location, so no code changed. CI runs inside `LensLog/`. The
+final outputs come from the frozen code (`v1.0-freeze`), which the move doesn't affect.
+
 ## M2 perception decisions — current as of 18 November 2026
 
 This section supersedes the pre-integration process notes archived with the
