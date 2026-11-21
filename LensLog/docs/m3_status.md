@@ -1,5 +1,18 @@
 # M3 status
 
+## Post-freeze coverage complete - 2026-11-21 (#28 T3)
+
+The single report-only D-a pass on the 138 committed EPIC outputs at 9a791db
+covers 9,668 validation GT segments. Submitted highlights versus frozen uniform:
+any overlap **42.5233% / 33.7003%**, half **32.5592% / 19.9124%**, full
+**21.9452% / 11.1261%** (mean distinct-pair coverage over videos). This confirms
+the recording's "about a third" line. Evidence and method are in
+docs/evidence/M3_post_freeze_coverage_2026-11-21.json and docs/results.md.
+The final outputs and production code are unchanged. Raw annotations and the
+per-video report remain outside the repo. T7 (four recordings sent to Aarush)
+and T12 (watch the draft after T9) still require Anuj's completion. Anuj
+confirmed T3 and its #55 checkbox is ticked; T7 and T12 remain open.
+
 ## Budget-fill study complete; F1 blocked - 2026-11-18 (#34/#37)
 
 PR #32 is accepted and merged. The new fixed budget-fill study uses current
