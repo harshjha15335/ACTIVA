@@ -1,0 +1,48 @@
+{
+  "team_id": "LensLog",
+  "video_id": "Horse_C_2MSagUvms",
+  "duration_sec": 165.29,
+  "label": {
+    "name": "horse",
+    "score": 0.158
+  },
+  "actions": [],
+  "highlights": [
+    {
+      "segment": [
+        66.51,
+        70.51
+      ]
+    },
+    {
+      "segment": [
+        71.01,
+        75.01
+      ]
+    },
+    {
+      "segment": [
+        101.52,
+        105.52
+      ]
+    },
+    {
+      "segment": [
+        110.0,
+        114.0
+      ]
+    },
+    {
+      "segment": [
+        116.0,
+        120.0
+      ]
+    },
+    {
+      "segment": [
+        130.01,
+        134.01
+      ]
+    }
+  ]
+}

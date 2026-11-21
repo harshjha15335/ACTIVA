@@ -1,0 +1,48 @@
+{
+  "team_id": "LensLog",
+  "video_id": "Jumping_IPRT9MZh3_s",
+  "duration_sec": 175.74,
+  "label": {
+    "name": "jumping",
+    "score": 0.1311
+  },
+  "actions": [],
+  "highlights": [
+    {
+      "segment": [
+        0.0,
+        4.0
+      ]
+    },
+    {
+      "segment": [
+        110.0,
+        114.0
+      ]
+    },
+    {
+      "segment": [
+        119.52,
+        123.52
+      ]
+    },
+    {
+      "segment": [
+        124.53,
+        128.53
+      ]
+    },
+    {
+      "segment": [
+        132.5,
+        136.5
+      ]
+    },
+    {
+      "segment": [
+        171.74,
+        175.74
+      ]
+    }
+  ]
+}

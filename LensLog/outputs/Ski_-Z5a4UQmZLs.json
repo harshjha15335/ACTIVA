@@ -1,0 +1,36 @@
+{
+  "team_id": "LensLog",
+  "video_id": "Ski_-Z5a4UQmZLs",
+  "duration_sec": 184.55,
+  "label": {
+    "name": "ski",
+    "score": 0.3485
+  },
+  "actions": [],
+  "highlights": [
+    {
+      "segment": [
+        0.0,
+        8.0
+      ]
+    },
+    {
+      "segment": [
+        73.01,
+        77.01
+      ]
+    },
+    {
+      "segment": [
+        77.51,
+        81.51
+      ]
+    },
+    {
+      "segment": [
+        166.0,
+        174.0
+      ]
+    }
+  ]
+}

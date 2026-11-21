@@ -1,0 +1,48 @@
+{
+  "team_id": "LensLog",
+  "video_id": "Longboarding_vaJPwfOt7Bs",
+  "duration_sec": 202.64,
+  "label": {
+    "name": "longboarding",
+    "score": 0.2152
+  },
+  "actions": [],
+  "highlights": [
+    {
+      "segment": [
+        18.52,
+        22.52
+      ]
+    },
+    {
+      "segment": [
+        53.02,
+        57.02
+      ]
+    },
+    {
+      "segment": [
+        70.0,
+        74.0
+      ]
+    },
+    {
+      "segment": [
+        104.0,
+        108.0
+      ]
+    },
+    {
+      "segment": [
+        124.0,
+        132.0
+      ]
+    },
+    {
+      "segment": [
+        191.53,
+        195.53
+      ]
+    }
+  ]
+}

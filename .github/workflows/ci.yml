@@ -34,3 +34,5 @@ jobs:
         run: python -m pytest -q
       - name: Committed weight pieces join offline and match every SHA-256
         run: python scripts/setup_weights.py --offline && python scripts/setup_weights.py --check
+      - name: The committed outputs are all 187 and pass the validator
+        run: test "$(ls outputs/*.json | wc -l)" -eq 187 && python scripts/validate_outputs.py --dir outputs

@@ -1,0 +1,30 @@
+{
+  "team_id": "LensLog",
+  "video_id": "Jumping_kTzwvyzzfjk",
+  "duration_sec": 83.68,
+  "label": {
+    "name": "rockclimbing",
+    "score": 0.1298
+  },
+  "actions": [],
+  "highlights": [
+    {
+      "segment": [
+        63.03,
+        67.03
+      ]
+    },
+    {
+      "segment": [
+        74.0,
+        78.0
+      ]
+    },
+    {
+      "segment": [
+        79.01,
+        83.01
+      ]
+    }
+  ]
+}

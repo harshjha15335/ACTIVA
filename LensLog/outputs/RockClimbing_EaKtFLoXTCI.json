@@ -1,0 +1,90 @@
+{
+  "team_id": "LensLog",
+  "video_id": "RockClimbing_EaKtFLoXTCI",
+  "duration_sec": 373.94,
+  "label": {
+    "name": "rockclimbing",
+    "score": 0.1061
+  },
+  "actions": [],
+  "highlights": [
+    {
+      "segment": [
+        2.0,
+        6.0
+      ]
+    },
+    {
+      "segment": [
+        7.51,
+        11.51
+      ]
+    },
+    {
+      "segment": [
+        57.03,
+        61.03
+      ]
+    },
+    {
+      "segment": [
+        73.51,
+        77.51
+      ]
+    },
+    {
+      "segment": [
+        89.52,
+        93.52
+      ]
+    },
+    {
+      "segment": [
+        163.53,
+        167.53
+      ]
+    },
+    {
+      "segment": [
+        190.0,
+        194.0
+      ]
+    },
+    {
+      "segment": [
+        234.0,
+        238.0
+      ]
+    },
+    {
+      "segment": [
+        243.51,
+        247.51
+      ]
+    },
+    {
+      "segment": [
+        250.02,
+        254.02
+      ]
+    },
+    {
+      "segment": [
+        282.0,
+        286.0
+      ]
+    },
+    {
+      "segment": [
+        287.52,
+        291.52
+      ]
+    },
+    {
+      "segment": [
+        321.0,
+        327.0
+      ]
+    }
+  ]
+}

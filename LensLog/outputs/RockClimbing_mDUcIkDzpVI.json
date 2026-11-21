@@ -1,0 +1,78 @@
+{
+  "team_id": "LensLog",
+  "video_id": "RockClimbing_mDUcIkDzpVI",
+  "duration_sec": 377.01,
+  "label": {
+    "name": "rockclimbing",
+    "score": 0.3018
+  },
+  "actions": [],
+  "highlights": [
+    {
+      "segment": [
+        14.0,
+        22.0
+      ]
+    },
+    {
+      "segment": [
+        31.5,
+        35.5
+      ]
+    },
+    {
+      "segment": [
+        41.01,
+        45.01
+      ]
+    },
+    {
+      "segment": [
+        153.0,
+        157.0
+      ]
+    },
+    {
+      "segment": [
+        233.0,
+        237.0
+      ]
+    },
+    {
+      "segment": [
+        237.51,
+        241.51
+      ]
+    },
+    {
+      "segment": [
+        242.0,
+        246.0
+      ]
+    },
+    {
+      "segment": [
+        248.0,
+        252.0
+      ]
+    },
+    {
+      "segment": [
+        278.0,
+        282.0
+      ]
+    },
+    {
+      "segment": [
+        348.0,
+        358.0
+      ]
+    },
+    {
+      "segment": [
+        373.0,
+        377.0
+      ]
+    }
+  ]
+}

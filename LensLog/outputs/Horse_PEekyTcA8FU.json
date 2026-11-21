@@ -1,0 +1,60 @@
+{
+  "team_id": "LensLog",
+  "video_id": "Horse_PEekyTcA8FU",
+  "duration_sec": 229.08,
+  "label": {
+    "name": "horse",
+    "score": 0.2176
+  },
+  "actions": [],
+  "highlights": [
+    {
+      "segment": [
+        10.51,
+        14.51
+      ]
+    },
+    {
+      "segment": [
+        44.0,
+        48.0
+      ]
+    },
+    {
+      "segment": [
+        57.51,
+        61.51
+      ]
+    },
+    {
+      "segment": [
+        92.0,
+        96.0
+      ]
+    },
+    {
+      "segment": [
+        126.0,
+        130.0
+      ]
+    },
+    {
+      "segment": [
+        141.51,
+        145.51
+      ]
+    },
+    {
+      "segment": [
+        189.51,
+        193.51
+      ]
+    },
+    {
+      "segment": [
+        220.51,
+        224.51
+      ]
+    }
+  ]
+}

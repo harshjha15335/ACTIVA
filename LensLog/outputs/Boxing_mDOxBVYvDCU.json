@@ -1,0 +1,18 @@
+{
+  "team_id": "LensLog",
+  "video_id": "Boxing_mDOxBVYvDCU",
+  "duration_sec": 134.94,
+  "label": {
+    "name": "boxing",
+    "score": 0.1559
+  },
+  "actions": [],
+  "highlights": [
+    {
+      "segment": [
+        116.94,
+        134.94
+      ]
+    }
+  ]
+}

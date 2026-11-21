@@ -1,0 +1,42 @@
+{
+  "team_id": "LensLog",
+  "video_id": "BikePolo_DHbYfmjX3WQ_3",
+  "duration_sec": 169.62,
+  "label": {
+    "name": "bike",
+    "score": 0.174
+  },
+  "actions": [],
+  "highlights": [
+    {
+      "segment": [
+        6.0,
+        10.0
+      ]
+    },
+    {
+      "segment": [
+        22.0,
+        26.0
+      ]
+    },
+    {
+      "segment": [
+        97.5,
+        105.5
+      ]
+    },
+    {
+      "segment": [
+        155.5,
+        159.5
+      ]
+    },
+    {
+      "segment": [
+        162.0,
+        166.0
+      ]
+    }
+  ]
+}

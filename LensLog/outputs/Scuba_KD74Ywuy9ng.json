@@ -1,0 +1,54 @@
+{
+  "team_id": "LensLog",
+  "video_id": "Scuba_KD74Ywuy9ng",
+  "duration_sec": 264.6,
+  "label": {
+    "name": "scuba",
+    "score": 0.3553
+  },
+  "actions": [],
+  "highlights": [
+    {
+      "segment": [
+        2.0,
+        6.0
+      ]
+    },
+    {
+      "segment": [
+        46.0,
+        54.0
+      ]
+    },
+    {
+      "segment": [
+        61.0,
+        65.0
+      ]
+    },
+    {
+      "segment": [
+        68.0,
+        72.0
+      ]
+    },
+    {
+      "segment": [
+        94.0,
+        98.0
+      ]
+    },
+    {
+      "segment": [
+        136.0,
+        144.0
+      ]
+    },
+    {
+      "segment": [
+        200.0,
+        204.0
+      ]
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "team_id": "LensLog",
+  "video_id": "Skate_el49s-RlIa4",
+  "duration_sec": 37.24,
+  "label": {
+    "name": "skate",
+    "score": 0.2596
+  },
+  "actions": [],
+  "highlights": [
+    {
+      "segment": [
+        6.51,
+        10.51
+      ]
+    }
+  ]
+}

@@ -1,0 +1,66 @@
+{
+  "team_id": "LensLog",
+  "video_id": "Longboarding_Jec5YAjth6M",
+  "duration_sec": 247.81,
+  "label": {
+    "name": "longboarding",
+    "score": 0.1813
+  },
+  "actions": [],
+  "highlights": [
+    {
+      "segment": [
+        12.51,
+        16.51
+      ]
+    },
+    {
+      "segment": [
+        28.53,
+        32.53
+      ]
+    },
+    {
+      "segment": [
+        46.52,
+        50.52
+      ]
+    },
+    {
+      "segment": [
+        56.53,
+        60.53
+      ]
+    },
+    {
+      "segment": [
+        87.02,
+        91.02
+      ]
+    },
+    {
+      "segment": [
+        120.0,
+        124.0
+      ]
+    },
+    {
+      "segment": [
+        154.0,
+        158.0
+      ]
+    },
+    {
+      "segment": [
+        163.03,
+        167.03
+      ]
+    },
+    {
+      "segment": [
+        243.81,
+        247.81
+      ]
+    }
+  ]
+}

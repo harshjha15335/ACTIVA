@@ -1,0 +1,48 @@
+{
+  "team_id": "LensLog",
+  "video_id": "Boxing_gCsPzyhBxDY",
+  "duration_sec": 196.8,
+  "label": {
+    "name": "boxing",
+    "score": 0.1949
+  },
+  "actions": [],
+  "highlights": [
+    {
+      "segment": [
+        0.0,
+        4.0
+      ]
+    },
+    {
+      "segment": [
+        36.0,
+        40.0
+      ]
+    },
+    {
+      "segment": [
+        60.0,
+        64.0
+      ]
+    },
+    {
+      "segment": [
+        93.0,
+        99.0
+      ]
+    },
+    {
+      "segment": [
+        128.0,
+        132.0
+      ]
+    },
+    {
+      "segment": [
+        149.52,
+        153.52
+      ]
+    }
+  ]
+}

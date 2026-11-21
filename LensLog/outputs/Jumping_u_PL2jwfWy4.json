@@ -1,0 +1,36 @@
+{
+  "team_id": "LensLog",
+  "video_id": "Jumping_u_PL2jwfWy4",
+  "duration_sec": 117.08,
+  "label": {
+    "name": "ski",
+    "score": 0.215
+  },
+  "actions": [],
+  "highlights": [
+    {
+      "segment": [
+        42.51,
+        46.51
+      ]
+    },
+    {
+      "segment": [
+        53.52,
+        57.52
+      ]
+    },
+    {
+      "segment": [
+        67.5,
+        71.5
+      ]
+    },
+    {
+      "segment": [
+        113.08,
+        117.08
+      ]
+    }
+  ]
+}

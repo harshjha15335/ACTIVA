@@ -1,0 +1,30 @@
+{
+  "team_id": "LensLog",
+  "video_id": "Plane_UM3DZadX_o4",
+  "duration_sec": 96.23,
+  "label": {
+    "name": "jumping",
+    "score": 0.1239
+  },
+  "actions": [],
+  "highlights": [
+    {
+      "segment": [
+        70.0,
+        74.0
+      ]
+    },
+    {
+      "segment": [
+        88.0,
+        92.0
+      ]
+    },
+    {
+      "segment": [
+        92.23,
+        96.23
+      ]
+    }
+  ]
+}
