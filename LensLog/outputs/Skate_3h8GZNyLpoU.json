@@ -1,0 +1,42 @@
+{
+  "team_id": "LensLog",
+  "video_id": "Skate_3h8GZNyLpoU",
+  "duration_sec": 136.39,
+  "label": {
+    "name": "skate",
+    "score": 0.2039
+  },
+  "actions": [],
+  "highlights": [
+    {
+      "segment": [
+        32.03,
+        36.03
+      ]
+    },
+    {
+      "segment": [
+        44.0,
+        48.0
+      ]
+    },
+    {
+      "segment": [
+        69.03,
+        73.03
+      ]
+    },
+    {
+      "segment": [
+        106.02,
+        110.02
+      ]
+    },
+    {
+      "segment": [
+        127.5,
+        131.5
+      ]
+    }
+  ]
+}

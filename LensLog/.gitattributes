@@ -6,3 +6,6 @@
 weights/parts/* binary
 kit/manifest.csv -text
 kit/supported_classes.json -text
+
+# The final outputs: stored and checked out byte for byte, so comparisons are exact.
+outputs/*.json -text

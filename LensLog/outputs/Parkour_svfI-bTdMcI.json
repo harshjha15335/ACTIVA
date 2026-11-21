@@ -1,0 +1,54 @@
+{
+  "team_id": "LensLog",
+  "video_id": "Parkour_svfI-bTdMcI",
+  "duration_sec": 202.62,
+  "label": {
+    "name": "skate",
+    "score": 0.1289
+  },
+  "actions": [],
+  "highlights": [
+    {
+      "segment": [
+        4.51,
+        8.51
+      ]
+    },
+    {
+      "segment": [
+        10.0,
+        14.0
+      ]
+    },
+    {
+      "segment": [
+        40.0,
+        44.0
+      ]
+    },
+    {
+      "segment": [
+        152.0,
+        156.0
+      ]
+    },
+    {
+      "segment": [
+        164.0,
+        168.0
+      ]
+    },
+    {
+      "segment": [
+        184.0,
+        188.0
+      ]
+    },
+    {
+      "segment": [
+        190.0,
+        194.0
+      ]
+    }
+  ]
+}

@@ -135,13 +135,13 @@ python scripts/validate_outputs.py --dir outputs
 ```
 
 - `run_manifest.py` writes a per-video report to `tmp/run_report.json`.
-- `validate_outputs.py` is our local implementation of the kit README's rules. The official `validate.py` is listed in the kit but was missing from our copy, and we've asked the organisers for it.
-- Latest full run, 17 Nov on the current code: **187/187 valid**, no fallbacks.
+- `validate_outputs.py` is our local implementation of the kit README's rules. The organisers don't provide an official `validate.py` and asked teams to write their own (#46).
+- **Final run, 21 Nov, on the frozen code (`v1.0-freeze`): 187/187 valid**, no fallbacks, strict mode. How it was made, and the versions used, are in [`outputs/README.md`](outputs/README.md).
 - **Two published EPIC files contain damaged H.264 packets: P29_05 and P30_08.** Their MD5s match EPIC's official list, so everyone's copies are the same. ACTIVA skips those packets, as ffmpeg does (D18).
 
-Provisional choices, pending the organisers' answers (`docs/kit_compliance.md`):
-- **Team ID:** `team_id` is `LensLog`.
-- **Short videos:** for videos where 15% is under 4 s (3 in the manifest), we output one 4.0 s highlight.
+Choices about the kit's rules (`docs/kit_compliance.md`):
+- **Team ID:** `team_id` is `LensLog`, as the organisers confirmed.
+- **Short videos (still unanswered):** for videos where 15% is under 4 s (3 in the manifest), we output one 4.0 s highlight.
 
 ## Reproducibility
 
@@ -164,7 +164,7 @@ The SlowFast and ActionFormer code is in the repo at the pinned commits (see Cre
 
 | | |
 |---|---|
-| OS, GPU | Windows 11, RTX 4060 Laptop, NVIDIA driver 592.82 |
+| OS, GPU | Windows 11, RTX 4060 Laptop, NVIDIA driver 610.91 (592.82 for the 17 Nov run) |
 | Python | 3.13.5 |
 | torch | 2.15.0+cu132 (CUDA 13.2, cuDNN 9.26) |
 | torchvision, open_clip_torch | 0.29.2+cpu, 4.2.1 |

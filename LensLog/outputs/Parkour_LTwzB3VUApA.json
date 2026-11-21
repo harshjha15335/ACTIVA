@@ -1,0 +1,30 @@
+{
+  "team_id": "LensLog",
+  "video_id": "Parkour_LTwzB3VUApA",
+  "duration_sec": 110.68,
+  "label": {
+    "name": "parkour",
+    "score": 0.1928
+  },
+  "actions": [],
+  "highlights": [
+    {
+      "segment": [
+        0.0,
+        4.0
+      ]
+    },
+    {
+      "segment": [
+        30.0,
+        36.0
+      ]
+    },
+    {
+      "segment": [
+        97.53,
+        101.53
+      ]
+    }
+  ]
+}

@@ -1,0 +1,60 @@
+{
+  "team_id": "LensLog",
+  "video_id": "BikePolo_ccTGFdD18SM_1",
+  "duration_sec": 250.65,
+  "label": {
+    "name": "bike",
+    "score": 0.137
+  },
+  "actions": [],
+  "highlights": [
+    {
+      "segment": [
+        10.0,
+        14.0
+      ]
+    },
+    {
+      "segment": [
+        34.0,
+        38.0
+      ]
+    },
+    {
+      "segment": [
+        52.52,
+        56.52
+      ]
+    },
+    {
+      "segment": [
+        108.0,
+        112.0
+      ]
+    },
+    {
+      "segment": [
+        144.0,
+        148.0
+      ]
+    },
+    {
+      "segment": [
+        175.01,
+        179.01
+      ]
+    },
+    {
+      "segment": [
+        190.03,
+        198.03
+      ]
+    },
+    {
+      "segment": [
+        235.0,
+        239.0
+      ]
+    }
+  ]
+}

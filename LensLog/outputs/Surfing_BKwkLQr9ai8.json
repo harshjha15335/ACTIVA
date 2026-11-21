@@ -1,0 +1,30 @@
+{
+  "team_id": "LensLog",
+  "video_id": "Surfing_BKwkLQr9ai8",
+  "duration_sec": 83.98,
+  "label": {
+    "name": "surfing",
+    "score": 0.3083
+  },
+  "actions": [],
+  "highlights": [
+    {
+      "segment": [
+        0.0,
+        4.0
+      ]
+    },
+    {
+      "segment": [
+        23.02,
+        27.02
+      ]
+    },
+    {
+      "segment": [
+        53.02,
+        57.02
+      ]
+    }
+  ]
+}

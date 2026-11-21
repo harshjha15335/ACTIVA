@@ -1,0 +1,36 @@
+{
+  "team_id": "LensLog",
+  "video_id": "Motor_G9Ud4mWGkRY",
+  "duration_sec": 144.24,
+  "label": {
+    "name": "motor",
+    "score": 0.1313
+  },
+  "actions": [],
+  "highlights": [
+    {
+      "segment": [
+        0.0,
+        8.0
+      ]
+    },
+    {
+      "segment": [
+        49.0,
+        53.0
+      ]
+    },
+    {
+      "segment": [
+        100.0,
+        104.0
+      ]
+    },
+    {
+      "segment": [
+        140.24,
+        144.24
+      ]
+    }
+  ]
+}

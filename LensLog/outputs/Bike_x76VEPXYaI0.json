@@ -1,0 +1,24 @@
+{
+  "team_id": "LensLog",
+  "video_id": "Bike_x76VEPXYaI0",
+  "duration_sec": 123.16,
+  "label": {
+    "name": "bike",
+    "score": 0.1307
+  },
+  "actions": [],
+  "highlights": [
+    {
+      "segment": [
+        0.0,
+        6.0
+      ]
+    },
+    {
+      "segment": [
+        100.01,
+        112.01
+      ]
+    }
+  ]
+}

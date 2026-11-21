@@ -1,0 +1,60 @@
+{
+  "team_id": "LensLog",
+  "video_id": "BikePolo_5yf797Lh4Oc_1",
+  "duration_sec": 267.83,
+  "label": {
+    "name": "bikepolo",
+    "score": 0.2152
+  },
+  "actions": [],
+  "highlights": [
+    {
+      "segment": [
+        0.0,
+        8.0
+      ]
+    },
+    {
+      "segment": [
+        14.02,
+        18.02
+      ]
+    },
+    {
+      "segment": [
+        69.5,
+        73.5
+      ]
+    },
+    {
+      "segment": [
+        79.51,
+        83.51
+      ]
+    },
+    {
+      "segment": [
+        152.02,
+        156.02
+      ]
+    },
+    {
+      "segment": [
+        176.0,
+        180.0
+      ]
+    },
+    {
+      "segment": [
+        227.53,
+        231.53
+      ]
+    },
+    {
+      "segment": [
+        252.02,
+        256.03
+      ]
+    }
+  ]
+}

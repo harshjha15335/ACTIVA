@@ -1,0 +1,36 @@
+{
+  "team_id": "LensLog",
+  "video_id": "Horse_7ZzWccM_5cM",
+  "duration_sec": 146.18,
+  "label": {
+    "name": "horse",
+    "score": 0.246
+  },
+  "actions": [],
+  "highlights": [
+    {
+      "segment": [
+        0.0,
+        4.0
+      ]
+    },
+    {
+      "segment": [
+        65.5,
+        69.5
+      ]
+    },
+    {
+      "segment": [
+        93.0,
+        99.0
+      ]
+    },
+    {
+      "segment": [
+        142.17,
+        146.17
+      ]
+    }
+  ]
+}

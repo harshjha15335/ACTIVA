@@ -1,0 +1,30 @@
+{
+  "team_id": "LensLog",
+  "video_id": "Jumping__mU-p2wuk90",
+  "duration_sec": 131.7,
+  "label": {
+    "name": "jumping",
+    "score": 0.109
+  },
+  "actions": [],
+  "highlights": [
+    {
+      "segment": [
+        2.0,
+        6.0
+      ]
+    },
+    {
+      "segment": [
+        85.52,
+        89.52
+      ]
+    },
+    {
+      "segment": [
+        112.0,
+        120.0
+      ]
+    }
+  ]
+}

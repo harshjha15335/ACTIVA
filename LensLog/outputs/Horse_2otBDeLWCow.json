@@ -1,0 +1,54 @@
+{
+  "team_id": "LensLog",
+  "video_id": "Horse_2otBDeLWCow",
+  "duration_sec": 248.18,
+  "label": {
+    "name": "horse",
+    "score": 0.1573
+  },
+  "actions": [],
+  "highlights": [
+    {
+      "segment": [
+        9.0,
+        15.0
+      ]
+    },
+    {
+      "segment": [
+        150.0,
+        154.0
+      ]
+    },
+    {
+      "segment": [
+        174.0,
+        178.0
+      ]
+    },
+    {
+      "segment": [
+        180.0,
+        186.0
+      ]
+    },
+    {
+      "segment": [
+        204.0,
+        212.0
+      ]
+    },
+    {
+      "segment": [
+        226.0,
+        230.0
+      ]
+    },
+    {
+      "segment": [
+        244.0,
+        248.0
+      ]
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "team_id": "LensLog",
+  "video_id": "Plane_Yz4CYVdRvvU",
+  "duration_sec": 111.34,
+  "label": {
+    "name": "plane",
+    "score": 0.1166
+  },
+  "actions": [],
+  "highlights": [
+    {
+      "segment": [
+        0.0,
+        4.0
+      ]
+    },
+    {
+      "segment": [
+        51.02,
+        59.02
+      ]
+    },
+    {
+      "segment": [
+        107.34,
+        111.34
+      ]
+    }
+  ]
+}

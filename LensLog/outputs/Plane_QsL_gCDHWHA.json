@@ -1,0 +1,48 @@
+{
+  "team_id": "LensLog",
+  "video_id": "Plane_QsL_gCDHWHA",
+  "duration_sec": 205.47,
+  "label": {
+    "name": "jumping",
+    "score": 0.1204
+  },
+  "actions": [],
+  "highlights": [
+    {
+      "segment": [
+        32.5,
+        36.5
+      ]
+    },
+    {
+      "segment": [
+        60.51,
+        64.51
+      ]
+    },
+    {
+      "segment": [
+        84.0,
+        88.0
+      ]
+    },
+    {
+      "segment": [
+        132.0,
+        136.0
+      ]
+    },
+    {
+      "segment": [
+        192.51,
+        200.51
+      ]
+    },
+    {
+      "segment": [
+        201.47,
+        205.47
+      ]
+    }
+  ]
+}
