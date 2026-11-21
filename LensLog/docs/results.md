@@ -1,3 +1,53 @@
+# M3 post-freeze coverage - 21 November 2026 (#28 T3, D-a)
+
+One report-only pass on the **138 EPIC outputs committed at 9a791db** (#56),
+produced by frozen code `v1.0-freeze` (`3968ea7`). No model, selector, settings
+or final output changed in response to these measurements.
+
+| Mean distinct GT verb-noun pair coverage | Submitted highlights | Uniform reference |
+|---|---:|---:|
+| Any positive overlap | 42.5233% | 33.7003% |
+| At least half of a GT instance | 32.5592% | 19.9124% |
+| Full GT instance | 21.9452% | 11.1261% |
+
+All 138 output files were checked against their committed git blobs before
+scoring and SHA-256 checked again afterward. The cohort is selected by the
+manifest's `epic_kitchens_100` membership: `P*.json` alone also matches seven
+Parkour/Plane outputs. That initial preflight stopped before scoring; only one
+scored pass was performed. There are **9,668 positive-length GT segments** and
+zero skipped zero-length rows. Validation annotations are from
+`epic-kitchens/epic-kitchens-100-annotations@ea8b40457a400c3fffa1c7f406ef3dc169cc2522`;
+SHA-256 `35f7932ba0a1127a96cac215a98d35398946f343e3cea9ad6688ed17eee9d75d`,
+matching M1's #26 report. Verb/noun class IDs are mapped with that revision's
+EPIC class keys, as in `scripts/m1_epic_val_report.py`.
+
+For each video, `eval.metrics.coverage` counts a distinct GT verb-noun pair
+once if any of its instances meets the stated rule against the highlight
+union. The table is the unweighted mean of those per-video fractions. The
+uniform reference uses frozen `optimizer.select_uniform` with empty actions,
+zero importance, and each output's duration, then `normalize_highlights` and
+`schema.to_output`. It uses the existing 0.148 safety budget, nominal six-second
+clips and four-second minimum. The existing single-four-second-clip exception
+applies to the three shortest videos in both methods. Neither annotations nor
+predictions choose uniform positions. Submitted clips are scored exactly as
+committed. Using the rounded output duration for uniform is explicit; it does
+not reconstruct the original decoder's unrounded duration.
+
+These are local coverage proxies, not the organisers' score or FPVSum human
+highlight F1. The half-overlap **32.5592%** supports the demo's "about a third"
+line. Raw annotations and the full per-video report stay outside the repo;
+public aggregate evidence, output/source hashes and the report digest are in
+`docs/evidence/M3_post_freeze_coverage_2026-11-21.json`. This report cannot be
+used for further tuning under D-a.
+
+Verification: full `python -m pytest -q` from `LensLog/` completed with
+**457 passed, 6 skipped, 1 failed** (177.04 s). The sole failure is
+`test_committed_pieces_match_the_asset_table`: this local sparse checkout
+excludes the large `weights/parts/` archives. A separate committed-tree inventory
+check confirms all part names, contiguous numbering and asset sizes match the
+installer table; it does not verify the excluded archive contents. This is
+disclosed as an incomplete local packaging check, not an all-green suite.
+
 # Current M2 results — 9 November 2026
 
 These are fresh checks, not the historical74-test report. Detailed evidence:
