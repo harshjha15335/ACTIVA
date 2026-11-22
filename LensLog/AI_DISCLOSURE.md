@@ -22,6 +22,7 @@ network requests. The highlight selector is our own deterministic code.
   - wrote and edited code, tests and documentation from our instructions;
   - ran experiments and test suites;
   - drafted board messages and reports;
+  - built the presentation and edited the demo video from the team's content and recorded voices;
   - ran independent review passes ("judge", planner and edge-case reviews in `tmp/review/`, not committed) that found issues we then fixed, for example 4.00 s highlights that were 3.9999 s in floating point (D22).
 - **How we set them up:** in the open, in this repo.
   - `AGENTS.md` and `CLAUDE.md` give the agents' rules.
@@ -31,7 +32,7 @@ network requests. The highlight selector is our own deterministic code.
 
 ## Human oversight
 
-- **Every change went through a pull request.** CI runs the full test suite (450+ tests), and a team member reviewed and merged. Nothing reached `main` without that.
+- **Work was done on role branches and merged into `main`, mostly through pull requests.** CI runs the full test suite (450+ tests). Merges were made from a team member's account, some by a coding agent under that member's standing instruction once the checks passed.
 - **Design decisions are made by the team and recorded** in `docs/decisions.md`, with the evidence behind them.
 - **Reported numbers come from scripts in this repo** and were re-measured before we wrote them down: validator results, run times, ablations and label accuracy. Experiments followed rules fixed before the results were seen, and were run once on held-out data.
 - **We avoided leakage:** hidden-set videos and annotations were never used to tune anything (`docs/leakage.md`).
@@ -43,7 +44,7 @@ network requests. The highlight selector is our own deterministic code.
 
 ## What the AI did not do
 
-- It did not choose the approach or the trade-offs. The team did, and they're recorded in `docs/decisions.md`.
+- It did not have the final say on the approach or the trade-offs. The team made the final call, recorded in `docs/decisions.md`.
 - It did not train or fine-tune any model.
 - It did not produce or edit ground-truth labels, and no annotations of the evaluation videos were used to tune anything.
 - It did not generate the output JSONs by hand: every file in `outputs/` is written by `./run.sh`.
