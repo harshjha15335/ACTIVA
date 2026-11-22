@@ -48,6 +48,9 @@ check confirms all part names, contiguous numbering and asset sizes match the
 installer table; it does not verify the excluded archive contents. This is
 disclosed as an incomplete local packaging check, not an all-green suite.
 
+*Follow-up (M4): on a complete checkout at `ee4c9b4`, with `weights/parts/` present, the
+full suite gives **461 passed, 3 skipped, 0 failed**, including that packaging check.*
+
 # Current M2 results — 9 November 2026
 
 These are fresh checks, not the historical74-test report. Detailed evidence:
