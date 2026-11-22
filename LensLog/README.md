@@ -1,6 +1,10 @@
 # ACTIVA
 
-**Team LensLog** (VIT Vellore) · Samsung PRISM XR Hackathon 2026 · Track 04
+**Action Intelligence and Video Analysis**
+
+**Team LensLog** (VIT Vellore) · Samsung PRISM XR Hackathon 2026 · Track 04, Action-Aware Video Summarization
+
+**[Demo video (2:49)](https://youtu.be/X3hYju0MdcA)** · **[Presentation (PDF)](docs/VITVellore_LensLog.pdf)** · [AI disclosure](AI_DISCLOSURE.md) · [Results](#results)
 
 ACTIVA turns a first-person (egocentric) MP4 into one JSON in the student kit's format:
 - the video's **label**, e.g. `cooking` or `ski`;
@@ -93,21 +97,21 @@ MP4 ─┬─ PyAV, 2 fps ─ CLIP ViT-B-32 ─┬─ importance (novelty) ─�
 | Shared types and settings | `code/contracts.py`, `code/config.py`, `code/vocab.py` | M4 |
 
 - Labels, verbs and nouns come from the kit's `kit/supported_classes.json` when it is present (`ACTIVA_VOCAB` can point to it elsewhere).
-  - We don't publish kit files until the organisers say we may.
   - Without it, the same list is rebuilt from public sources: the EPIC-100 class keys in the installed model files, and the 14 FPVSum category names (`config.FPVSUM_CATEGORIES`) + `cooking` + `other`. A test checks the result equals the kit file exactly (D20).
 - Inference never reads video IDs, annotations or development caches.
 - Design decisions: [`docs/decisions.md`](docs/decisions.md).
 
 ## Hardware and runtime
 
-Measured on one laptop: RTX 4060 Laptop (8 GB), i7-14650HX, 16 GB RAM, strict mode, all 187 manifest videos, current code (17 Nov run).
+Measured on one laptop: RTX 4060 Laptop (8 GB), i7-14650HX, 16 GB RAM, strict mode, all 187 manifest videos (56,094 s of video).
 
 | | |
 |---|---|
-| Whole manifest (56,094 s of video) | 7.2 h, **0.46 s per second of video** (about 2 h of it lost to thermal throttling, see below) |
-| A 9 to 10 min EPIC video | 194 to 247 s |
-| A 2 min FPVSum video | 4 to 14 s (the kitchen action model is skipped on sports labels, D21) |
-| Peak GPU memory | 3.2 GB |
+| Final run, 21 Nov, frozen code | 6.9 h, **0.44 s per second of video** |
+| Earlier full run, 17 Nov | 7.2 h, 0.46 s per second of video (about 2 h of it lost to thermal throttling, see below) |
+| A 9 to 10 min EPIC video (17 Nov) | 194 to 247 s |
+| A 2 min FPVSum video (17 Nov) | 4 to 14 s (the kitchen action model is skipped on sports labels, D21) |
+| Peak GPU memory (17 Nov) | 3.2 GB |
 
 - The run is limited by video decoding on the CPU, so the GPU is mostly idle.
 - **Keep the machine cool.** During the 17 Nov run the laptop's CPU reached 95 °C and throughput halved for about 2.5 h, until the fans were set to maximum. Outside that window the EPIC videos ran at 0.42 s per second of video. The outputs are unaffected; only the time changes.
@@ -122,6 +126,18 @@ Measured on one laptop: RTX 4060 Laptop (8 GB), i7-14650HX, 16 GB RAM, strict mo
   - So a 33-minute video takes about 2 h on this CPU, and the whole manifest about 57 h.
   - Same label and highlights as the GPU run. Of the GPU run's 1,927 actions (1,928 on CPU), 1,562 are identical and 1,696 have the same segment, verb and noun; the rest differ slightly in score or boundaries from floating-point rounding.
   - The CLIP part alone (label and importance) runs at about 0.7 s per video-second on this CPU.
+
+## Results
+
+These are our own measurements, each run once. None of them is an official score, and nothing was changed because of them.
+
+| Check | Result | Notes |
+|---|---|---|
+| Valid output files, final run | **187 / 187** | Strict mode, 0 fallbacks, 0 errors ([`outputs/README.md`](outputs/README.md)) |
+| Action mAP, EPIC-100 validation (138 videos, mean over tIoU 0.1 to 0.5) | **verb 18.11, noun 14.73, action 13.74** | Features from the raw MP4, verbs and nouns paired by us ([#26](https://github.com/harshjha15335/ACTIVA/issues/26)). The published model on its published features, which we reproduced, gets verb 23.49 (published 23.51) and noun 21.88 (published 21.88) ([`docs/m1_status.md`](docs/m1_status.md)) |
+| Distinct actions covered by the highlights (138 EPIC videos) | **32.56%** at half overlap, against 19.91% for evenly spaced clips | Any overlap 42.52% vs 33.70%, full action 21.95% vs 11.13%. A local proxy, not the organisers' score ([`docs/results.md`](docs/results.md)) |
+| Label, 31 sports videos outside the manifest | **26 / 31** | A small set, not evaluation videos. Three prompt variants were tested once and none was adopted ([#33](https://github.com/harshjha15335/ACTIVA/issues/33)) |
+| Highlight F1, FPVSum | **Not measured** | We have no independent human-labelled videos |
 
 ## Outputs and checks
 
@@ -184,6 +200,7 @@ pip install -r requirements-dev.txt
 python -m pytest -q
 ```
 
+- Full suite on a complete checkout: 461 passed, 3 skipped.
 - The tests build synthetic videos with FFmpeg: short, long, black, VFR, rotated, corrupt, damaged-packet, empty and audio-only.
 - They use a fixture vocabulary and need no model weights.
 - CI runs them on every push and pull request.
