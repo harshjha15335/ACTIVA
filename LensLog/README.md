@@ -213,7 +213,7 @@ python -m pytest -q
 | M1 Action engine | Arham Jain ([@Arhamj1](https://github.com/Arhamj1)) |
 | M2 Perception | Harsh Jha ([@harshjha15335](https://github.com/harshjha15335)) |
 | M3 Highlight selector | Anuj Deshpande ([@ANUJ-DESHPANDE](https://github.com/ANUJ-DESHPANDE)) |
-| M4 Integration, demo, submission | Aarush Shetty ([@AarushShetty346](https://github.com/AarushShetty346)) |
+| M4 Integration and demo | Aarush Shetty ([@AarushShetty346](https://github.com/AarushShetty346)) |
 
 **Contributor account clarification:** [@Aqualil234](https://github.com/Aqualil234) is an alternate GitHub account used by Harsh Jha (M2), not a fifth team member. ACTIVA has four participating students, as listed above.
 
